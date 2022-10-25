@@ -1,15 +1,82 @@
 
+// implement your own payer for custom plans
+export interface Payor {
+    login: string,   // a bot handle we can fetch data from
+    // this is the list of plans used anonymously
+    anonPlan: Plan[]
+    plan: PlanFn
+}
+
+
+export class Adjudication {
+    version: number | undefined = 1
+    constructor(public input: AdjudicationInput, eob: Eob[]) {
+    }
+    static empty(): Adjudication {
+        return {
+
+        }
+    }
+    static fromJson(store: string): Adjudication {
+        if (!store) { return Adjudication.empty() }
+
+        const o = JSON.parse(store) as Adjudication
+
+        return o
+    }
+
+    toJson() {
+        return JSON.stringify(this)
+    }
+}
+
+export class AdjudicationInput {
+    constructor(
+        public claim: Claim = ,
+        public payor: Payor,
+        public subscriber?: Subscriber,
+        public patient?: string) {
+    }
+}
+type AdjudicateFn = (claim: AdjudicationInput) => Promise<Eob[]>
+
+async function adjudicate(a: AdjudicationInput): Promise<Eob[]> {
+    var plan: Plan[] = []
+    if (a.subscriber)
+        plan = a.payor.plan(a.subscriber!, a.patient);
+    else
+        plan = a.payor.anonPlan
+    const pr = plan.map((e) => e.adjudicate(a))
+
+    const r = await Promise.all(pr)
+    return r.flat(1)
+}
+
+export type PlanFn = (state: Subscriber, covered: string | undefined) => Plan[]
+
 
 // Claim -> *pricing* -> PricedClaim -> *sharing* -> Eob
 
 // a plan could be composed of multiple plans, may have user electable options.
+export class Adjudicated {
+    constructor(public claim: Claim, public eob: Eob[]) {
+
+    }
+    // we can do one eob for each plan; for most this will be in and out of network, but for open enrollment, there may be value in having even more plans
+
+
+    static async adjudicate(claim: Claim, plan: Plan[]): Promise<Adjudicated> {
+        const eob: Eob[] = []
+        return new Adjudicated(claim, eob)
+    }
+}
 
 export class Claim {
-    constructor(public line: ShoppableLine[]){
+    constructor(public line: ShoppableLine[]) {
 
     }
 
-     static random() {
+    static random() {
         return new Claim([
             {
                 code: '70450',
@@ -27,18 +94,6 @@ export class Claim {
     }
 }
 
-export class Adjudicated {
-    constructor(public claim: Claim, public eob: Eob[]){
-
-    }
-    // we can do one eob for each plan; for most this will be in and out of network, but for open enrollment, there may be value in having even more plans
-
-
-    static async adjudicate(claim: Claim, plan: Plan[]) : Promise<Adjudicated> {
-        const eob : Eob[] = []
-        return new Adjudicated(claim , eob)
-    }
-}
 
 
 export interface ShoppableLine {
@@ -60,7 +115,7 @@ export interface Plan {
     adjudicate: AdjudicateFn
 }
 
-export function simpleContract(x: string)  : Contract {
+export function simpleContract(x: string): Contract {
     return {
         price: pricing()
     }
@@ -80,9 +135,9 @@ export function simplePlan(x: string) {
 }
 
 // should just be pricing followed by sharing
-type AdjudicateFn = (claim: Claim) => Promise<Eob[]>
-export  function adjudicate(): AdjudicateFn {
-    return async (claim: Claim)=>{
+
+export function adjudicate3(): AdjudicateFn {
+    return async (claim: Claim) => {
         return []
     }
 }
@@ -90,34 +145,28 @@ export  function adjudicate(): AdjudicateFn {
 // the shopper can pick the contract to process the claim under
 // some contracts may be more expensive but offer different providers.
 // do that though we process it under every contract and coalesce the ones with the same price
-export interface Payor {
-    login: string,   // a bot handle we can fetch data from
-    // this is the list of plans used anonymously
-    anonPlan: Plan[]
-    plan: PlanFn
-}
-export type PlanFn = (state: SubscriberState, covered: Covered) => Plan
+
 
 // maybe these need to be async to allow fetch?
-export function simplePayor() : Payor{
+export function simplePayor(): Payor {
     let p = simplePlan("")
     return {
-         login: "",
-         anonPlan: [
+        login: "",
+        anonPlan: [
             p
-         ],
-         plan: (state: SubscriberState, covered: Covered) => p
-     }
- }
+        ],
+        plan: (state: Subscriber, covered: Patient) => p
+    }
+}
 
-export function plan() :PlanFn{
-    return (state: SubscriberState, covered: Covered) : Plan => {
+export function plan(): PlanFn {
+    return (state: Subscriber, covered: Patient): Plan => {
         throw "not done"
     }
 }
 
 // the priced claim may provide some category information too: generic, etc.
-type SharingFn = (claim: PricedClaim, subscriber: SubscriberState) => Eob
+type SharingFn = (claim: PricedClaim, subscriber: Subscriber) => Eob
 
 
 
@@ -133,7 +182,7 @@ export interface Contract {
     price: PricingFn
 }
 type PricingFn = (claim: Claim) => PricedClaim
-export function pricing(): PricingFn{
+export function pricing(): PricingFn {
     return (claim: Claim): PricedClaim => {
         return {}
     }
@@ -145,8 +194,8 @@ export function pricing(): PricingFn{
 // eobs.
 export class Eob {
     constructor(
-        public subscriber: SubscriberState,
-        public covered: Covered,
+        public subscriber: Subscriber,
+        public covered: Patient,
         public plan: PlanRules,
         public lines: EobLine[]) {
         // we should add up counters here
@@ -164,12 +213,12 @@ export class Eob {
 }
 
 // generic <Covered>?
-export interface SubscriberState {
+export interface Subscriber {
     subscriber: string // name of subscriber
     plan: string  // name of the plan
-    covered: Covered[] // each covered life
+    covered: Patient[] // each covered life
 }
-export interface Covered extends CounterMap {
+export interface Patient extends CounterMap {
     id: string
     name: string
 }
@@ -234,7 +283,7 @@ export interface EobFormat {
 
 export interface StoredData {
     // these don't have valid values if loggedIn=false
-    state: SubscriberState
+    state: Subscriber
     plan: PlanRules
     patient: string
     recentProvider: string[]
@@ -253,8 +302,8 @@ export interface GeoBounds {
 
 
 // for hypotheticals, map the shoppable lines to different networks/npis
-export async function adjudicate2(subscriber: SubscriberState,
-    covered: Covered,
+export async function adjudicate2(subscriber: Subscriber,
+    covered: Patient,
     plan: PlanRules,
     line: ShoppableLine[]): Promise<Eob> {
 

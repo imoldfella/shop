@@ -1,9 +1,8 @@
 //import { useStore } from './cart'
 import { ChevronLeftIcon, ShoppingCartIcon, PrinterIcon, XMarkIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline'
-import { ShoppableLine } from './eob';
-import { Map } from 'map'
+import { Claim, Payor, AdjudicationInput } from './eob';
+import { Map } from '@datagrove/map'
 import React, { ReactNode as Children, createContext, useContext, useReducer } from 'react'
-import { Adjudicated} from './eob'
 
 const drsearchScreen = 1
 const cartScreen = 0
@@ -12,12 +11,13 @@ const mapScreen = 2
 class UiState {
     login = false
     screen = cartScreen
+    claim = new AdjudicatedInput
     dispatch = {} as React.Dispatch<UiUpdate>
-    claim = new Adjudicated
 }
 interface UiUpdate {
     screen?: number
     login?: boolean
+
 }
 function reducer(state: UiState, update: UiUpdate): UiState {
     const o = {
@@ -63,35 +63,43 @@ export function Cart() {
     </UiContext.Provider>)
 
 }
+function Card(props: { children: Children }) {
+    return (<div className="max-w-sm rounded overflow-hidden shadow-lg">{props.children}</div>)
+}
 function Eob() {
     const st = useStore()
     const clear = () => { }
     const addRandom = () => { }
-    const eobPdf = () => { alert("pdf")}
+    const eobPdf = () => { alert("pdf") }
     const logout = () => { }
-    let isEmpty = false  
+    let isEmpty = false
 
-return (<div >
-   <nav className="flex bg-slate-900 p-2" role="navigation" aria-label="main navigation">
-        <div className="flex-none"><button className="navbar-tool" onClick={() => { }}>
-            <ChevronLeftIcon className="h-6 w-6 text-blue-500" /></button></div>
-        <div className="flex-1 text-center">Cart</div>
-        <div className="flex-none">
-            
-            <button className="navbar-tool " onClick={eobPdf}><PrinterIcon className="h-6 w-6 text-blue-500" /> </button>
-        </div>
-    </nav>     
+    return (<div >
+        <nav className="flex bg-slate-900 p-2" role="navigation" aria-label="main navigation">
+            <div className="flex-none"><button className="navbar-tool" onClick={() => { }}>
+                <ChevronLeftIcon className="h-6 w-6 text-blue-500" /></button></div>
+            <div className="flex-1 text-center">Cart</div>
+            <div className="flex-none">
 
-  { isEmpty? (<div >
+                <button className="navbar-tool " onClick={eobPdf}><PrinterIcon className="h-6 w-6 text-blue-500" /> </button>
+            </div>
+        </nav>
+
+        <Card>
+            <Patient />
+            <Lines />
+        </Card>
+        {st.claim
+        {isEmpty ? (<div >
             <div className="card">
                 <p></p>
                 Cart is empty
             </div>
         </div>)
-    :  (
-        <div><div className="cardlist"></div>
+            : (
+                <div><div className="cardlist"></div>
 
-        </div>) }
+                </div>)}
 
 
         {st.login ? <Action onClick={() => st.dispatch({ login: false })} >LOGOUT</Action> :
@@ -132,7 +140,7 @@ function searchInput() {
 
         <label className="relative block box-border">
             <span className="absolute inset-y-0 left-0 flex items-center pl-3">
-                <MagnifyingGlassIcon/>
+                <MagnifyingGlassIcon />
             </span>
             <input autoFocus
                 className="w-full text-black bg-white placeholder:font-italitc border border-slate-300 rounded-half py-2 pl-10 pr-4  focus:outline-none"
