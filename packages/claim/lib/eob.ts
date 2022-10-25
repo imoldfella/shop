@@ -4,6 +4,42 @@
 
 // a plan could be composed of multiple plans, may have user electable options.
 
+export class Claim {
+    constructor(public line: ShoppableLine[]){
+
+    }
+
+     static random() {
+        return new Claim([
+            {
+                code: '70450',
+                desc: ' CT scan head or brain without dye',
+                npi: '1234567890',
+                provider: 'Jill, MD'
+            },
+            {
+                code: '70451',
+                desc: 'Anesthesia',
+                npi: '1234567891',
+                provider: 'Joe, MD',
+            }
+        ])
+    }
+}
+
+export class Adjudicated {
+    constructor(public claim: Claim, public eob: Eob[]){
+
+    }
+    // we can do one eob for each plan; for most this will be in and out of network, but for open enrollment, there may be value in having even more plans
+
+
+    static async adjudicate(claim: Claim, plan: Plan[]) : Promise<Adjudicated> {
+        const eob : Eob[] = []
+        return new Adjudicated(claim , eob)
+    }
+}
+
 
 export interface ShoppableLine {
     // this is pretty universal
@@ -16,10 +52,6 @@ export interface ShoppableLine {
     provider: string | undefined
 }
 
-export interface Claim {
-    line: ShoppableLine[]
-}
-
 export interface Plan {
     name: string
     contract: Contract[]
@@ -28,12 +60,12 @@ export interface Plan {
     adjudicate: AdjudicateFn
 }
 
-
 export function simpleContract(x: string)  : Contract {
     return {
         price: pricing()
     }
 }
+
 export function simplePlan(x: string) {
     let contract = simpleContract(x)
     return {

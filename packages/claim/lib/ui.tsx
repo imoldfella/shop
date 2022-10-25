@@ -1,31 +1,38 @@
 //import { useStore } from './cart'
-import { ShoppingCartIcon } from '@heroicons/react/24/solid'
+import { ChevronLeftIcon, ShoppingCartIcon, PrinterIcon, XMarkIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline'
 import { ShoppableLine } from './eob';
-import Map from './map';
-import React, { createContext,useContext, useReducer } from 'react';
-
+import { Map } from 'map'
+import React, { ReactNode as Children, createContext, useContext, useReducer } from 'react'
+import { Adjudicated} from './eob'
 
 const drsearchScreen = 1
 const cartScreen = 0
 const mapScreen = 2
 
 class UiState {
-    screen =  cartScreen
-    dispatch =  {} as React.Dispatch<UiUpdate>
+    login = false
+    screen = cartScreen
+    dispatch = {} as React.Dispatch<UiUpdate>
+    claim = new Adjudicated
 }
 interface UiUpdate {
     screen?: number
+    login?: boolean
 }
-function reducer(state: UiState, update: UiUpdate ) : UiState {
-    return {
+function reducer(state: UiState, update: UiUpdate): UiState {
+    const o = {
         ...state,
         ...update
     }
+    console.log("o", o)
+    return o
 }
-const Screen = createContext(new UiState)
+const UiContext = createContext(new UiState)
 function useStore() {
-    return useContext(Screen)
+    return useContext(UiContext)
 }
+
+
 
 export function Cart() {
     let [store, dispatch] = useReducer(reducer, new UiState)
@@ -34,68 +41,79 @@ export function Cart() {
         dispatch: dispatch
     }
 
-    let x : React.ReactNode
-    switch(store.screen) {
-        case mapScreen:
-            x = MapScreen()
-        case drsearchScreen:
-            x = Search()
-            break;
-        case cartScreen:
-        default:
-            x = Eob()
-            break        
+    const Scr = () => {
+        switch (store.screen) {
+            case mapScreen:
+                return MapScreen()
+            case drsearchScreen:
+                return Search()
+            default:
+                return Eob()
+        }
     }
 
-    // if logged in
-    return (<Screen.Provider value={store}>
-        { x }
-        </Screen.Provider>)
-    
-}
 
+    // if logged in
+    const login = (x: boolean) => {
+        console.log("login", x, dispatch)
+        dispatch({ login: x })
+    }
+    return (<UiContext.Provider value={store}>
+        <Scr />
+    </UiContext.Provider>)
+
+}
+function Eob() {
+    const st = useStore()
+    const clear = () => { }
+    const addRandom = () => { }
+    const eobPdf = () => { alert("pdf")}
+    const logout = () => { }
+    let isEmpty = false  
+
+return (<div >
+   <nav className="flex bg-slate-900 p-2" role="navigation" aria-label="main navigation">
+        <div className="flex-none"><button className="navbar-tool" onClick={() => { }}>
+            <ChevronLeftIcon className="h-6 w-6 text-blue-500" /></button></div>
+        <div className="flex-1 text-center">Cart</div>
+        <div className="flex-none">
+            
+            <button className="navbar-tool " onClick={eobPdf}><PrinterIcon className="h-6 w-6 text-blue-500" /> </button>
+        </div>
+    </nav>     
+
+  { isEmpty? (<div >
+            <div className="card">
+                <p></p>
+                Cart is empty
+            </div>
+        </div>)
+    :  (
+        <div><div className="cardlist"></div>
+
+        </div>) }
+
+
+        {st.login ? <Action onClick={() => st.dispatch({ login: false })} >LOGOUT</Action> :
+            <Action onClick={() => st.dispatch({ login: true })}>LOGIN</Action>}
+        <Action onClick={addRandom}>RANDOM</Action>
+        <Action onClick={clear} >CLEAR</Action>
+    </div >)
+
+}
 function setScreen(screen: number) {
     let s = useStore()
-    s.dispatch({screen: screen})
+    s.dispatch({ screen: screen })
 }
 
 function Search() {
     return (<div>search</div>)
 }
 
-
-function eobPdf(){
-    alert("print pdf")
-}
-
-function CancelSvg() {
-    return (<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24"
-        stroke="#808080" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-    </svg>)
-}
-
-function Magnifier() {
-    return (<svg className="h-5 w-5 fill-black" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="30"
-        height="30" viewBox="0 0 30 30">
-        <path
-            d="M 13 3 C 7.4889971 3 3 7.4889971 3 13 C 3 18.511003 7.4889971 23 13 23 C 15.396508 23 17.597385 22.148986 19.322266 20.736328 L 25.292969 26.707031 A 1.0001 1.0001 0 1 0 26.707031 25.292969 L 20.736328 19.322266 C 22.148986 17.597385 23 15.396508 23 13 C 23 7.4889971 18.511003 3 13 3 z M 13 5 C 17.430123 5 21 8.5698774 21 13 C 21 17.430123 17.430123 21 13 21 C 8.5698774 21 5 17.430123 5 13 C 5 8.5698774 8.5698774 5 13 5 z">
-        </path>
-    </svg>)
-}
-
-function PrinterSvg() {
-    return (<svg xmlns="http://www.w3.org/2000/svg"
-        className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="#808080" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round"
-            d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-    </svg>)
-}
-
-function ModalNav(props: { title: string, setClose: ()=>void }) {
+function ModalNav(props: { title: string, setClose: () => void }) {
     return (<nav className="navbar" role="navigation" aria-label="main navigation">
         <button className="navbar-tool" onClick={props.setClose}>
-            <CancelSvg />
+            <XMarkIcon />
         </button>
         <div className="text-sm align-middle flex flex-col justify-center">
             {props.title}
@@ -104,24 +122,9 @@ function ModalNav(props: { title: string, setClose: ()=>void }) {
 }
 
 function MapScreen() {
-    return (<div><ModalNav title='' setClose={()=>{}} />
+    return (<div><ModalNav title='' setClose={() => { }} />
         <Map></Map>
     </div>)
-}
-
-function cartNav() {
-    return (<nav className="navbar" role="navigation" aria-label="main navigation">
-        <button className="navbar-tool" onClick={()=>{}}>
-            <CancelSvg /></button>
-
-
-        <div className="navbar-brand">Cart</div>
-
-        <div className="navbar-right" v-if=" store.isLogin()">
-            <div className="navbar-tool"></div>
-            <button className="navbar-tool" onClick={eobPdf}> </button>
-        </div>
-    </nav>)
 }
 
 function searchInput() {
@@ -129,7 +132,7 @@ function searchInput() {
 
         <label className="relative block box-border">
             <span className="absolute inset-y-0 left-0 flex items-center pl-3">
-                <Magnifier></Magnifier>
+                <MagnifyingGlassIcon/>
             </span>
             <input autoFocus
                 className="w-full text-black bg-white placeholder:font-italitc border border-slate-300 rounded-half py-2 pl-10 pr-4  focus:outline-none"
@@ -140,7 +143,7 @@ function searchInput() {
 
 
 function oon() {
-    return (<div className="flex items-center p-4"><button className="" onClick={()=>setScreen(mapScreen)}>See on map</button>
+    return (<div className="flex items-center p-4"><button className="" onClick={() => setScreen(mapScreen)}>See on map</button>
         <input id="zip" aria-describedby="zip" name="zip" type="checkbox"
             className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded ml-4" />
         <div className="ml-2 text-sm">
@@ -172,7 +175,7 @@ function providers() {
 
 
 function askPhone() {
-    const submit = ()=>{}
+    const submit = () => { }
     return (<form>
         <p><label htmlFor="mobile">Mobile number</label></p>
         <p><input type="tel" autoFocus id="mobile" v-model="mobile" autoComplete="tel" placeholder="" />
@@ -182,62 +185,38 @@ function askPhone() {
 }
 
 function askToken() {
-    const login=()=>{}
+    const login = () => { }
     return (<div>
         <p><label htmlFor="token">Enter Token</label></p>
-        <p><input placeholder=""/></p>
+        <p><input placeholder="" /></p>
         <p><button onClick={login}>Login</button></p>
     </div>)
 }
 
-function cartContents() {
-    const logout = ()=>{}
-    let isEmpty = false
-    if (isEmpty)
-        return (<div >
-        <div className="card">
-            <p></p>
-            Cart is empty
-        </div>
-    </div>)
-    else return (
-    <div><div className="cardlist"></div>
-        {
-            <button onClick={logout} className="pb-2">LOGIN</button>
-        }
-    </div>)
-    
-}
 
 function EobHtml() {
-     return (<div v-html="store.eobs"></div>)
+    return (<div v-html="store.eobs"></div>)
 }
 
 function SelectSomething() {
-    const onchange = ()=>{}
+    const onchange = () => { }
     const name = ""
     return (<select v-if="store.isLogin()" v-model="store.patient" name="patient" className="pickList" onChange={onchange}>
-    <option v-htmlFor="(item) in store.loginData?.state.covered || []" value="item.id">
-    { name }
-</option></select >)
+        <option v-htmlFor="(item) in store.loginData?.state.covered || []" value="item.id">
+            {name}
+        </option></select >)
 }
 
-function Eob() {
-
-    const clear = ()=>{}
-    const logout = ()=>{}
-    const addRandom = ()=>{}
-
-    return (<div className="eob ml-1" id="cart">
-                <button v-if='!store.isLogin()' onClick={clear} >LOGIN</button>
-                <button v-if="store.isLogin()" onClick={logout}className="ml-4">LOGOUT</button>
-                <button onClick={addRandom} className="ml-4">ADD RANDOM</button>
-                <button onClick={clear} className='ml-4'>CLEAR</button>
-            </div >)
-
+function Action(props: {
+    children: Children
+    onClick: () => void
+}) {
+    return (<div className="ml-2 inline-block" ><button style={{ color: '#0E7AFE' }} onClick={props.onClick}>{props.children}</button></div>)
 }
 
-    
+
+
+
 
 /*
 function showDebug() {
@@ -271,7 +250,7 @@ function showDebug() {
             </tr>
         </table>
         */
-    
+
 
 /*
 function Cart2() {
@@ -340,5 +319,28 @@ var ln = store.lines[i];
 }
 
 
+function CancelSvg() {
+    return (<svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24"
+        stroke="#808080" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+    </svg>)
+}
+
+function Magnifier() {
+    return (<svg className="h-5 w-5 fill-black" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="30"
+        height="30" viewBox="0 0 30 30">
+        <path
+            d="M 13 3 C 7.4889971 3 3 7.4889971 3 13 C 3 18.511003 7.4889971 23 13 23 C 15.396508 23 17.597385 22.148986 19.322266 20.736328 L 25.292969 26.707031 A 1.0001 1.0001 0 1 0 26.707031 25.292969 L 20.736328 19.322266 C 22.148986 17.597385 23 15.396508 23 13 C 23 7.4889971 18.511003 3 13 3 z M 13 5 C 17.430123 5 21 8.5698774 21 13 C 21 17.430123 17.430123 21 13 21 C 8.5698774 21 5 17.430123 5 13 C 5 8.5698774 8.5698774 5 13 5 z">
+        </path>
+    </svg>)
+}
+
+function PrinterSvg() {
+    return (<svg xmlns="http://www.w3.org/2000/svg"
+        className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="#808080" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round"
+            d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+    </svg>)
+}
 
 */

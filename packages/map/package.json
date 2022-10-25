@@ -1,8 +1,21 @@
 {
-  "name": "example",
-  "private": true,
+  "name": "@datagrove/map",
+  "private": false,
   "version": "0.0.0",
   "type": "module",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/map.umd.js",
+  "module": "./dist/map.es.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/map.es.js",
+      "require": "./dist/map.umd.js"
+    }
+  },
+
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
@@ -10,9 +23,7 @@
   },
   "dependencies": {
     "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "claim": "*",
-    "map": "*"
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
     "@types/react": "^18.0.17",

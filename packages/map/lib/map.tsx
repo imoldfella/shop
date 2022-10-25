@@ -1,11 +1,16 @@
-import React, {useEffect, useRef} from 'react';
-import maplibregl from 'maplibre-gl';
-import 'maplibre-gl/dist/maplibre-gl.css';
-import './map.css';
+import React, {useEffect, useRef} from 'react'
+import maplibregl from 'maplibre-gl'
+import 'maplibre-gl/dist/maplibre-gl.css'
+import './map.css'
 
-export default function Map() {
-  if (process.env.REACT_APP_API_KEY == null) {
-    throw new Error("You have to configure env REACT_APP_API_KEY, see README");
+export function MyButton() {
+  return (<button>hello, world</button>)
+}
+
+const apiKey : string|null = import.meta.env.VITE_MAPTILER
+export  function Map() {
+  if (apiKey == null) {
+    throw new Error("You have to configure env VITE_MAPTILER, see README");
   }
 
   const mapContainerRef = useRef<HTMLDivElement>(null);
@@ -13,7 +18,7 @@ export default function Map() {
   useEffect(() => {
     const map = new maplibregl.Map({
       container: mapContainerRef.current!,
-      style: `https://api.maptiler.com/maps/streets/style.json?key=${process.env.REACT_APP_API_KEY}`,
+      style: `https://api.maptiler.com/maps/streets/style.json?key=${apiKey}`,
       center: [139.753, 35.6844],
       zoom: 14
     });
@@ -30,7 +35,7 @@ export default function Map() {
   }, []);
 
   return (
-      <div className="map-wrap">
+      <div className="map-wrap" >
         <a href="https://www.maptiler.com" className="watermark"><img
             src="https://api.maptiler.com/resources/logo.svg" alt="MapTiler logo"/></a>
         <div ref={mapContainerRef} className="map"/>

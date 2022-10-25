@@ -18,7 +18,7 @@ const store : Store = {
     dispatch: {} as  React.Dispatch<Tx1|Tx2>
 }
 
- function reducer(state: Store, action: Tx1 | Tx2): Store {
+function reducer(state: Store, action: Tx1 | Tx2): Store {
     switch (action.type) {
         case "1":
             return {

@@ -1,6 +1,6 @@
 {
-  "name": "claim",
-  "private": true,
+  "name": "@datagrove/claim",
+  "private": false,
   "version": "0.0.0",
   "type": "module",
   "files": [
@@ -38,7 +38,9 @@
     "vitest": "^0.24.3"
   },
   "dependencies": {
+    "@headlessui/react": "^1.7.3",
     "@heroicons/react": "^2.0.12",
+    "map": "*",
     "maplibre-gl": "^2.4.0"
   }
 }
