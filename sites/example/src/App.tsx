@@ -3,6 +3,7 @@ import reactLogo from './assets/react.svg'
 import './App.css'
 import { MyButton } from '@datagrove/claim'
 import { MyButton as Button2 } from '@datagrove/map'
+import { MyButton as Button3 } from '@datagrove/shop'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -19,6 +20,7 @@ function App() {
       </div>
       <MyButton></MyButton>
       <Button2/>
+      <Button3/>
       <h1>Vite + React</h1>
       <MyButton/>
       <div className="card">

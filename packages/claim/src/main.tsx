@@ -5,10 +5,10 @@ import { ClaimsProvider } from '../lib/store'
 import './index.css'
 
 async function main() {
-  // do asynchronous things to initialize the desired Payor, through custom code or payor.json
+  // do asynchronous things to initialize the desired Payor, through custom code or payor.json we should only need to wait at the cart though, not for home page.
 
   // load the most recent cart state.
-
+  
 
   // initialize a plan document from 
   ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
