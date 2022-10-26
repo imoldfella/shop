@@ -3,5 +3,8 @@
   "workspaces": [
     "packages/*",
     "sites/*"
-  ]
+  ],
+  "dependencies": {
+    "fflate": "^0.7.4"
+  }
 }

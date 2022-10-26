@@ -6,25 +6,6 @@ export function MyButton() {
 
 
 
-// we can use localstorage for the cart
-// we can use unique ids to capture the idea of unique bundles of cpt's.
-
-// change this to pull id from database instead of json file
-// 
-
-// create sku_table = ()
-class Database {
-
-
-}
-
-class TableReader {
-
-    Query<T>(begin: T, end: T) {
-
-    }
-}
-
 
 // to use create a context React.CreateContext
 export class Cart {
