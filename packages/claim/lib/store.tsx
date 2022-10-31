@@ -32,11 +32,13 @@ function reducer(state: Store, action: Tx1 | Tx2): Store {
 
 // onl
 const ClaimContext = React.createContext(store)
+
+// use this to read the cart context
 export function useClaims() {
     return useContext(ClaimContext)
 }
 
-// we ne
+// use this to establish in the widget tree
 export function ClaimsProvider(props: {children?: React.ReactNode}) {
     const [st,dispatch] =useReducer(reducer, store)
     const st2 = {

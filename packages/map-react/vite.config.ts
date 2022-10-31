@@ -4,18 +4,18 @@ import { defineConfig } from 'vite';
 import dts from 'vite-plugin-dts';
 
 export default defineConfig({
-    server: {
-        proxy:{
-            '/db': {
-                target: 'http://localhost:8080',
-                secure: false,
-            },
-            '/fonts': {
-               target: 'http://localhost:8080',
-               secure: false,
-            } 
-        }
-    },
+  server: {
+    proxy:{
+        '/db': {
+            target: 'http://localhost:8080',
+            secure: false,
+        },
+        '/fonts': {
+           target: 'http://localhost:8080',
+           secure: false,
+        } 
+    }
+},
     plugins: [
         react(),
         dts({

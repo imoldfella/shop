@@ -15,6 +15,7 @@ export interface DbJson {
         [key: string]: DbTable
     }
 }
+
 export function binarySearch(nums: number[], target: number): number {
     let left: number = 0
     let right: number = nums.length
@@ -27,6 +28,7 @@ export function binarySearch(nums: number[], target: number): number {
     }
     return left - 1
 }
+
 export class DbIndex {
     constructor(public key: number[], public offset: number[]) {
 
@@ -59,10 +61,9 @@ export class BytesReader {
     return res
   }
 }
-export class TableReader {
-    constructor(public db: Db, public t: DbTable, public root: DbIndex) {
 
-    }
+export class TableReader {
+    constructor(public db: Db, public t: DbTable, public root: DbIndex) {}
 
     async read1(id: number): Promise<Uint8Array> {
         // we need to binary search the sorted values, then take the pivot
@@ -85,6 +86,7 @@ export class TableReader {
         const end = r.offset[found + 1]
         return await this.db.readBytes(start, end - start)
     }
+
     async getJson(id: number): Promise<string> {
         const d = await this.read1(id)
         return new TextDecoder().decode(d)
@@ -119,9 +121,7 @@ export class Db {
     index = new Map<number, DbIndex>()
     table_ = new Map<string, TableReader>()
 
-    constructor(public path: string, public js: DbJson) {
-
-    }
+    constructor(public path: string, public js: DbJson) {}
 
     async table(name: string): Promise<TableReader> {
         const r = this.table_.get(name)
@@ -149,6 +149,7 @@ export class Db {
         console.log()
         return new Uint8Array(await resp.arrayBuffer())
     }
+    
     async readBytes(pos: number, size: number): Promise<Uint8Array> {
         const ch = this.js.chunk_size
         const file = Math.floor(pos / ch)
@@ -201,7 +202,9 @@ export class Db {
 // create sku_table = ()
 export class Database {
 
-
+    async attach(url: string){
+        const db = await Db.open(url)
+    }
 }
 
 // // build a TableReader out of a PageReader? 

@@ -1,2 +1,2 @@
 export { Pyramid } from './hilbert'
-export { Db, TableReader } from './db'
+export { Db, TableReader, Database } from './db'
