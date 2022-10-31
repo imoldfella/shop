@@ -40,6 +40,9 @@ export interface SearchOptions {
 }
 export function MapSearch(props: {
     options?: SearchOptions
+    found: ReactNode[]
+    suggest: string[]
+    setSearch: (x: string)=>void
     near?: [number, number] //  by default will use current location
 }) {
     const [search, setSearch] = useState("")

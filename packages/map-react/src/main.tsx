@@ -45,20 +45,50 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
 // each app needs a database provider
 const db = createDatabase()
 
+// maybe these should be 
 const options: SearchOptions = {
   buttons: [
     ["provider", "beaker", "pharmacy"]
   ]
 }
 
+// we could do the suggestion engine in dart
+// we might like our suggestor to be sync if possible, or maybe a stream?
+// we might like to have the list update, as a query might.
+async function suggestor(s: string): Promise<string[]>{
+  return []
+}
+// maybe should return html?
+// maybe it should take a call back so it can keep streaming results.
+// 
+async function searcher(s: string): Promise<ReactNode[]>{
+  return []
+}
+
+// maybe instead 
 function App() {
   // we need to define how search will happen and provide a result list
+  const [search,setSearch] = useState("")
+  const [found,setFound]  = useState<ReactNode[]>([])
+  const [suggest,setSuggest] = useState<string[]>([])
+  // calls the suggester each time the 
+ 
+  const commit = ()=> searcher(search).then((r)=> setFound(r))
+  const update = (s:string) => {
+    setSearch(search)
+    suggestor(s).then((e)=>setFound(e))
+    setSuggest([])
+  }
 
-
+  // the search display is going to be scrollable, virtual
   return (<ErrorBoundary fallback={<p>Could not fetch data.</p>}>
     <Suspense>
-      <MapSearch options={options}
-        found={/>
+      <MapSearch 
+        options={options}
+        found={found}
+        setSearch={update}
+        suggest={suggest}
+        />
     </Suspense>
   </ErrorBoundary>)
 }
