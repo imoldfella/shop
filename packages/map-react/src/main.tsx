@@ -2,14 +2,15 @@ import React, { useReducer, useState, Suspense, useMemo, useEffect, ReactNode } 
 import ReactDOM from 'react-dom/client'
 import './index.css'
 import '../../map/lib/map.css'
-import { Mapgl, Marker, MapPosition, MapClick, MapSearch, } from '../lib/main'
+import { Mapgl, Marker, MapPosition, MapClick, MapSearch, SearchOptions } from '../lib/main'
 import { ErrorBoundary } from './error'
-import { createDatabase } from '../../db-react/lib/main'
+import { createDatabase, ResourceMap } from '../../db-react/lib/main'
 import { Database } from '@datagrove/db'
 import 'intl-polyfill';
 import { negotiateLanguages } from '@fluent/langneg';
 import { FluentBundle, FluentResource } from '@fluent/bundle';
-import { LocalizationProvider, ReactLocalization } from '@fluent/react';
+import { LocalizationProvider, Localized, ReactLocalization } from '@fluent/react';
+import { BeakerIcon } from '@heroicons/react/24/solid'
 
 // in general things that query the database should be suspendable
 
@@ -17,35 +18,22 @@ import { LocalizationProvider, ReactLocalization } from '@fluent/react';
 // we can use db without logging in to get access to public databases.
 
 // we should move this into a database table
-interface ResourceMap  {
-   [key: string]: FluentResource
-}
-const RESOURCES :  ResourceMap = {
-  'es': new FluentResource('hello = Hola !'),
-  'en-US': new FluentResource('hello = Hello, world!'),
+
+const RESOURCES: ResourceMap = {
+  'es': new FluentResource(`hello = Hola !
+pharmacy = Farmacia
+  
+  `),
+  'en-US': new FluentResource(`hello = Hello, world!
+
+pharmacy = Pharmacy
+
+beaker = <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+<path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23-.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5" />
+</svg>
+
+`),
 };
-// A generator function responsible for building the sequence 
-// of FluentBundle instances in the order of user's language
-// preferences.
-function* generateBundles(userLocales: readonly string[]) {
-  // Choose locales that are best for the user.
-  const currentLocales = negotiateLanguages(
-      userLocales,
-      [ 'en-US', 'es'],
-      { defaultLocale: 'en-US' }
-  );
-
-  for (const locale of currentLocales) {
-      const bundle = new FluentBundle(locale);
-      bundle.addResource(RESOURCES[locale]);
-      yield bundle;
-  }
-}
-
-// The ReactLocalization instance stores and caches the sequence of generated
-// bundles. You can store it in your app's state.
-let l10n = new ReactLocalization(generateBundles(navigator.languages));
-
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
@@ -57,23 +45,23 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
 // each app needs a database provider
 const db = createDatabase()
 
-function App() {
-  return (<ErrorBoundary fallback={<p>Could not fetch data.</p>}>
-      <Suspense>
-        <MapSearch options={options}/>
-      </Suspense>
-    </ErrorBoundary>)
-}
-
-const options = {
+const options: SearchOptions = {
   buttons: [
-    [ "svg", "text"]
+    ["provider", "beaker", "pharmacy"]
   ]
 }
 
+function App() {
+  // we need to define how search will happen and provide a result list
 
 
-
+  return (<ErrorBoundary fallback={<p>Could not fetch data.</p>}>
+    <Suspense>
+      <MapSearch options={options}
+        found={/>
+    </Suspense>
+  </ErrorBoundary>)
+}
 // equivalent to a prepared statement. h
 
 // generate a hook? generate better  code for queries with no parameters?
