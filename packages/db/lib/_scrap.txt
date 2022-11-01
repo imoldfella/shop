@@ -1,0 +1,157 @@
+
+        // Get the height of all nodes which haven't been measured yet.
+        for (i = first; i < last; i++) {
+            // Only cache the height if we have the real contents, not a placeholder.
+            let n = this.rendered_[i].node
+            if (!n) continue;
+            if (this.rendered_[i].active && !this.rendered_[i].height) {
+                this.rendered_[i].height = n.offsetHeight;
+                this.rendered_[i].width = n.offsetWidth;
+            }
+        }
+
+append(uuid       var tombstoneAnimations = new Map<number, [HTMLElement, number]>()
+        // Create DOM nodes.
+        for (i = first; i < last; i++) {
+            while (this.rendered_.length <= i) {
+                let o = this.props.snapshot.get(i)
+                const e = this.div()
+              
+                    this.props.builder(o, e)
+                }
+                this.rendered_.push(new Item(e))
+            }
+            let n = this.rendered_[i].node
+            if (n) {
+                // if it's a tombstone but we have data, replace it.
+                if (n.classList.contains('tombstone') &&
+                    this.rendered_[i].active) {
+                    // TODO: Probably best to move items on top of tombstones and fade them in instead.
+                    if (this.ANIMATION_DURATION_MS) {
+                        n.style.zIndex = "1"
+                        tombstoneAnimations.set(i, [n, this.rendered_[i].top - this.anchorScrollTop])
+                    } else {
+                        n.classList.add('invisible')
+                        this.tombstones_.push(n)
+                    }
+
+                } else {
+                    continue;
+                }
+            }
+
+        }
+
+
+
+, {data})
+don't change the tuple at all.
+       var i
+        for (i = 0; i < this.rendered_.length; i++) {
+            if (i == first) {
+                i = last - 1;
+                continue
+            }
+            let n = this.rendered_[i]
+
+            if (n.isTombstone) {
+                this.tombstones_.push(n.node);
+                n.node.classList.add('invisible');
+            } else {
+                this.unusedNodes.push(n.node);
+            }
+
+        }
+           const getTombstone = () => {
+                var tombstone = this.tombstones_.pop()
+                if (tombstone) {
+                    tombstone.classList.remove('invisible')
+                    tombstone.style.opacity = "1"
+                    tombstone.style.transform = ''
+                    tombstone.style.transition = ''
+                    return tombstone;
+                }
+                return this.createTombstone();
+            }
+
+
+            let d = this.rendered_[i].data
+            if (d) {
+                let node = this.rendered_[i].node || this.getTemplate()
+                this.props.builder(d, node as HTMLElement)
+                // Maybe don't do this if it's already attached?
+                node.style.position = 'absolute'
+                this.rendered_[i].top = -1
+                this.scroller_.appendChild(node)
+                this.rendered_[i].node = node
+            } else {
+
+            }
+
+
+        // Set up initial positions for animations.
+        for (let [i, anim] of tombstoneAnimations) {
+            let n = this.rendered_[i].node
+            if (!n) continue
+            n.style.transform = 'translateY(' + (this.anchorScrollTop + anim[1]) + 'px) scale(' + (this.tombstoneWidth_ / this.rendered_[i].width) + ', ' + (this.tombstoneSize_ / this.rendered_[i].height) + ')';
+            // Call offsetTop on the nodes to be animated to force them to apply current transforms.
+            n.offsetTop
+            anim[0].offsetTop
+            n.style.transition = 'transform ' + this.ANIMATION_DURATION_MS + 'ms';
+        }
+        for (i = first; i < last; i++) {
+            const anim: undefined | [HTMLElement, number] = tombstoneAnimations.get(i)
+            if (anim) {
+                anim[0].style.transition = 'transform ' + this.ANIMATION_DURATION_MS + 'ms, opacity ' + this.ANIMATION_DURATION_MS + 'ms'
+                anim[0].style.transform = 'translateY(' + curPos + 'px) scale(' + (this.rendered_[i].width / this.tombstoneWidth_) + ', ' + (this.rendered_[i].height / this.tombstoneSize_) + ')'
+                anim[0].style.opacity = "0"
+            }
+            let n = this.rendered_[i].node
+            if (n && curPos != this.rendered_[i].top) {
+
+                if (!anim)
+                    n.style.transition = ''
+                n.style.transform = 'translateY(' + curPos + 'px)'
+            }
+            this.rendered_[i].top = curPos
+            curPos += this.rendered_[i].height || this.tombstoneSize_
+        }
+        if (this.ANIMATION_DURATION_MS) {
+            // TODO: Should probably use transition end, but there are a lot of animations we could be listening to.
+            const fn = () => {
+                for (let [i, v] of tombstoneAnimations) {
+                    var anim = tombstoneAnimations.get(i)
+                    if (!anim) continue
+                    anim[0].classList.add('invisible')
+                    this.tombstones_.push(anim[0])
+                    // Tombstone can be recycled now.
+                }
+            }
+            setTimeout(fn, this.ANIMATION_DURATION_MS)
+        }
+
+        // position all the nodes
+        // the 
+        var curPos = this.anchorScrollTop - this.anchorItem.offset
+        for (let i = 0; i<this.rendered_.length; i++){
+            curPos = 
+        }
+
+        // Fix scroll position in case we have realized the heights of elements
+        // that we didn't used to know.
+        // TODO: We should only need to do this when a height of an item becomes
+        // known above.
+        this.anchorScrollTop = 0
+        // the 
+        for (let i = 0; i < this.anchorItem.index; i++) {
+            this.anchorScrollTop += this.rendered_[i].height || this.tombstoneSize_
+        }
+        this.anchorScrollTop += this.anchorItem.offset
+        this.scroller_.scrollTop = this.anchorScrollTop;
+
+       
+
+
+        // this monotonically increases the runway.
+        this.scrollRunwayEnd_ = Math.max(this.scrollRunwayEnd_, curPos + this.SCROLL_RUNWAY)
+        this.scrollRunway_.style.transform = 'translate(0, ' + this.scrollRunwayEnd_ + 'px)';

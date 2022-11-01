@@ -18,7 +18,6 @@ function randomChat(): Chat {
 }
 const chats = [...new Array(1000)].map(e => randomChat())
 const root = document.getElementById('root')
-const tombstone = document.getElementById('tombstone') as HTMLElement
 // we should try to limit the number of creates
 
 
@@ -27,12 +26,10 @@ function foo() {
         container: root!,
         snapshot: Snapshot.fromArray(chats),
         // builder takes a T and creates dom from it.
-        builder: (chat: Chat, old: HTMLElement) => {
-            old.innerHTML = `<p>${chat.message}<p>`
+        builder(chat: Chat|null, old: HTMLElement) {     
+            old.innerHTML = chat? `<p>${chat.message}<p>`: '<p>tombstone</p>'
         },
-        // tombstones are placeholders since we don't try to keep everything in ram
-        tombstone: tombstone,
-        template: tombstone,
+
 
         // provide a callback to get notified of updates to scroll or data
         // data update is going to change scroll anyway, so having both seems meh.
