@@ -4,14 +4,14 @@
 import { DxUpdate, Snapshot } from './dx'
 const inf = Number.NEGATIVE_INFINITY
 
-function rotate<T>(a: T[],  n: number ) {
-    a.unshift.apply( a, a.splice( n, a.length ) );
+function rotate<T>(a: T[], n: number) {
+    a.unshift.apply(a, a.splice(n, a.length));
     return a;
-  }
+}
 
 // index is given to builder to build the dom. inf indicates nto as
 class Item<T> {
-    constructor(public node: HTMLElement ) { }
+    constructor(public node: HTMLElement) { }
     // on an update we can scan this to 
     data: T | null = null
     index = inf
@@ -21,7 +21,12 @@ class Item<T> {
 
     get active(): boolean { return this.index != inf };
 
-    get isTombstone() { return !!this.data}
+    get isTombstone() { return !!this.data }
+
+    show(x: boolean) {
+        this.node.style.display = x ? 'block' : 'none'
+    }
+
 }
 
 // index is the top visible item, offset is how far scroll off the top it is (0 is flush to top)
@@ -72,9 +77,9 @@ export class Scroller<T>  {
     // surma's assumed we were starting from the beginning, but we are not assuming that here.
     // we do assume that we know the count of things. we want to keep two "pages". we run loads asynchronously.
     // for top-k search we might not know exactly how many items are in the snapshot. when we get the last page, it may get bigger, but it can get bigger anyway.
-    
-   // loadedItems_ = 0;
-   // requestInProgress_ = false;
+
+    // loadedItems_ = 0;
+    // requestInProgress_ = false;
 
     // snapshot was updated, also our listener on the snapshot
     _update() {
@@ -94,15 +99,15 @@ export class Scroller<T>  {
     // when we create a div it should be display none and absolute and a child of the scroller
     // tombstone.style.position = 'absolute'
     // this.scroller_.appendChild(tombstone)
-    div() : HTMLElement {
-        const r = document.createElement('div')as HTMLElement
+    div(): HTMLElement {
+        const r = document.createElement('div') as HTMLElement
         this.scroller_.append(r)
         r.style.position = 'absolute'
         r.style.display = 'none'
         return r
     }
 
-    tombstone_ : HTMLElement
+    tombstone_: HTMLElement
     constructor(public props: Props<T>) {
         this.props.snapshot.addListener(this._update)
         this.scroller_.addEventListener('scroll', () => this.onScroll_());
@@ -113,15 +118,13 @@ export class Scroller<T>  {
         this.scrollRunway_.style.width = '1px';
         this.scrollRunway_.style.transition = 'transform 0.2s';
         this.scroller_.appendChild(this.scrollRunway_);
-        
+
         this.tombstone_ = this.div()
         // for debug, only start here.
-       // this.onResize_();
+        // this.onResize_();
     }
     onResize_() {
         // this just measures the size of a tombstone, then it discards what it knows about item 
-        // either the first or last item should always be a tombstone
-      
         this.tombstone_.style.display = 'block'
         this.tombstoneSize_ = this.tombstone_.offsetHeight
         this.tombstoneWidth_ = this.tombstone_.offsetWidth
@@ -130,13 +133,17 @@ export class Scroller<T>  {
         // Reset the cached size of items in the scroller as they may no longer be
         // correct after the item content undergoes layout.
         for (var i = 0; i < this.rendered_.length; i++) {
-            this.rendered_[i].height = this.rendered_[i].width = 0
+            this.measure(this.rendered_[i])
         }
         this.onScroll_()
     }
 
+    measure(item: Item<T>) {
+        item.height = item.node.offsetHeight
+        item.width = item.node.offsetWidth
+    }
 
-    onScroll_() {   
+    onScroll_() {
         //Calculates the item that should be anchored after scrolling by delta 
         const calculateAnchoredItem = (initialAnchor: Anchor, delta: number): Anchor => {
             if (delta == 0)
@@ -185,10 +192,10 @@ export class Scroller<T>  {
         // sets the range of items which should be attached and attaches those items.
         if (delta < 0) {
             first = this.anchorItem.index - this.RUNWAY_ITEMS
-            last =  lastScreenItem.index + this.RUNWAY_ITEMS_OPPOSITE      
+            last = lastScreenItem.index + this.RUNWAY_ITEMS_OPPOSITE
         } else {
             first = this.anchorItem.index - this.RUNWAY_ITEMS_OPPOSITE
-            last = lastScreenItem.index + this.RUNWAY_ITEMS  
+            last = lastScreenItem.index + this.RUNWAY_ITEMS
         }
         first = Math.max(0, first)
         last = Math.min(this.props.snapshot.length, last)
@@ -200,10 +207,16 @@ export class Scroller<T>  {
 
         // we need to shift the render nodes 
         const shift = first - this.rendered_start_
+        if (Math.abs(shift) >= this.rendered_.length) {
+            // all the items are bad
+        }
         this.rendered_.shift()
+        // after shifting +, the last shift items are bad, after -  the first shift items are bad.
+        let b = shift > 0 ? this.rendered_.length - shift : 0
+        let e = shift > 0 ? this.rendered_.length : - shift
         var i
-         for (i = 0; i < this.rendered_.length; i++) {
-            
+        for (i = 0; i < this.rendered_.length; i++) {
+
             if (i == first) {
                 i = last - 1;
                 continue
@@ -216,16 +229,20 @@ export class Scroller<T>  {
             } else {
                 this.unusedNodes.push(n.node);
             }
-         
-         }
+
+        }
 
         var tombstoneAnimations = new Map<number, [HTMLElement, number]>()
         // Create DOM nodes.
         for (i = first; i < last; i++) {
             while (this.rendered_.length <= i) {
                 let o = this.props.snapshot.get(i)
-                let e = this.getTemplate()
-                this.props.builder(o,e)
+                const e = this.div()
+                if (o == null) {
+                    this.props.tombstone(e)
+                } else {
+                    this.props.builder(o, e)
+                }
                 this.rendered_.push(new Item(e))
             }
             let n = this.rendered_[i].node
@@ -241,33 +258,10 @@ export class Scroller<T>  {
                         n.classList.add('invisible')
                         this.tombstones_.push(n)
                     }
-                    this.rendered_[i].node = null
+
                 } else {
                     continue;
                 }
-            }
-            const getTombstone = () => {
-                var tombstone = this.tombstones_.pop()
-                if (tombstone) {
-                    tombstone.classList.remove('invisible')
-                    tombstone.style.opacity = "1"
-                    tombstone.style.transform = ''
-                    tombstone.style.transition = ''
-                    return tombstone;
-                }
-                return this.createTombstone();
-            }
-            let d = this.rendered_[i].data
-            if (d) {
-                let node = this.rendered_[i].node || this.getTemplate()
-                this.props.builder(d, node as HTMLElement)
-                // Maybe don't do this if it's already attached?
-                node.style.position = 'absolute'
-                this.rendered_[i].top = -1
-                this.scroller_.appendChild(node)
-                this.rendered_[i].node = node
-            } else {
-
             }
 
         }
@@ -349,7 +343,7 @@ export class Scroller<T>  {
                     this.tombstones_.push(anim[0])
                     // Tombstone can be recycled now.
                 }
-            }            
+            }
             setTimeout(fn, this.ANIMATION_DURATION_MS)
         }
 
