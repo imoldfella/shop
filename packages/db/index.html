@@ -4,10 +4,30 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title><map name=""></map></title>
+    <title>db example</title>
+    <style>
+      html {
+        background: #eeeeee;
+      }
+  
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        font-family: 'Roboto', sans-serif;
+        overflow: hidden;
+        -webkit-tap-highlight-color: rgba(0,0,0,0);
+      }
+      #templates {
+        display: none;
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+
+      <div style="display: none" id="tombstone"></div>
+    </div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

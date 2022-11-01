@@ -1,2 +1,4 @@
-export { Pyramid } from './hilbert'
-export { Db, TableReader, Database } from './db'
+export * from './hilbert'
+export * from './db'
+export * from './dx'
+export * from './scroll'
