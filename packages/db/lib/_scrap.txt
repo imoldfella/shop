@@ -155,3 +155,55 @@ don't change the tuple at all.
         // this monotonically increases the runway.
         this.scrollRunwayEnd_ = Math.max(this.scrollRunwayEnd_, curPos + this.SCROLL_RUNWAY)
         this.scrollRunway_.style.transform = 'translate(0, ' + this.scrollRunwayEnd_ + 'px)';
+
+
+
+                //Calculates the item that should be anchored after scrolling by delta 
+        const calculateAnchoredItem2 = (initialAnchor: Anchor, delta: number): Anchor => {
+            if (delta == 0)
+                return initialAnchor;
+            delta += initialAnchor.offset;
+            var i = initialAnchor.index;
+            var tombstones = 0;
+            if (delta < 0) {
+                while (delta < 0 && i > 0 && this.rendered_[i - 1].height) {
+                    delta += this.rendered_[i - 1].height;
+                    i--;
+                }
+                tombstones = Math.max(-i, Math.ceil(Math.min(delta, 0) / this.tombstoneHeight_));
+            } else {
+                while (delta > 0 && i < this.rendered_.length && this.rendered_[i].height && this.rendered_[i].height < delta) {
+                    delta -= this.rendered_[i].height;
+                    i++;
+                }
+                if (i >= this.rendered_.length || !this.rendered_[i].height)
+                    tombstones = Math.floor(Math.max(delta, 0) / this.tombstoneHeight_);
+            }
+            i += tombstones;
+            delta -= tombstones * this.tombstoneHeight_;
+            return {
+                index: i,
+                offset: delta,
+            };
+        }
+
+           let firstRender = this.rendered_start_ * this.tombstoneHeight_
+            if (a < firstRender) {
+                this.anchorItem.index = Math.floor(a / this.tombstoneHeight_)
+                this.anchorItem.offset = 0
+            } else if (a > firstRender + this.measuredHeight_) {
+                a = a - (firstRender + this.measuredHeight_);
+                this.anchorItem.index = this.rendered_start_ + this.rendered_.length + Math.floor(a / this.tombstoneHeight_)
+                this.anchorItem.offset = 0
+            } else {
+                a -= firstRender
+                let i = 0
+                for (; i < this.rendered_.length; i++) {
+                    const h = this.rendered_[i].height
+                    if (h > a) {
+                        break;
+                    }
+                    a -= h
+                }
+                this.anchorItem.index = this.rendered_start_ + i
+                this.anchorItem.offset = a
