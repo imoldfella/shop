@@ -3,7 +3,8 @@ const inf = Number.NEGATIVE_INFINITY
 
 export interface ScrollerProps<T> {
     container: HTMLElement,
-    snapshot: Snapshot<T>,
+    items?: T[]
+    snapshot?: Snapshot<T>
     // builder takes a T and creates dom from it.
     builder: (x: T | null, old: HTMLElement) => void,
 
@@ -50,6 +51,7 @@ export class Scroller<T>  {
     rendered_start_ = 0
     rendered_: Item<T>[] = [];
     tombstone_: HTMLElement
+    snap_: Snapshot<T>
 
     anchorItem: Anchor = { index: 0, offset: 0 };
 
@@ -71,7 +73,7 @@ export class Scroller<T>  {
     }
 
     close() {
-        this.props.snapshot.removeListener(this._update)
+        this.snap_.removeListener(this._update)
     }
     get scroller_() { return this.props.container }
 
@@ -87,7 +89,8 @@ export class Scroller<T>  {
     }
 
     constructor(public props: ScrollerProps<T>) {
-        this.props.snapshot.addListener(this._update)
+        this.snap_ = props.snapshot ?? Snapshot.fromArray(props.items ?? [])
+        this.snap_.addListener(this._update)
 
         this.scroller_.addEventListener('scroll', () => this.onScroll_());
         window.addEventListener('resize', () => this.onResize_());
@@ -107,13 +110,13 @@ export class Scroller<T>  {
     }
 
     resizeData() {
-        let target = Math.min(this.props.snapshot.length, 50)
+        let target = Math.min(this.snap_.length, 50)
 
         if (target > this.rendered_.length) {
             let b = this.rendered_.length
             for (; b < target; b++) {
                 let o = this.div()
-                let d = this.props.snapshot.get(this.rendered_start_ + b)
+                let d = this.snap_.get(this.rendered_start_ + b)
                 this.props.builder(d, o)
                 let i = new Item<T>(o, d)
                 this.rendered_.push(i)
@@ -194,7 +197,7 @@ export class Scroller<T>  {
         // first is lowest index to render
         let first = this.anchorItem.index - 10
         first = Math.max(0, first)
-        first = Math.min(this.props.snapshot.length - this.rendered_.length, first)
+        first = Math.min(this.snap_.length - this.rendered_.length, first)
 
         if (first != this.rendered_start_) {
             //console.log(first)
@@ -214,7 +217,7 @@ export class Scroller<T>  {
             let height = 0
             for (let k = b; k < e; k++) {
                 const o = this.rendered_[k];
-                o.data = this.props.snapshot.get(this.rendered_start_ + k)
+                o.data = this.snap_.get(this.rendered_start_ + k)
                 this.props.builder(o.data, o.node)
                 this.measuredHeight_ -= o.height
                 this.measure(o)
@@ -248,7 +251,7 @@ export class Scroller<T>  {
         for (let b = this.anchorItem.index - this.rendered_start_; b < this.rendered_.length; b++)
             a += this.rendered_[b].height
 
-        const tombstones = this.props.snapshot.length - this.rendered_start_ - this.rendered_.length
+        const tombstones = this.snap_.length - this.rendered_start_ - this.rendered_.length
         const est = a + tombstones * this.tombstoneHeight_
         this.scrollRunway_.style.transform = `translate(0,${est}px)`;
     }
