@@ -20,11 +20,8 @@ const ScrollerDiv = styled.div`
 
 export function Scroller<T>(props: ScrollerProps<T>) {
     const container = useRef<HTMLDivElement>(null);
-
     useEffect(() => {
-        let ts = new ScrollerTs({
-
-        } as ScrollerProps<Found>)
+        let ts = new ScrollerTs(props)
         return () => ts.close()
     })
     return (<ScrollerDiv ref={container} />)

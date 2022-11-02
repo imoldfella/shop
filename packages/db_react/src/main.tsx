@@ -9,11 +9,13 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
     <App />
   </React.StrictMode>
 )
-
+// <FloatingSearch />
 function App() {
   return (
-    <div><FloatingSearch />
-      <ChatList /></div>
+    
+      <div className='fixed h-screen w-screen z-10'>
+        <ChatList/>
+      </div>
   )
 }
 
