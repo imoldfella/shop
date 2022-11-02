@@ -5,7 +5,7 @@ function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
 }
 
-export default function App() {
+export  function Toggle() {
   const [enabled, setEnabled] = useState(false)
 
   return (

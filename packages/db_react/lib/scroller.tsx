@@ -1,11 +1,21 @@
 
-import './index.css'
-import { faker } from '@faker-js/faker'
-import { Dx, Snapshot, Scroller } from '../lib'
+import React, { useEffect,useRef } from 'react'
+import { ScrollerProps, Scroller as ScrollerTs} from '../../db/lib'
 
 
-const dx = new Dx
+function Scroller<T>(props: ScrollerProps<T>) {
+    const container = useRef<HTMLDivElement>(null);
+    useEffect(()=>{
+        if (container.current) return;
+        container.current = new ScrollerTs({
 
+        })
+
+    })
+    return (<div ref={container}>
+
+    </div>)
+}
 interface Chat {
     message: string
     avatar: string
@@ -40,35 +50,3 @@ function foo() {
 
 }
 foo()
-
-/*
-// to generate
-export class Query2 {
-
-}
-
-async function query2(dx: Dx,props: {} ) : Promise<Snapshot<Query2>> {
-    let count = 0
-    let fn = (n: number) => new Query2
-    return new Snapshot<Query2>(count, fn)
-}
-
-// needs to be wrapped in a useEffect
-type Query2Scroller = ScrollerView<Query2>
-function test(props: {
-    dom: HTMLElement 
-    changeSelection?: (x: Query2Scroller )=>void
-    changeScroll?: (x:Query2Scroller)=>void
-}) {
-    const dx = useDx()
-    // create a snapshot
-    const q = query2(dx)
-
-    // create a scroller from the snapshot
-    const s = new ScrollerView<Query2>(dom,builder,tombstone)
-    // listen to the snapshot.
-    
-}
-
-
-*/

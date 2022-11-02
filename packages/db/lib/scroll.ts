@@ -1,10 +1,20 @@
-// adapted from https://github.com/GoogleChromeLabs/ui-element-samples/tree/gh-pages/infinite-scroller
+import { DxUpdate, Snapshot } from './dx'
+const inf = Number.NEGATIVE_INFINITY
 
+export interface ScrollerProps<T> {
+    container: HTMLElement,
+    snapshot: Snapshot<T>,
+    // builder takes a T and creates dom from it.
+    builder: (x: T | null, old: HTMLElement) => void,
+
+    // provide a callback to get notified of updates to scroll or data
+    // data update is going to change scroll anyway, so having both seems meh.
+    onUpdate: () => void
+}
 
 // when we move the rendered_start, we need to remember it's scrolltop
 
-import { DxUpdate, Snapshot } from './dx'
-const inf = Number.NEGATIVE_INFINITY
+
 
 function rotate<T>(a: T[], n: number) {
     a.unshift.apply(a, a.splice(n, a.length));
@@ -30,16 +40,6 @@ class Anchor {
     offset = 0
 }
 
-interface Props<T> {
-    container: HTMLElement,
-    snapshot: Snapshot<T>,
-    // builder takes a T and creates dom from it.
-    builder: (x: T | null, old: HTMLElement) => void,
-
-    // provide a callback to get notified of updates to scroll or data
-    // data update is going to change scroll anyway, so having both seems meh.
-    onUpdate: () => void
-}
 
 // wraps around a dom element; portrays a Snapshot stream.
 // to be wrapped by react with useEffect.
@@ -86,7 +86,7 @@ export class Scroller<T>  {
         return r
     }
 
-    constructor(public props: Props<T>) {
+    constructor(public props: ScrollerProps<T>) {
         this.props.snapshot.addListener(this._update)
 
         this.scroller_.addEventListener('scroll', () => this.onScroll_());
@@ -107,7 +107,7 @@ export class Scroller<T>  {
     }
 
     resizeData() {
-        let target = Math.min(this.props.snapshot.length, 30)
+        let target = Math.min(this.props.snapshot.length, 50)
 
         if (target > this.rendered_.length) {
             let b = this.rendered_.length
@@ -197,7 +197,7 @@ export class Scroller<T>  {
         first = Math.min(this.props.snapshot.length - this.rendered_.length, first)
 
         if (first != this.rendered_start_) {
-            console.log(first)
+            //console.log(first)
             const shift = first - this.rendered_start_
             this.rendered_start_ = first
             let b, e

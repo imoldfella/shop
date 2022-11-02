@@ -12,10 +12,10 @@ export default defineConfig({
     ],
     build: {
         lib: {
-            entry: resolve(__dirname, 'lib/main.ts'),
-            name: 'main',
+            entry: resolve(__dirname, 'lib/index.ts'),
+            name: 'index',
             formats: ['es', 'umd'],
-            fileName: (format) => `main.${format}.js`,
+            fileName: (format) => `index.${format}.js`,
         },
         rollupOptions: {
             external: ['react', 'react-dom'],
