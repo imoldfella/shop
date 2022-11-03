@@ -3,7 +3,6 @@
 
 <head>
   <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>db example</title>
   <style>
@@ -31,9 +30,13 @@
       overflow-x: hidden;
       overflow-y: scroll;
       -webkit-overflow-scrolling: touch;
-      width: 100%;
-      height: 100%;
-      position: absolute;
+      width: 50%;
+      height: 80%;
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background-color: #eeeeee;
+      border-color: 1px solid red;
       box-sizing: border-box;
       contain: layout;
       will-change: transform;
@@ -130,10 +133,22 @@
     .invisible {
       display: none;
     }
+
+    #debug {
+      position: fixed;
+      top: 100px;
+      left: 100px;
+      border: solid red 1px;
+      width: 300px;
+      min-height: 300px;
+      z-index: 10000;
+      background-color: #ccc
+    }
   </style>
 </head>
 
 <body>
+  <div id="debug"></div>
   <div id="root">
 
     <div style="display: none" id="tombstone"></div>

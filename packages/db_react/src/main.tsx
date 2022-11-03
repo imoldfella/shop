@@ -12,10 +12,10 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
 // <FloatingSearch />
 function App() {
   return (
-    
-      <div className='fixed h-screen w-screen z-10'>
-        <ChatList/>
-      </div>
+
+    <div className='fixed h-screen w-screen z-10'>
+      <ChatList />
+    </div>
   )
 }
 
@@ -32,7 +32,7 @@ function randomChat(): Chat {
     avatar: faker.image.avatar()
   }
 }
-const chats = [...new Array(1000)].map(e => randomChat())
+const chats = [...new Array(100)].map(e => randomChat())
 const root = document.getElementById('root')
 // we should try to limit the number of creates
 

@@ -3,8 +3,9 @@ const inf = Number.NEGATIVE_INFINITY
 
 export interface ScrollerProps<T> {
     container: HTMLElement,
-    items?: T[]
+    items?: T[] // alternative to snapshot
     snapshot?: Snapshot<T>
+    intitial?: number
     // builder takes a T and creates dom from it.
     builder: (x: T | null, old: HTMLElement) => void,
 
@@ -15,7 +16,12 @@ export interface ScrollerProps<T> {
 
 // when we move the rendered_start, we need to remember it's scrolltop
 
-
+let debug = document.getElementById('debug')
+function debugOut(a: object) {
+    if (debug) {
+        debug.innerHTML = JSON.stringify(a)
+    }
+}
 
 function rotate<T>(a: T[], n: number) {
     a.unshift.apply(a, a.splice(n, a.length));
@@ -48,7 +54,7 @@ export class Scroller<T>  {
 
     // these should only be on our runway. doesn't need to start at 0.
     // when we get a snapshot update we should diff the T's to see if we can reuse the dom we have created.
-    rendered_start_ = 0
+    //rendered_start_ = 0
     rendered_: Item<T>[] = [];
     tombstone_: HTMLElement
     snap_: Snapshot<T>
@@ -59,6 +65,7 @@ export class Scroller<T>  {
     tombstoneHeight_ = 0;
     tombstoneWidth_ = 0;
     measuredHeight_ = 0;
+    estHeight_ = 0
 
     //what about instead estimating as a sample instead of by tombstone?
 
@@ -89,6 +96,7 @@ export class Scroller<T>  {
     }
 
     constructor(public props: ScrollerProps<T>) {
+        this.anchorItem.index = props.intitial ?? 0
         this.snap_ = props.snapshot ?? Snapshot.fromArray(props.items ?? [])
         this.snap_.addListener(this._update)
 
@@ -116,7 +124,7 @@ export class Scroller<T>  {
             let b = this.rendered_.length
             for (; b < target; b++) {
                 let o = this.div()
-                let d = this.snap_.get(this.rendered_start_ + b)
+                let d = this.snap_.get(b)
                 this.props.builder(d, o)
                 let i = new Item<T>(o, d)
                 this.rendered_.push(i)
@@ -127,11 +135,22 @@ export class Scroller<T>  {
         }
 
         // second loop so all the measures are batched
-        for (let o of this.rendered_)
-            this.position(o)
     }
 
+    get rendered_start(): number {
+        const b = Math.max(0, this.anchorItem.index - 10)
+        return Math.min(b, this.snap_.length - this.rendered_.length)
+    }
+    get heightAbove() {
+        let r = 0
+        let e = this.anchorItem.index - this.rendered_start
+        for (let i = 0; i < e; i++) {
+            r += this.rendered_[i].height
+        }
+        return r + this.anchorItem.offset
+    }
     onResize_() {
+
         // this measures the size of a tombstone 
         this.tombstone_.style.display = 'block'
         this.tombstoneHeight_ = this.tombstone_.offsetHeight
@@ -140,120 +159,147 @@ export class Scroller<T>  {
 
         // Reset the cached size of items in the scroller as they may no longer be
         // correct after the item content undergoes layout.
-
-        let curPos = this.rendered_start_ * this.tombstoneHeight_
-        this.measuredHeight_ = 0
         for (let o of this.rendered_) {
             this.measure(o)
-            o.top = curPos
-            this.position(o)
-            curPos += o.height
-            this.measuredHeight_ += o.height
         }
+
+
+        let topCache = this.heightAbove
+        this.anchorScrollTop = this.heightAbove + this.rendered_start * this.tombstoneHeight_
+        this.props.container.scrollTop = this.anchorScrollTop
+        this.adjustHeight()
+        this.repositionAll()
         this.onScroll_()
     }
+    repositionAll() {
+        let pos = this.anchorScrollTop - this.heightAbove
+        for (let o of this.rendered_) {
+            o.top = pos
+            this.position(o)
+            pos += o.height
+        }
+    }
+
     position(o: Item<T>) {
         o.node.style.transform = `translateY(${o.top}px)`
     }
     measure(item: Item<T>) {
+        this.measuredHeight_ -= item.height
         item.height = item.node.offsetHeight
         item.width = item.node.offsetWidth
+        this.measuredHeight_ += item.height
+    }
+    // adjust height lazily, try to avoid it.
+    // we need at least what we have measured, but if we change it we should add the tombstones.
+    // we should only change height at the top when we measure the first item.
+    adjustHeight() {
+        const rendered_start = this.rendered_start
+        const th = this.tombstoneHeight_
+        if (rendered_start == 0) {
+            const tombstones = this.snap_.length - this.rendered_.length
+            const h = this.measuredHeight_ + tombstones * th
+            if (h != this.estHeight_) {
+                this.height = h
+                this.props.container.scrollTop = this.heightAbove
+                this.repositionAll
+            }
+        } else if (rendered_start + this.rendered_.length >= this.snap_.length) {
+            const heightBelow = this.measuredHeight_ - this.heightAbove
+            const ta = this.anchorScrollTop + heightBelow
+            this.height = ta
+        } else {
+            const tombstones = this.snap_.length - rendered_start - this.rendered_.length
+            const heightBelow = this.measuredHeight_ - this.heightAbove
+            const ta = this.anchorScrollTop + heightBelow
+            if (ta > this.estHeight_) {
+                this.height = ta + tombstones * this.tombstoneHeight_
+            }
+        }
+    }
+    set height(est: number) {
+        if (est != this.estHeight_) {
+            this.scrollRunway_.style.transform = `translate(0,${est}px)`;
+            this.estHeight_ = est
+        }
+    }
+
+    calculateAnchoredItem(initialAnchor: Anchor, delta: number): Anchor {
+        if (delta == 0)
+            return initialAnchor;
+        const rendered_start = this.rendered_start
+        delta += initialAnchor.offset;
+        var i = initialAnchor.index - rendered_start
+        var tombstones = 0;
+        if (delta < 0) {
+            while (delta < 0 && i > 0) {
+                delta += this.rendered_[i - 1].height;
+                i--;
+            }
+            tombstones = Math.max(-i, Math.ceil(Math.min(delta, 0) / this.tombstoneHeight_));
+        } else {
+            while (delta > 0 && i < this.rendered_.length && this.rendered_[i].height < delta) {
+                delta -= this.rendered_[i].height;
+                i++;
+            }
+            if (i >= this.rendered_.length)
+                tombstones = Math.floor(Math.max(delta, 0) / this.tombstoneHeight_);
+        }
+        return {
+            index: i + rendered_start + tombstones,
+            offset: delta - tombstones * this.tombstoneHeight_,
+        };
     }
 
     onScroll_() {
+        debugOut({ ...this.anchorItem, top: this.scroller_.scrollTop, st: this.rendered_start, h: this.estHeight_ })
+
+        let oldstart = this.rendered_start
+        let oldindex = this.anchorItem.index
         let delta = this.scroller_.scrollTop - this.anchorScrollTop
         this.anchorScrollTop = this.scroller_.scrollTop;
-
         if (this.scroller_.scrollTop == 0) {
             this.anchorItem = { index: 0, offset: 0 };
         } else {
-            const calculateAnchoredItem2 = (initialAnchor: Anchor, delta: number): Anchor => {
-                if (delta == 0)
-                    return initialAnchor;
-                delta += initialAnchor.offset;
-                var i = initialAnchor.index - this.rendered_start_
-                var tombstones = 0;
-                if (delta < 0) {
-                    while (delta < 0 && i > 0) {
-                        delta += this.rendered_[i - 1].height;
-                        i--;
-                    }
-                    tombstones = Math.max(-i, Math.ceil(Math.min(delta, 0) / this.tombstoneHeight_));
-                } else {
-                    while (delta > 0 && i < this.rendered_.length && this.rendered_[i].height && this.rendered_[i].height < delta) {
-                        delta -= this.rendered_[i].height;
-                        i++;
-                    }
-                    if (i >= this.rendered_.length)
-                        tombstones = Math.floor(Math.max(delta, 0) / this.tombstoneHeight_);
-                }
-                return {
-                    index: i + this.rendered_start_ + tombstones,
-                    offset: delta - tombstones * this.tombstoneHeight_,
-                };
-            }
-            this.anchorItem = calculateAnchoredItem2(this.anchorItem, delta)
+            this.anchorItem = this.calculateAnchoredItem(this.anchorItem, delta)
         }
-        // first is lowest index to render
-        let first = this.anchorItem.index - 10
-        first = Math.max(0, first)
-        first = Math.min(this.snap_.length - this.rendered_.length, first)
 
-        if (first != this.rendered_start_) {
-            //console.log(first)
-            const shift = first - this.rendered_start_
-            this.rendered_start_ = first
-            let b, e
-            if (Math.abs(shift) >= this.rendered_.length) {
-                b = 0
-                e = this.rendered_.length
-            }
-            else {
-                // after shifting +, the last shift items are bad, after -  the first shift items are bad.        
-                b = shift > 0 ? this.rendered_.length - shift : 0
-                e = shift > 0 ? this.rendered_.length : - shift
-                rotate(this.rendered_, shift)
-            }
-            let height = 0
-            for (let k = b; k < e; k++) {
-                const o = this.rendered_[k];
-                o.data = this.snap_.get(this.rendered_start_ + k)
-                this.props.builder(o.data, o.node)
-                this.measuredHeight_ -= o.height
-                this.measure(o)
-                this.measuredHeight_ += o.height
-                height += o.height
-                // maybe we should have both a tombstone and a div, then we can animate between them? this would keep things from jumping around? size transition as well opacity?
-            }
+        const shift = this.rendered_start - oldstart
+        if (shift == 0) return;
 
-            let curPos
-            if (b == 0) {
-                if (e < this.rendered_.length) {
-                    curPos = this.rendered_[e].top - height
-                }
-                else {
-                    curPos = this.rendered_start_ * this.tombstoneHeight_
-                }
-            } else {
-                curPos = this.rendered_[b - 1].top + this.rendered_[b - 1].height
-            }
 
-            for (let k = b; k < e; k++) {
-                const o = this.rendered_[k]
+        let b, e
+        if (Math.abs(shift) >= this.rendered_.length) {
+            b = 0
+            e = this.rendered_.length
+        }
+        else {
+            // after shifting +, the last shift items are bad, after -  the first shift items are bad.        
+            b = shift > 0 ? this.rendered_.length - shift : 0
+            e = shift > 0 ? this.rendered_.length : - shift
+            rotate(this.rendered_, shift)
+        }
+        const rendered_start = this.rendered_start
+        for (let k = b; k < e; k++) {
+            const o = this.rendered_[k];
+            o.data = this.snap_.get(rendered_start + k)
+            this.props.builder(o.data, o.node)
+            this.measure(o)
+            // maybe we should have both a tombstone and a div, then we can animate between them? this would keep things from jumping around? size transition as well opacity?
+        }
+
+        // if there is not enough room, we need to reset the scroll top to give enough room
+        // if rendered start is 0, then we should also set the scroll top exactly.
+        this.adjustHeight()
+        let curPos = this.anchorScrollTop - this.heightAbove
+        for (let i = 0; i < this.rendered_.length; i++) {
+            const o = this.rendered_[i]
+            if (o.top != curPos) {
                 o.top = curPos
                 this.position(o)
-                curPos += o.height
-                // maybe we should have both a tombstone and a div, then we can animate between them? this would keep things from jumping around? size transition as well opacity?
             }
+            curPos += o.height
+            // maybe we should have both a tombstone and a div, then we can animate between them? this would keep things from jumping around? size transition as well opacity?
         }
-
-        let a = this.scroller_.scrollTop - this.anchorItem.offset
-        for (let b = this.anchorItem.index - this.rendered_start_; b < this.rendered_.length; b++)
-            a += this.rendered_[b].height
-
-        const tombstones = this.snap_.length - this.rendered_start_ - this.rendered_.length
-        const est = a + tombstones * this.tombstoneHeight_
-        this.scrollRunway_.style.transform = `translate(0,${est}px)`;
     }
 }
 

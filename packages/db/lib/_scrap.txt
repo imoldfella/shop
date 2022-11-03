@@ -207,3 +207,7 @@ don't change the tuple at all.
                 }
                 this.anchorItem.index = this.rendered_start_ + i
                 this.anchorItem.offset = a
+
+
+                        first = Math.max(0, first)
+        first = Math.min(this.snap_.length - this.rendered_.length, first)

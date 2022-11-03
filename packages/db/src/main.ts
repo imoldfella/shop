@@ -1,5 +1,4 @@
 
-import './index.css'
 import { faker } from '@faker-js/faker'
 import { Dx, Snapshot, Scroller } from '../lib'
 
@@ -12,13 +11,12 @@ interface Chat {
 }
 let count = 0
 function randomChat(): Chat {
-    count++;
     return {
-        message: count + ". " + faker.lorem.paragraph(),
+        message: count++ + ". " + faker.lorem.paragraph(),
         avatar: faker.image.avatar()
     }
 }
-const chats = [...new Array(1000)].map(e => randomChat())
+const chats = [...new Array(100)].map(e => randomChat())
 const root = document.getElementById('root')
 // we should try to limit the number of creates
 
@@ -26,7 +24,7 @@ const root = document.getElementById('root')
 function foo() {
     const s = new Scroller<Chat>({
         container: root!,
-        snapshot: Snapshot.fromArray(chats),
+        items: chats,
         // builder takes a T and creates dom from it.
         builder(chat: Chat | null, old: HTMLElement) {
             old.innerHTML = chat ? `<p>${chat.message}<p>` : '<p>tombstone</p>'
