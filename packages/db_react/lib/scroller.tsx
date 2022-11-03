@@ -3,8 +3,7 @@ import React, { useEffect, useRef } from 'react'
 import { ScrollerProps, Snapshot, Scroller as ScrollerTs } from '../../db/lib'
 import styled from 'styled-components'
 export type { ScrollerProps, Snapshot }
-interface Found {
-}
+
 const ScrollerDiv = styled.div`
     margin: 0;
       padding: 0;
@@ -19,10 +18,15 @@ const ScrollerDiv = styled.div`
       will-change: transform;`
 
 export function Scroller<T>(props: ScrollerProps<T>) {
-    const container = useRef<HTMLDivElement>(null);
+    const container = useRef<HTMLDivElement|null>(null);
     useEffect(() => {
-        let ts = new ScrollerTs(props)
-        return () => ts.close()
+        if (container.current) {
+            const ts  = new ScrollerTs(
+                container.current,
+                props
+            )
+            return () => ts.close()          
+        }
     })
     return (<ScrollerDiv ref={container} />)
 }

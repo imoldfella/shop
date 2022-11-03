@@ -1,17 +1,23 @@
 import { DxUpdate, Snapshot } from './dx'
 const inf = Number.NEGATIVE_INFINITY
 
+// needs a useQuery to be able to clean up.
+export class ScrollController {
+
+}
+
+type BuilderFn<T> = (x: T | null, old: HTMLElement) => void
 export interface ScrollerProps<T> {
-    container: HTMLElement,
     items?: T[] // alternative to snapshot
     snapshot?: Snapshot<T>
     intitial?: number
     // builder takes a T and creates dom from it.
-    builder: (x: T | null, old: HTMLElement) => void,
+    // builder can default to displaying bits of html
+    builder?: BuilderFn<T>,
 
     // provide a callback to get notified of updates to scroll or data
     // data update is going to change scroll anyway, so having both seems meh.
-    onUpdate: () => void
+
 }
 
 // when we move the rendered_start, we need to remember it's scrolltop
@@ -27,7 +33,12 @@ function rotate<T>(a: T[], n: number) {
     a.unshift.apply(a, a.splice(n, a.length));
     return a;
 }
-
+function defaultBuilder<T>(chat: T | null, old: HTMLElement)  {
+    if (typeof(chat) == "string")
+        old.innerHTML = chat ?? '<p>tombstone</p>'
+    else 
+        old.innerHTML = JSON.stringify(chat)
+}
 // index is given to builder to build the dom. inf indicates nto as
 class Item<T> {
     constructor(public node: HTMLElement, public data: T | null) { }
@@ -55,6 +66,7 @@ export class Scroller<T>  {
     // these should only be on our runway. doesn't need to start at 0.
     // when we get a snapshot update we should diff the T's to see if we can reuse the dom we have created.
     //rendered_start_ = 0
+    builder: BuilderFn<T>
     rendered_: Item<T>[] = [];
     tombstone_: HTMLElement
     snap_: Snapshot<T>
@@ -76,13 +88,11 @@ export class Scroller<T>  {
         // at some point the snapshot is too expensive to maintain (phone in a drawer)
 
         // 
-        this.props.onUpdate()
+       // this.props.onUpdate()
     }
 
-    close() {
-        this.snap_.removeListener(this._update)
-    }
-    get scroller_() { return this.props.container }
+
+    get scroller_() { return this.container }
 
     // when we create a div it should be display none and absolute and a child of the scroller
     // tombstone.style.position = 'absolute'
@@ -95,7 +105,10 @@ export class Scroller<T>  {
         return r
     }
 
-    constructor(public props: ScrollerProps<T>) {
+    // don't put container in props, w
+
+    constructor(public container: HTMLElement, public props: ScrollerProps<T>) {
+        this.builder = props.builder??defaultBuilder
         this.anchorItem.index = props.intitial ?? 0
         this.snap_ = props.snapshot ?? Snapshot.fromArray(props.items ?? [])
         this.snap_.addListener(this._update)
@@ -111,11 +124,17 @@ export class Scroller<T>  {
         this.scroller_.appendChild(this.scrollRunway_);
 
         this.tombstone_ = this.div()
-        this.props.builder(null, this.tombstone_)
+        this.builder(null, this.tombstone_)
 
         this.resizeData()
         this.onResize_()
     }
+    // this needs to remove all the dom and everything to work with useEffect
+    close() {
+        this.container.replaceChildren()
+        this.snap_.removeListener(this._update)
+    }
+
 
     resizeData() {
         let target = Math.min(this.snap_.length, 50)
@@ -125,7 +144,7 @@ export class Scroller<T>  {
             for (; b < target; b++) {
                 let o = this.div()
                 let d = this.snap_.get(b)
-                this.props.builder(d, o)
+                this.builder(d, o)
                 let i = new Item<T>(o, d)
                 this.rendered_.push(i)
             }
@@ -166,7 +185,7 @@ export class Scroller<T>  {
 
         let topCache = this.heightAbove
         this.anchorScrollTop = this.heightAbove + this.rendered_start * this.tombstoneHeight_
-        this.props.container.scrollTop = this.anchorScrollTop
+        this.container.scrollTop = this.anchorScrollTop
         this.adjustHeight()
         this.repositionAll()
         this.onScroll_()
@@ -200,7 +219,7 @@ export class Scroller<T>  {
             const h = this.measuredHeight_ + tombstones * th
             if (h != this.estHeight_) {
                 this.height = h
-                this.props.container.scrollTop = this.heightAbove
+                this.container.scrollTop = this.heightAbove
                 this.repositionAll
             }
         } else if (rendered_start + this.rendered_.length >= this.snap_.length) {
@@ -282,7 +301,7 @@ export class Scroller<T>  {
         for (let k = b; k < e; k++) {
             const o = this.rendered_[k];
             o.data = this.snap_.get(rendered_start + k)
-            this.props.builder(o.data, o.node)
+            this.builder(o.data, o.node)
             this.measure(o)
             // maybe we should have both a tombstone and a div, then we can animate between them? this would keep things from jumping around? size transition as well opacity?
         }

@@ -17,8 +17,10 @@ export function Mapgl(props: {
 }) {
     const mContainer = useRef<HTMLDivElement>(null);
     const m = useRef<MapGl>(null)
+    const ox = useRef(true)
     useEffect(() => {
         if (m.current) return
+        ox.current = false
         mountDgMap(mContainer.current!)
     })
     return (
