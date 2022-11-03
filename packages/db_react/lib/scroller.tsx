@@ -6,7 +6,6 @@ export type { ScrollerProps, Snapshot }
 
 const ScrollerDiv = styled.div`
     margin: 0;
-      padding: 0;
       overflow-x: hidden;
       overflow-y: scroll;
       -webkit-overflow-scrolling: touch;
@@ -18,14 +17,14 @@ const ScrollerDiv = styled.div`
       will-change: transform;`
 
 export function Scroller<T>(props: ScrollerProps<T>) {
-    const container = useRef<HTMLDivElement|null>(null);
+    const container = useRef<HTMLDivElement | null>(null);
     useEffect(() => {
         if (container.current) {
-            const ts  = new ScrollerTs(
+            const ts = new ScrollerTs(
                 container.current,
                 props
             )
-            return () => ts.close()          
+            return () => ts.close()
         }
     })
     return (<ScrollerDiv ref={container} />)

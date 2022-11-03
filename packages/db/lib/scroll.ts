@@ -14,7 +14,7 @@ export interface ScrollerProps<T> {
     // builder takes a T and creates dom from it.
     // builder can default to displaying bits of html
     builder?: BuilderFn<T>,
-
+    safeTop?: number
     // provide a callback to get notified of updates to scroll or data
     // data update is going to change scroll anyway, so having both seems meh.
 
@@ -33,10 +33,10 @@ function rotate<T>(a: T[], n: number) {
     a.unshift.apply(a, a.splice(n, a.length));
     return a;
 }
-function defaultBuilder<T>(chat: T | null, old: HTMLElement)  {
-    if (typeof(chat) == "string")
+function defaultBuilder<T>(chat: T | null, old: HTMLElement) {
+    if (typeof (chat) == "string")
         old.innerHTML = chat ?? '<p>tombstone</p>'
-    else 
+    else
         old.innerHTML = JSON.stringify(chat)
 }
 // index is given to builder to build the dom. inf indicates nto as
@@ -88,7 +88,7 @@ export class Scroller<T>  {
         // at some point the snapshot is too expensive to maintain (phone in a drawer)
 
         // 
-       // this.props.onUpdate()
+        // this.props.onUpdate()
     }
 
 
@@ -106,9 +106,10 @@ export class Scroller<T>  {
     }
 
     // don't put container in props, w
-
+    safeTop = 0
     constructor(public container: HTMLElement, public props: ScrollerProps<T>) {
-        this.builder = props.builder??defaultBuilder
+        this.safeTop = props.safeTop ?? 0
+        this.builder = props.builder ?? defaultBuilder
         this.anchorItem.index = props.intitial ?? 0
         this.snap_ = props.snapshot ?? Snapshot.fromArray(props.items ?? [])
         this.snap_.addListener(this._update)
@@ -200,7 +201,7 @@ export class Scroller<T>  {
     }
 
     position(o: Item<T>) {
-        o.node.style.transform = `translateY(${o.top}px)`
+        o.node.style.transform = `translateY(${o.top + this.safeTop}px)`
     }
     measure(item: Item<T>) {
         this.measuredHeight_ -= item.height

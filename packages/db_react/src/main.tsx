@@ -12,14 +12,14 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
 
 
 function App() {
-  let count=0
-  const chats = [...new Array(100)].map(e => count++ + ". " + faker.lorem.paragraph()) 
+  let count = 0
+  const chats = [...new Array(100)].map(e => count++ + ". " + faker.lorem.paragraph())
 
   return (
     <div className='fixed h-screen w-screen'>
-      <FloatingSearchHeader/>
+      <FloatingSearchHeader />
       <div className={'search-results'} >
-        <Scroller items={chats}  />
+        <Scroller items={chats} safeTop={96} />
       </div>
     </div>
   )

@@ -22,18 +22,12 @@ const root = document.getElementById('root')
 
 
 function foo() {
-    const s = new Scroller<Chat>({
-        container: root!,
+    const s = new Scroller<Chat>(root!, {
         items: chats,
         // builder takes a T and creates dom from it.
         builder(chat: Chat | null, old: HTMLElement) {
             old.innerHTML = chat ? `<p>${chat.message}<p>` : '<p>tombstone</p>'
         },
-
-
-        // provide a callback to get notified of updates to scroll or data
-        // data update is going to change scroll anyway, so having both seems meh.
-        onUpdate: () => { }
     })
 
 }
