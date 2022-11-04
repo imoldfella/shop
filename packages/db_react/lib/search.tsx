@@ -4,6 +4,8 @@ import { Combobox } from '@headlessui/react'
 import { faker } from '@faker-js/faker'
 
 import { } from '../../db/lib'
+import { Scroller } from './scroller'
+import { renderToString } from 'react-dom/server'
 
 interface Person {
   id: number,
@@ -18,18 +20,33 @@ function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
 }
 
+/*
+   position: fixed;
+    height: 100vh;
+    width: 408px;
+    box-shadow: 5px 8px 18px rgb(0, 0, 0, 0.3);
+    z-index: 2
+*/
 export function FloatingSearch() {
+  let count = 0
+  const fn = ()=> renderToString(
+    <div className='m-4'>{count++} {" "}  {faker.lorem.paragraph()}</div>
+  )
+  const chats = [...new Array(100)].map(fn)
+
   return (<div className='h-screen'>
-    <FloatingSearchHeader />
-    <SearchList />
+      <FloatingSearchHeader />
+      <div className={'fixed h-screen w-[408px] shadow dark:shadow-white'} >
+        <Scroller items={chats} safeTop={96} />
+      </div>
   </div>)
 }
 
 export function FloatingSearchHeader() {
 
-  return (<div className="bg-white shadow sm:rounded-lg fixed z-50 m-4">
+  return (<div className="bg-white shadow sm:rounded-lg fixed z-50 m-4 w-[372px]">
     <div className='flex items-center' >
-      <button className='h-6 w-6 m-2'><Bars3Icon /></button> <SearchComplete />
+      <button className='h-6 w-6 m-2'><Bars3Icon className='dark:text-black'/></button> <SearchComplete />
     </div>
   </div>)
 
@@ -47,7 +64,7 @@ export function SearchComplete() {
       })
 
   return (
-    <Combobox as="div" value={selectedPerson} onChange={setSelectedPerson}>
+    <Combobox className='w-full' as="div" value={selectedPerson} onChange={setSelectedPerson}>
       <div className="relative mt-1">
         <Combobox.Input
           className="w-full rounded-md outline-none bg-white py-2 pl-3 pr-10  focus:ring-transparent sm:text-sm"

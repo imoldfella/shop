@@ -2,9 +2,3 @@
 @tailwind components;
 @tailwind utilities;
 
-.search-results {
-    position: fixed;
-    height: 100vh;
-    width: 408px;
-    box-shadow: 5px 8px 18px rgb(0, 0, 0, 0.7);
-}

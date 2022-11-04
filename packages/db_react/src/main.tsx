@@ -3,6 +3,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { Toggle, Autocomplete, FloatingSearch, Scroller, ScrollerProps, Snapshot, FloatingSearchHeader } from '../lib'
 import './index.css'
+import '../lib/css.css'
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
@@ -10,17 +11,11 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   </React.StrictMode>
 )
 
-
 function App() {
-  let count = 0
-  const chats = [...new Array(100)].map(e => count++ + ". " + faker.lorem.paragraph())
 
   return (
-    <div className='fixed h-screen w-screen'>
-      <FloatingSearchHeader />
-      <div className={'search-results'} >
-        <Scroller items={chats} safeTop={96} />
-      </div>
+    <div className='dark fixed h-screen w-screen'>
+      <FloatingSearch/> 
     </div>
   )
 }
