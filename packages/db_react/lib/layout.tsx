@@ -41,7 +41,7 @@ const sidebarNavigation = [
   { name: 'Customers', href: '#', icon: UserCircleIcon, current: false },
   { name: 'Flagged', href: '#', icon: FlagIcon, current: false },
   { name: 'Spam', href: '#', icon: NoSymbolIcon, current: false },
-  { name: 'Drafts', href: '#', icon: PencilSquareIcon, current: false,  },
+  { name: 'Drafts', href: '#', icon: PencilSquareIcon, current: false, },
 ]
 const userNavigation = [
   { name: 'Your Profile', href: '#' },
@@ -52,7 +52,62 @@ function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
 }
 
+// this might need to take a render prop?
+// the 
+export function ServerList() {
+
+}
 // mobile = full screen. 
+// 0,1
+export function Rail({ value, onChange }: { value: number, onChange: (x: number) => void }) {
+  return (<nav aria-label="Sidebar" className=" flex md:block md:flex-shrink-0 md:overflow-y-auto md:bg-gray-800">
+    <div className="relative flex flex-col flex-shrink-0 w-20 space-y-3 p-3">
+      {sidebarNavigation.map((item, index) => (
+        <a
+          onClick={() => onChange(index)}
+          key={item.name}
+          href={item.href}
+          className={classNames(
+            item.current ? 'bg-gray-900 text-white' : 'text-gray-400 hover:bg-gray-700',
+            'flex-shrink-0 inline-flex items-center justify-center h-14 w-14 rounded-lg'
+          )}
+        >
+          <span className="sr-only">{item.name}</span>
+          <item.icon className="h-6 w-6" aria-hidden="true" />
+        </a>
+      ))}
+    </div>
+
+  </nav>)
+}
+
+function Drawer() {
+  return (<aside className=" order-first block flex-shrink-0">
+    <div className="relative flex h-full w-96 flex-col overflow-y-auto border-r border-gray-200 bg-gray-100">
+      {/* Your content */}
+      <FloatingSearchHeader onMenu={() => { }} />
+    </div>
+  </aside>)
+}
+
+function Main() {
+  return (<main className="min-w-0 flex-1  border-gray-200 lg:flex">
+    <FloatingSearchHeader onMenu={() => { }} />
+
+    {/* Primary column */}
+    <section
+      aria-labelledby="primary-heading"
+      className="flex h-full min-w-0 flex-1 flex-col overflow-y-auto lg:order-last"
+    >
+      {/* Top nav*/}
+      <h1 id="primary-heading" className="">
+
+
+      </h1>
+      {/* Your content */}
+    </section>
+  </main>)
+}
 
 // hamburger needs to stay on the screen, possibly shrink
 // top navbar needs to float. side context need to stay open on wide
@@ -60,15 +115,16 @@ function classNames(...classes: string[]) {
 // probably a splitter when the menu is open.
 // on big adaptive screens, the layout pushes
 export function Layout() {
-    // full screen mode has a fly over.
-  const [full, setFull] = useState(false)
+  // full screen mode has a fly over.
+  const [show, setShow] = useState(0)
+  const [rail, setRail] = useState(0)
   const [iframe, setIframe] = useState(false)
-  
-  function setName(name: string){
-    if (name!="Open"){
-        setIframe(true)
+
+  function setName(name: string) {
+    if (name != "Open") {
+      setIframe(false)
     } else {
-        setIframe(false)
+      setIframe(true)
     }
 
   }
@@ -76,64 +132,13 @@ export function Layout() {
   // iframe mode and the iframe requests it
   // mobile and menu is open
   // desktop and not full screen
-
+  "flex min-h-0 flex-1 overflow-hidden"
   return (
     <>
-      <div className="flex h-full flex-col">
-
-
-        {/* Bottom section */}
-        <div className="flex min-h-0 flex-1 overflow-hidden">
-          {/* Narrow sidebar, part of the flyout on mobile and on full screen */}
-          {!full &&
-            <nav aria-label="Sidebar" className=" flex md:block md:flex-shrink-0 md:overflow-y-auto md:bg-gray-800">
-              <div className="relative flex flex-col flex-shrink-0 w-20 space-y-3 p-3">
-                {sidebarNavigation.map((item) => (
-                  <a
-                    key={item.name}
-                    href={item.href}
-                    className={classNames(
-                      item.current ? 'bg-gray-900 text-white' : 'text-gray-400 hover:bg-gray-700',
-                      'flex-shrink-0 inline-flex items-center justify-center h-14 w-14 rounded-lg'
-                    )}
-                  >
-                    <span className="sr-only">{item.name}</span>
-                    <item.icon className="h-6 w-6" aria-hidden="true" />
-                  </a>
-                ))}
-              </div>
-              {!iframe && <aside className=" order-first block flex-shrink-0">
-                <div className="relative flex h-full w-96 flex-col overflow-y-auto border-r border-gray-200 bg-gray-100">
-                  {/* Your content */}
-                  <FloatingSearchHeader onMenu={()=>setFull(!full)}/>
-                </div>
-              </aside>}
-            </nav>}
-
-          {/* Main area */}
-          { !iframe && <main className="min-w-0 flex-1  border-gray-200 lg:flex">
-            <FloatingSearchHeader onMenu={()=>setFull(!full)}/>
-
-            {/* Primary column */}
-            <section
-              aria-labelledby="primary-heading"
-              className="flex h-full min-w-0 flex-1 flex-col overflow-y-auto lg:order-last"
-            >
-              {/* Top nav*/}
-              <h1 id="primary-heading" className="">
-
-
-              </h1>
-              {/* Your content */}
-            </section>
-        </main> }
-
-          
-          { iframe && <iframe className="min-w-0 flex-1  border-gray-200 lg:flex" src='espn.com'>
-
-          </iframe> }
-          
-        </div>
+      <div className="flex h-full flex-row">
+        {rail > 0 && <Rail onChange={setRail} value={rail} />}
+        {rail == 1 && <Drawer />}
+        {iframe ? <iframe className="min-w-0 flex-1  border-gray-200 lg:flex" src='espn.com' /> : <Main />}
       </div>
     </>
   )
