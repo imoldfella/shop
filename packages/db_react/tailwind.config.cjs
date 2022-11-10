@@ -3,6 +3,7 @@ module.exports = {
   mode: 'jit',
   content: [
     "./index.html",
+    "./play.html",
     "./src/**/*.{js,ts,jsx,tsx}",
     "./lib/**/*.{js,ts,jsx,tsx}",
   ],

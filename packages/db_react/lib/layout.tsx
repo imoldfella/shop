@@ -12,6 +12,7 @@ import {
   UserCircleIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline'
+import { FloatingSearch, FloatingSearchHeader } from './search'
 
 const user = {
   name: 'Whitney Francis',
@@ -40,7 +41,7 @@ const sidebarNavigation = [
   { name: 'Customers', href: '#', icon: UserCircleIcon, current: false },
   { name: 'Flagged', href: '#', icon: FlagIcon, current: false },
   { name: 'Spam', href: '#', icon: NoSymbolIcon, current: false },
-  { name: 'Drafts', href: '#', icon: PencilSquareIcon, current: false },
+  { name: 'Drafts', href: '#', icon: PencilSquareIcon, current: false,  },
 ]
 const userNavigation = [
   { name: 'Your Profile', href: '#' },
@@ -59,8 +60,18 @@ function classNames(...classes: string[]) {
 // probably a splitter when the menu is open.
 // on big adaptive screens, the layout pushes
 export function Layout() {
+    // full screen mode has a fly over.
   const [full, setFull] = useState(false)
   const [iframe, setIframe] = useState(false)
+  
+  function setName(name: string){
+    if (name!="Open"){
+        setIframe(true)
+    } else {
+        setIframe(false)
+    }
+
+  }
   // showServers show if:
   // iframe mode and the iframe requests it
   // mobile and menu is open
@@ -75,8 +86,8 @@ export function Layout() {
         <div className="flex min-h-0 flex-1 overflow-hidden">
           {/* Narrow sidebar, part of the flyout on mobile and on full screen */}
           {!full &&
-            <nav aria-label="Sidebar" className="hidden md:block md:flex-shrink-0 md:overflow-y-auto md:bg-gray-800">
-              <div className="relative flex w-20 flex-col space-y-3 p-3">
+            <nav aria-label="Sidebar" className=" flex md:block md:flex-shrink-0 md:overflow-y-auto md:bg-gray-800">
+              <div className="relative flex flex-col flex-shrink-0 w-20 space-y-3 p-3">
                 {sidebarNavigation.map((item) => (
                   <a
                     key={item.name}
@@ -94,14 +105,14 @@ export function Layout() {
               {!iframe && <aside className=" order-first block flex-shrink-0">
                 <div className="relative flex h-full w-96 flex-col overflow-y-auto border-r border-gray-200 bg-gray-100">
                   {/* Your content */}
-                  Sidebar nav
+                  <FloatingSearchHeader onMenu={()=>setFull(!full)}/>
                 </div>
               </aside>}
             </nav>}
 
           {/* Main area */}
-          <main className="min-w-0 flex-1  border-gray-200 lg:flex">
-
+          { !iframe && <main className="min-w-0 flex-1  border-gray-200 lg:flex">
+            <FloatingSearchHeader onMenu={()=>setFull(!full)}/>
 
             {/* Primary column */}
             <section
@@ -110,14 +121,18 @@ export function Layout() {
             >
               {/* Top nav*/}
               <h1 id="primary-heading" className="">
-                <button onClick={() => setFull(!full)}>{full ? "normal" : "full"}</button><br />
-                <button onClick={() => setIframe(!iframe)}>{iframe ? "local" : "iframe"}</button><br />
+
+
               </h1>
               {/* Your content */}
             </section>
+        </main> }
 
+          
+          { iframe && <iframe className="min-w-0 flex-1  border-gray-200 lg:flex" src='espn.com'>
 
-          </main>
+          </iframe> }
+          
         </div>
       </div>
     </>
@@ -125,3 +140,4 @@ export function Layout() {
 }
 
 
+//                 <button onClick={() => setIframe(!iframe)}>{iframe ? "local" : "iframe"}</button><br />

@@ -35,18 +35,18 @@ export function FloatingSearch() {
   const chats = [...new Array(100)].map(fn)
 
   return (<div className='h-screen'>
-      <FloatingSearchHeader />
+      <FloatingSearchHeader onMenu={()=>{}} />
       <div className={'fixed h-screen w-[408px] shadow dark:shadow-white'} >
         <Scroller items={chats} safeTop={96} />
       </div>
   </div>)
 }
 
-export function FloatingSearchHeader() {
+export function FloatingSearchHeader({onMenu}: {onMenu: ()=>void}) {
 
   return (<div className="bg-white shadow sm:rounded-lg fixed z-50 m-4 w-[372px]">
     <div className='flex items-center' >
-      <button className='h-6 w-6 m-2'><Bars3Icon className='dark:text-black'/></button> <SearchComplete />
+      <button className='h-6 w-6 m-2' onClick={onMenu}><Bars3Icon className='dark:text-black'/></button> <SearchComplete />
     </div>
   </div>)
 
