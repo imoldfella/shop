@@ -973,6 +973,6 @@ module.exports = {
     'disabled',
   ],
   plugins: [
-    
+    require('@tailwindcss/forms'),
   ],
 }
