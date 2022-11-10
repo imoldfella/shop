@@ -46,13 +46,14 @@ export function FloatingSearchHeader({onMenu}: {onMenu: ()=>void}) {
 
   return (<div className="bg-white shadow sm:rounded-lg fixed z-50 m-4 w-[372px]">
     <div className='flex items-center' >
-      <button className='h-6 w-6 m-2' onClick={onMenu}><Bars3Icon className='dark:text-black'/></button> <SearchComplete />
+      <button className='h-6 w-6 m-2' onClick={onMenu}><Bars3Icon className='dark:text-black'/></button> <SearchComplete placeholder='Find a conversation'/>
     </div>
   </div>)
-
 }
 
-export function SearchComplete() {
+export function SearchComplete({placeholder}:{
+  placeholder: string
+}) {
   const [query, setQuery] = useState('')
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null)
 
@@ -67,10 +68,10 @@ export function SearchComplete() {
     <Combobox className='w-full' as="div" value={selectedPerson} onChange={setSelectedPerson}>
       <div className="relative mt-1">
         <Combobox.Input
-          className="w-full rounded-md outline-none bg-white py-2 pl-3 pr-10  focus:ring-transparent sm:text-sm"
+          className="w-full rounded-md outline-none py-2 pl-3 pr-10  focus:ring-transparent sm:text-sm bg-transparent"
           onChange={(event) => setQuery(event.target.value)}
           displayValue={(person: Person) => person?.name}
-          placeholder="Search for provider"
+          placeholder={placeholder}
         />
         <Combobox.Button className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
           <MagnifyingGlassIcon className="h-6 w-6 text-gray-800" aria-hidden="true" />
