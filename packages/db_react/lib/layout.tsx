@@ -1,6 +1,6 @@
 import { Fragment, useState } from 'react'
 import { Dialog, Menu, Transition } from '@headlessui/react'
-import { ChevronDownIcon, MagnifyingGlassIcon } from '@heroicons/react/20/solid'
+import { ChevronDownIcon, CircleStackIcon, MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import {
   ArchiveBoxIcon,
   Bars3Icon,
@@ -10,43 +10,10 @@ import {
   NoSymbolIcon,
   PencilSquareIcon,
   UserCircleIcon,
-  XMarkIcon,
+  XCircleIcon
 } from '@heroicons/react/24/outline'
 import { SearchComplete } from './search'
-
-const user = {
-  name: 'Whitney Francis',
-  email: 'whitney.francis@example.com',
-  imageUrl:
-    'https://images.unsplash.com/photo-1517365830460-955ce3ccd263?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-}
-const navigation = [
-  {
-    name: 'Inboxes',
-    href: '#',
-    children: [
-      { name: 'Technical Support', href: '#' },
-      { name: 'Sales', href: '#' },
-      { name: 'General', href: '#' },
-    ],
-  },
-  { name: 'Reporting', href: '#', children: [] },
-  { name: 'Settings', href: '#', children: [] },
-]
-
-// this needs to be a parameter, menu at the top, then context.
-const sidebarNavigation = [
-  { name: 'Open', href: '#', icon: InboxIcon, current: true },
-  { name: 'Archive', href: '#', icon: ArchiveBoxIcon, current: false },
-  { name: 'Customers', href: '#', icon: UserCircleIcon, current: false },
-  { name: 'Flagged', href: '#', icon: FlagIcon, current: false },
-  { name: 'Spam', href: '#', icon: NoSymbolIcon, current: false },
-  { name: 'Drafts', href: '#', icon: PencilSquareIcon, current: false, },
-]
-const userNavigation = [
-  { name: 'Your Profile', href: '#' },
-  { name: 'Sign out', href: '#' },
-]
+import { useMediaQuery } from 'react-responsive'
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
@@ -58,13 +25,13 @@ function classNames(...classes: string[]) {
 export function Rail({ value, onChange }: { value: number, onChange: (x: number) => void }) {
   return (<nav aria-label="Sidebar" className=" flex border-r border-gray-200  flex-shrink-0 overflow-y-auto bg-gray-800">
     <div className="relative flex flex-col flex-shrink-0 w-20 space-y-3 p-3">
-      {sidebarNavigation.map((item, index) => (
+      {server.map((item, index) => (
         <a
           onClick={() => onChange(index)}
           key={item.name}
           href={item.href}
           className={classNames(
-            item.current ? 'bg-gray-900 text-white' : 'text-gray-400 hover:bg-gray-700',
+            value == index ? 'bg-gray-900 text-white' : 'text-gray-400 hover:bg-gray-700',
             'flex-shrink-0 inline-flex items-center justify-center h-14 w-14 rounded-lg'
           )}
         >
@@ -77,30 +44,30 @@ export function Rail({ value, onChange }: { value: number, onChange: (x: number)
   </nav>)
 }
 
+// in full screen mode this needs a close which closes the rail as well.
 // drawers are typically sand boxed in in iframe, but we can have local ones
-function LocalDrawer() {
-  return (<aside className="  block flex-shrink-0">
-    <div className="relative flex h-full w-96 flex-col overflow-y-auto border-r border-gray-200 bg-gray-800 text-white" >
-      {/* Your content */}
-      <div className="bg-grey-900 border-gray-600 border rounded-lg  z-50 m-4 ">
-      <div className=' text-black' >
-        <input className='text-white   outline-none py-2 pl-3 pr-10  focus:ring-transparent sm:text-sm bg-transparent' placeholder='Find a conversation'/>
+function LocalDrawer({ }: {}) {
+  return (<aside className="  h-screen block flex-shrink-0">
+    <div className="relative flex h-full w-full flex-col overflow-y-auto border-r border-gray-200 bg-gray-800 text-white" >
+      <div className="bg-grey-900 text-black flex flex-row items-center border-gray-600 border rounded-lg m-4 ">
+
+        <input className='text-white w-full  outline-none py-2 pl-3 pr-10  focus:ring-transparent sm:text-sm bg-transparent' placeholder='Find a conversation' />
 
         {/* we need a search list here */}
+        <XCircleIcon className='w-6 h-6 m-2 text-blue-600' onClick={() => { }} />
 
       </div>
-    </div>
     </div>
   </aside>)
 }
 
 // there a many mains, some are maps. pannable things shouldn't move when the drawer flys out.
-function Main({onMenu}: {onMenu: ()=>void}) {
+function Main({ onMenu }: { onMenu: () => void }) {
   return (<main className="min-w-0 flex-1  border-gray-200 ">
-    <div className="bg-white text-black shadow sm:rounded-lg fixed z-50 m-4 w-[372px]">
+    <div className="bg-white text-black shadow sm:rounded-lg  m-4 w-[372px]">
       <div className='flex items-center' >
-        <button className='h-6 w-6 m-2' onClick={onMenu}><Bars3Icon className='text-black'/></button> 
-        <input className='outline-none py-2 pl-3 pr-10  focus:ring-transparent sm:text-sm bg-transparent' placeholder='Find a provider'/>
+        <button className='h-6 w-6 m-2' onClick={onMenu}><Bars3Icon className='text-black' /></button>
+        <input className='outline-none py-2 pl-3 pr-10 w-full focus:ring-transparent sm:text-sm bg-transparent' placeholder='Find a provider' />
       </div>
     </div>
     {/* Primary column */}
@@ -110,7 +77,7 @@ function Main({onMenu}: {onMenu: ()=>void}) {
     >
       {/* Top nav*/}
       <h1 id="primary-heading" className="">
-      
+
 
       </h1>
       {/* Your content */}
@@ -123,23 +90,93 @@ function Main({onMenu}: {onMenu: ()=>void}) {
 // side menu needs to stay open on wide.
 // probably a splitter when the menu is open.
 // on big adaptive screens, the layout pushes
+
+// full screen is handled outside layout?
+// it depends on the server, which is probably a context, can we use the database?
+function renderDiscuss() {
+  return (<b>discuss</b>)
+}
+function renderMap() {
+  return (<b>Map</b>)
+}
+
+interface App {
+  panning: boolean
+  icon: (x: any) => JSX.Element
+  render: (x: any) => JSX.Element
+}
+const appDiscuss: App = {
+  panning: false,
+  icon: CircleStackIcon,
+  render: renderDiscuss
+}
+const appMap: App = {
+  panning: true,
+  icon: ChevronDownIcon,
+  render: renderMap
+}
+const apps: AppRegistry = {
+  appDiscuss, appMap
+}
+
 export function Layout() {
-  // full screen mode has a fly over.
-  const [show, setShow] = useState(2)
-  const [rail, setRail] = useState(0)
+
+  const [showServers, setShowServers] = useState(true)
+  const [showFiles, setShowFiles] = useState(true)
+  const [server, setServer] = useState(0)
+
+  // each server has a server list
+  const [app, setApp] = useState(appDiscuss)
+  // panning mode has a fly over.
+  // small screens have a route over.
+  const [panning, setPanning] = useState(false)
+
+  let iframe = false
+
+  // if narrow then showServers implies showFiles, and both show over the editor
+
+  // if 
+
+
+  // !wide => fullover
 
   // showServers show if:
   // iframe mode and the iframe requests it
   // mobile and menu is open
   // desktop and not full screen
   "flex min-h-0 flex-1 overflow-hidden"
+
+  const isWide = useMediaQuery({
+    query: '(min-width: 600px)'
+  })
+  let w = "w-0";
+  if (showServers) {
+    if (isWide) {
+      w = showFiles ? "w-96" : "w-20";
+    } else {
+      w = showServers ? "w-full" : "w-0";
+    }
+  }
+
+
+
   return (
-    <>
-      <div className="flex h-full flex-row">
-        {show > 0 && <Rail onChange={setRail} value={rail} />}
-        {show == 2 && <LocalDrawer />}
-        {rail>1 ? <iframe className="min-w-0 flex-1  border-gray-200 lg:flex" src='espn.com' /> : <Main onMenu={()=>{ setShow(show==0?2:0) }} />}
-      </div>
+    <> // fly over, maybe full over? how to do that?
+      <Transition show={showServers}
+        as={Fragment}
+        enter="transition ease-in-out duration-100 transform"
+        enterFrom="-translate-x-full"
+        enterTo="translate-x-0"
+        leave="transition ease-in-out duration-100 transform"
+        leaveFrom="translate-x-0"
+        leaveTo="-translate-x-full"
+      >
+        <div className={`flex ${w} h-full flex-row`}>
+          <Rail onChange={setServer} value={server} />
+          {showFiles && <LocalDrawer />}
+        </div></Transition>
+
+      {iframe ? <iframe className="min-w-0 flex-1  border-gray-200 lg:flex" src='https://datagrove.com' /> : <Main onMenu={() => { setShowServers(!showServers) }} />}
     </>
   )
 }
