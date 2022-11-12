@@ -32,7 +32,7 @@ export function createDatabase(): Database {
 export interface ResourceMap {
     [key: string]: FluentResource
 }
-function useLocalization(rm: ResourceMap, lang?: string[]): (lang: string) => void {
+export function useLocalization(rm: ResourceMap, lang?: string[]): (lang: string) => void {
     const l = lang ?? navigator.languages;
 
     function* generateBundles(userLocales: readonly string[]) {

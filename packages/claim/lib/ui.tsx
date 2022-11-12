@@ -11,7 +11,7 @@ const mapScreen = 2
 class UiState {
     login = false
     screen = cartScreen
-    claim = new AdjudicatedInput
+    claim = new AdjudicationInput
     dispatch = {} as React.Dispatch<UiUpdate>
 }
 interface UiUpdate {
