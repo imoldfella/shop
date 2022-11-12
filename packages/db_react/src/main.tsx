@@ -4,52 +4,44 @@ import ReactDOM from 'react-dom/client'
 import { Toggle, Autocomplete, FloatingSearch, Scroller, ScrollerProps, Snapshot, FloatingSearchHeader, World, Layout, WorldProvider, initialize, ServerGroup, PrivateApp } from '../lib'
 import './index.css'
 import '../lib/css.css'
+import { AppLocalizationProvider } from "../lib/l10n"
 
+export async function initializeTest() {
+  const testWorld: Partial<World> = {
+    rail: [
+      new PrivateApp(),
+      new ServerGroup({
+        name: 'How should we live?',
+        icon: new Uint8Array(0),
+      }),
+      new ServerGroup({
+        name: 'Datagrove Users?',
+        icon: new Uint8Array(0),
+      }),
+      new ServerGroup({
+        name: 'Costa Rica Traffic',
+        icon: new Uint8Array(0),
+      }),
+    ],
+  }
+  await initialize({ world: testWorld })
 
-import { AppLocalizationProvider } from "./l10n";
-
-
-
-function App() {
-  return (
-    <div className='dark fixed h-screen w-screen'>
-      <WorldProvider>
-        <Layout></Layout>
-      </WorldProvider>
-    </div>
-  )
 }
+
 initializeTest().then(() => {
   ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
     <React.StrictMode>
-      <AppLocalizationProvider>
-      <App />
+      <AppLocalizationProvider locale='es' locales={{
+        "es": "Spanish",
+        "en-US": "English",
+      }
+      }>
+        <div className='dark fixed h-screen w-screen'>
+          <WorldProvider>
+            <Layout></Layout>
+          </WorldProvider>
+        </div>
       </AppLocalizationProvider>
     </React.StrictMode>
   )
 })
-
-
-// <FloatingSearch/> 
-
-export async function initializeTest() {
-  const testWorld : Partial<World> =  {
-    rail: [
-        new PrivateApp(),
-        new ServerGroup({
-            name: 'How should we live?',
-            icon: new Uint8Array(0),
-        }),
-        new ServerGroup({
-            name: 'Datagrove Users?',
-            icon: new Uint8Array(0),
-        }),
-        new ServerGroup({
-            name: 'Costa Rica Traffic',
-            icon: new Uint8Array(0),
-        }),
-    ],
-  }
-  await initialize({ world: testWorld})
-
-}
