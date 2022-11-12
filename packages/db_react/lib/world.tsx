@@ -7,6 +7,7 @@ import {
 import { SearchComplete } from './search'
 import { useMediaQuery } from 'react-responsive'
 import { Localized } from "@fluent/react";
+import { AppLocalizationProvider,LabeledId } from './l10n'
 
 export function classNames(...classes: string[]) {
     return classes.filter(Boolean).join(' ')
@@ -42,6 +43,8 @@ export class World {
 
     // local things, should these be in a different object?
     railSelect = 0
+    locale = "en-US"
+    locales : LabeledId[] = []
 
     update = (x: Partial<World>)=>{}
 }
@@ -66,9 +69,13 @@ export function WorldProvider({ children }: {
     }
     const [state, dispatch] = React.useReducer(reducer, world)
     world.update = dispatch
-    return (<Provider value={world}>
+    return (     
+      <AppLocalizationProvider locale={world.locale} locales={world.locales}
+    >
+    
+    <Provider value={world}>
         {children}
-    </Provider>)
+    </Provider></AppLocalizationProvider>)
 }
 
 

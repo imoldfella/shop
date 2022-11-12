@@ -6,12 +6,15 @@ import { ReactLocalization, LocalizationProvider, useLocalization } from "@fluen
 
 //let { l10n } = useLocalization();
 //alert(l10n.getString("hello"));
+
+export interface LabeledId {
+  id: string
+  label: string
+}
 interface AppLocalizationProviderProps {
   children: ReactNode;
   locale: string
-  locales: {
-    [key: string]: string
-  }
+  locales: LabeledId[]
 }
 
 export function AppLocalizationProvider(props: AppLocalizationProviderProps) {
@@ -36,7 +39,7 @@ export function AppLocalizationProvider(props: AppLocalizationProviderProps) {
   async function changeLocales(userLocales: Array<string>) {
     let currentLocales = negotiateLanguages(
       userLocales,
-      Object.keys(props.locales),
+      props.locales.map((e)=>e.id),
       { defaultLocale: props.locale }
     );
     setCurrentLocales(currentLocales);

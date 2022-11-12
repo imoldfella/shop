@@ -1,7 +1,7 @@
-import {  RailApp } from '..'
+import {  RailApp, useWorld , Switch,Combo} from '..'
 import React,{ useState } from 'react'
 import { Bars3Icon, MagnifyingGlassIcon, PlusIcon } from '@heroicons/react/24/outline';
-import { Switch,Combo } from '../'
+
 export class PrivateApp extends RailApp {
     fullScreen = false
     constructor() {
@@ -11,13 +11,14 @@ export class PrivateApp extends RailApp {
         return (<Avatar />)
     }
     render() {
+        const world = useWorld()
         const [enabled,setEnabled] = useState(true)
         return (
             <div className='w-full'>
             <Switch enabled={enabled} setEnabled={setEnabled} >
                 Use system dark mode
             </Switch>
-            <Combo/>
+            <Combo items={world.locales} value={world.locale} />
             </div>
       )
     }

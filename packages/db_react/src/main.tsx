@@ -22,7 +22,14 @@ export async function initializeTest() {
         name: 'Costa Rica Traffic',
         icon: new Uint8Array(0),
       }),
+
     ],
+    locale: 'es',
+    locales: [
+      { id: "es", label: "Spanish"},
+      { id: "en-US", label: "English" }
+    ]
+    
   }
   await initialize({ world: testWorld })
 
@@ -31,17 +38,11 @@ export async function initializeTest() {
 initializeTest().then(() => {
   ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
     <React.StrictMode>
-      <AppLocalizationProvider locale='es' locales={{
-        "es": "Spanish",
-        "en-US": "English",
-      }
-      }>
         <div className='dark fixed h-screen w-screen'>
           <WorldProvider>
             <Layout></Layout>
           </WorldProvider>
         </div>
-      </AppLocalizationProvider>
     </React.StrictMode>
   )
 })
