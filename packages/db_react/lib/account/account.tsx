@@ -5,6 +5,8 @@ import { Localized } from '@fluent/react';
 
 // each rail app is a directory app,
 
+
+
 export class AccountApp extends RailApp {
     render(): JSX.Element {
         return (

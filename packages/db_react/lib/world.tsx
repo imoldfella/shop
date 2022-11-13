@@ -13,6 +13,7 @@ import { negotiateLanguages } from "@fluent/langneg";
 import { FluentBundle, FluentResource } from "@fluent/bundle";
 import { ReactLocalization, LocalizationProvider, useLocalization } from "@fluent/react";
 import { Avatar } from './avatar'
+import { useIsMobile } from './hooks'
 
 //let { l10n } = useLocalization();
 //alert(l10n.getString("hello"));
@@ -77,12 +78,13 @@ export class World {
     locale = { id: 'es', label: 'Español' }
     locales: LabeledId[] = []
     systemDark = true
+    isMobile = false
     update = (x: Partial<World>) => { }
 
-
+    static  world = new World()
 }
-let world = new World()
-const worldContext = React.createContext<World>(world)
+
+const worldContext = React.createContext<World>(World.world)
 // each app needs to define 
 export function useWorld() {
     return React.useContext(worldContext)
@@ -110,9 +112,10 @@ function systemDark(): boolean {
     return window.matchMedia && window.matchMedia("(prefers-color-scheme:dark)").matches
 }
 export function WorldProvider(props: React.PropsWithChildren<{}>) {
-    const locales = world.locales.map((e) => e.id)
+    const mobile = useIsMobile()
+    const locales = World.world.locales.map((e) => e.id)
     // takes a list of preferences
-    let [currentLocales, setCurrentLocales] = useState([world.locale.id]);
+    let [currentLocales, setCurrentLocales] = useState([World.world.locale.id]);
     let [l10n, setL10n] = useState<ReactLocalization | null>(null);
     const { Provider } = worldContext
     const reducer = (state: World, action: Partial<World>) => {
@@ -120,13 +123,13 @@ export function WorldProvider(props: React.PropsWithChildren<{}>) {
             changeLocales([action.locale.id])
         }
 
-        world = {
+        World.world = {
             ...state,
             ...action
         }
 
         let x = systemDark()
-        if (!world.systemDark) {
+        if (!World.world.systemDark) {
             x = !x
         }
         if (x) {
@@ -135,11 +138,12 @@ export function WorldProvider(props: React.PropsWithChildren<{}>) {
             document.documentElement.classList.remove('dark')
         }
 
-        return world
+        return World.world
     }
-    const [state, dispatch] = React.useReducer(reducer, world)
-    world.update = dispatch
-    const locale = world.locale.id
+    const [state, dispatch] = React.useReducer(reducer, World.world)
+    World.world.update = dispatch
+    World.world.isMobile = mobile
+    const locale = World.world.locale.id
     // used to set the users desired local
     async function changeLocales(locale: string[]) {
         let currentLocales = negotiateLanguages(
@@ -162,28 +166,14 @@ export function WorldProvider(props: React.PropsWithChildren<{}>) {
 
     return (
         <LocalizationProvider l10n={l10n}>
-            <Provider value={world}>
+            <Provider value={World.world}>
                 {props.children}
             </Provider></LocalizationProvider>)
 }
 
 
-type InitProps = {
-    world: Partial<World>
-}
-export async function initialize(props: InitProps): Promise<void> {
-    world = {
-        ...world,
-        ...props.world
-    }
-    // this should be guest | logged out | logged in.
-    let loggedin = false;
-    if (loggedin) {
 
-    } else {
 
-    }
-}
 
 /*
 
