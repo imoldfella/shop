@@ -1,15 +1,13 @@
-import { faker } from '@faker-js/faker'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { Toggle, Autocomplete, FloatingSearch, Scroller, ScrollerProps, Snapshot, FloatingSearchHeader, World, Layout, WorldProvider, initialize, ServerGroup, PrivateApp } from '../lib'
+import { World, Layout, WorldProvider, initialize, ServerGroup, SettingsApp, AccountApp } from '../lib'
 import './index.css'
 import '../lib/css.css'
-import { AppLocalizationProvider } from "../lib/l10n"
 
 export async function initializeTest() {
   const testWorld: Partial<World> = {
     rail: [
-      new PrivateApp(),
+      new AccountApp(),
       new ServerGroup({
         name: 'How should we live?',
         icon: new Uint8Array(0),
@@ -24,12 +22,12 @@ export async function initializeTest() {
       }),
 
     ],
-    locale: 'es',
+    locale: { id: 'es', label: 'Español' },
     locales: [
-      { id: "es", label: "Spanish"},
+      { id: "es", label: "Español" },
       { id: "en-US", label: "English" }
     ]
-    
+
   }
   await initialize({ world: testWorld })
 
@@ -38,11 +36,11 @@ export async function initializeTest() {
 initializeTest().then(() => {
   ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
     <React.StrictMode>
-        <div className='dark fixed h-screen w-screen'>
-          <WorldProvider>
-            <Layout></Layout>
-          </WorldProvider>
-        </div>
+      <div className='fixed h-screen w-screen'>
+        <WorldProvider>
+          <Layout></Layout>
+        </WorldProvider>
+      </div>
     </React.StrictMode>
   )
 })

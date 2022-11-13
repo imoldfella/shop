@@ -1,5 +1,5 @@
 import React, { Fragment, ReactPropTypes, useState } from 'react'
-import {  MagnifyingGlassIcon, PlusIcon } from '@heroicons/react/20/solid'
+import { MagnifyingGlassIcon, PlusIcon } from '@heroicons/react/20/solid'
 import {
 
     XCircleIcon
@@ -7,17 +7,35 @@ import {
 import { SearchComplete } from './search'
 import { useMediaQuery } from 'react-responsive'
 import { Localized } from "@fluent/react";
-import { AppLocalizationProvider,LabeledId } from './l10n'
+import { Children, useEffect, ReactNode } from "react";
+
+import { negotiateLanguages } from "@fluent/langneg";
+import { FluentBundle, FluentResource } from "@fluent/bundle";
+import { ReactLocalization, LocalizationProvider, useLocalization } from "@fluent/react";
+import { Avatar } from './avatar'
+
+//let { l10n } = useLocalization();
+//alert(l10n.getString("hello"));
+
+// the sticky files per server can be per device
+
+
+export interface LabeledId {
+    id: string
+    label: string
+}
+
+export interface File extends LabeledId {
+    type: string
+}
 
 export function classNames(...classes: string[]) {
     return classes.filter(Boolean).join(' ')
 }
 
-export class Universe {
-    // Universe is shared among your tabs and devices
-}
-export class AppRegistry<T> {
-    [key: string]: T
+export class AppRegistry {
+    [key: string]: RailApp[]
+
 }
 // no login is a guest of some server, so only that server will appear in the rail
 interface Login {
@@ -33,20 +51,35 @@ export abstract class RailApp {
     abstract icon(): JSX.Element
     abstract render(): JSX.Element
 }
+export class Wallpaper extends RailApp {
+    fullScreen = false
+    icon(): JSX.Element {
+        return (<Avatar />)
+    }
+    render(): JSX.Element {
+        return (<div >Wallpaper</div>)
+    }
+
+}
 export class World {
-    u = new Universe()
     login?: boolean
     altLogin: Login[] = []
 
     rail: RailApp[] = []
-    app = new AppRegistry<App>()
+    app = new AppRegistry()
+    openFile = ""
+    focusApp = new Wallpaper()
 
     // local things, should these be in a different object?
     railSelect = 0
-    locale = "en-US"
-    locales : LabeledId[] = []
+    fileSelect = 0
+    showFiles = true
+    locale = { id: 'es', label: 'Español' }
+    locales: LabeledId[] = []
+    systemDark = true
+    update = (x: Partial<World>) => { }
 
-    update = (x: Partial<World>)=>{}
+
 }
 let world = new World()
 const worldContext = React.createContext<World>(world)
@@ -55,35 +88,90 @@ export function useWorld() {
     return React.useContext(worldContext)
 }
 
-export function WorldProvider({ children }: {
-    children: JSX.Element
-}) {
+async function fetchMessages(locale: string): Promise<[string, string]> {
+    const url = locale + ".ftl";
+    let response = await fetch(url);
+    console.log("fetch ", locale, response)
+    let messages = await response.text();
+    return [locale, messages];
+}
+
+function* lazilyParsedBundles(fetchedMessages: Array<[string, string]>) {
+    for (let [locale, messages] of fetchedMessages) {
+        let resource = new FluentResource(messages);
+        let bundle = new FluentBundle(locale);
+        bundle.addResource(resource);
+        yield bundle;
+    }
+}
+
+
+function systemDark(): boolean {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme:dark)").matches
+}
+export function WorldProvider(props: React.PropsWithChildren<{}>) {
+    const locales = world.locales.map((e) => e.id)
+    // takes a list of preferences
+    let [currentLocales, setCurrentLocales] = useState([world.locale.id]);
+    let [l10n, setL10n] = useState<ReactLocalization | null>(null);
     const { Provider } = worldContext
     const reducer = (state: World, action: Partial<World>) => {
-        console.log("reduce", action.railSelect)
-        world =  {
+        if (action.locale) {
+            changeLocales([action.locale.id])
+        }
+
+        world = {
             ...state,
             ...action
         }
+
+        let x = systemDark()
+        if (!world.systemDark) {
+            x = !x
+        }
+        if (x) {
+            document.documentElement.classList.add('dark')
+        } else {
+            document.documentElement.classList.remove('dark')
+        }
+
         return world
     }
     const [state, dispatch] = React.useReducer(reducer, world)
     world.update = dispatch
-    return (     
-      <AppLocalizationProvider locale={world.locale} locales={world.locales}
-    >
-    
-    <Provider value={world}>
-        {children}
-    </Provider></AppLocalizationProvider>)
+    const locale = world.locale.id
+    // used to set the users desired local
+    async function changeLocales(locale: string[]) {
+        let currentLocales = negotiateLanguages(
+            locale,
+            locales,
+            { defaultLocale: 'en' }
+        );
+        setCurrentLocales(currentLocales);
+        let fetchedMessages = await Promise.all(currentLocales.map(fetchMessages));
+        let bundles = lazilyParsedBundles(fetchedMessages);
+        setL10n(new ReactLocalization(bundles));
+    }
+    useEffect(() => {
+        changeLocales(['es']) //navigator.languages as Array<string>);
+    }, []);
+
+    if (l10n === null) {
+        return <div>Loading…</div>;
+    }
+
+    return (
+        <LocalizationProvider l10n={l10n}>
+            <Provider value={world}>
+                {props.children}
+            </Provider></LocalizationProvider>)
 }
 
 
 type InitProps = {
     world: Partial<World>
 }
-export async function initialize(props: InitProps) : Promise<void>{
-    
+export async function initialize(props: InitProps): Promise<void> {
     world = {
         ...world,
         ...props.world
@@ -97,89 +185,17 @@ export async function initialize(props: InitProps) : Promise<void>{
     }
 }
 
-
-// let {l10n} = useLocalization();
-// alert(l10n.getString("hello"));
-
-////////////////////
-// test setup, will delete
-// we need to load this from the database, to do that we may need to login. what will get if we don't?
-
-
 /*
-interface Drawable {
-    render: (x: any) => JSX.Element
-}
 
-export class WorldTx {
-    data: Partial<World> = {}
-    commit() {
-
-    }
-}
-
-export interface File {
-    app: string
-    path: Uint8Array // count and path
-}
-
-// we need to remember which ones are expanded
-export class BranchReader {
-    expand(f: File) {
-
-    }
-    get length(): number {
-        return 0
-    }
-    slice(from: number, to: number): File[] {
-        return []
-    }
-}
-const user = {
-    name: 'Whitney Francis',
-    email: 'whitney.francis@example.com',
-    imageUrl:
-        'https://images.unsplash.com/photo-1517365830460-955ce3ccd263?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-}
-
-export const appDiscuss: App = {
-    panning: false,
-    icon: CircleStackIcon,
-    render: renderDiscuss
-}
-const appMap: App = {
-    panning: true,
-    icon: ChevronDownIcon,
-    render: renderMap
-}
-function renderDiscuss() {
-    return (<b>discuss</b>)
-}
-function renderMap() {
-    return (<b>Map</b>)
-}
-
-function Avatar() {
-    return ()
-}
-        { name: 'DM', app: 'dm' },
-        { name: 'Archive', href: '#', icon: ArchiveBoxIcon },
-        { name: 'Customers', href: '#', icon: UserCircleIcon },
-        { name: 'Flagged', href: '#', icon: FlagIcon, },
-        { name: 'Spam', href: '#', icon: NoSymbolIcon, },
-        { name: 'Drafts', href: '#', icon: PencilSquareIcon, },
-
-         
-
-
-// const emptyWorld: World = {
-//     login: undefined,
-//     altLogin: [],
-//     rail: [],
-//     app: {},
-//     railApp: {},
-// }
-
-
-
+      <hr />
+      <select
+        onChange={event => changeLocales([event.target.value])}
+        value={currentLocales[0]}
+      >
+        {Object.entries(AVAILABLE_LOCALES).map(([code, name]) => (
+          <option key={code} value={code}>
+            {name}
+          </option>
+        ))}
+      </select>
 */

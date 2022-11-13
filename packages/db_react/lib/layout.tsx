@@ -21,36 +21,11 @@ import { Rail } from './rail'
 import { Localized } from '@fluent/react'
 
 
-// in full screen mode this needs a close which closes the rail as well.
-// drawers are typically sand boxed in in iframe, but we can have local ones
-function LocalDrawer({ onClose }: { onClose?: () => void }) {
-  const w = useWorld()
-  const app = w.rail[w.railSelect]
-  return (<aside className=" flex h-screen w-full flex-col overflow-y-auto   text-white bg-gray-900" >
-
-    {/* search */}
-    <div className="flex flex-row items-center border-gray-600 border rounded-lg m-4 ">
-      <Localized id='find' attrs={{placeholder: true}} >
-      <input className=' w-full  outline-none py-2 pl-3 pr-10  focus:ring-transparent sm:text-sm bg-transparent' placeholder='@Find' />
-      </Localized>
-
-      {/* we need a search list here */}
-      <XCircleIcon className='w-6 h-6 m-2 text-blue-600 hover:text-blue-400' onClick={onClose} />
-     
-      
-    </div>
-
-    {app.render()}
-  </aside>)
-}
-
-
-
 
 export function Layout() {
   const world = useWorld()
   const rail = world.railSelect
-  const setRail = (index: number)=> {
+  const setRail = (index: number) => {
     // we need to change the world.
     world.update({
       railSelect: index
@@ -61,13 +36,13 @@ export function Layout() {
   // in mobile mode, open the rail+files together as a dialog.
   const [mobileShowServers, setMobileShowServers] = useState(false)
   // clicking a server toggles the showFiles, although that's overridden if mobile  
-  const [desktopShowFiles, setDesktopShowFiles] = useState(true)
+  //const [desktopShowFiles, setDesktopShowFiles] = useState(true)
   //const [rail, setRail] = useState(0)
   const panning = false
   const [splitSize, setSplitSize] = useState(384)
 
   console.log(mobile ? "mobile" : "desktop", window.innerWidth)
-
+  const app = world.rail[world.railSelect]
   // we need to transition the 
   if (mobile) {
     const drawerWidth = "w-full"
@@ -84,8 +59,10 @@ export function Layout() {
           leaveTo="-translate-x-full"
         >
           <div className={`flex w-screen fixed z-50 h-full flex-row`}>
-            <Rail/>
-            <LocalDrawer onClose={() => setMobileShowServers(false)} />
+            <Rail />
+            <aside className=" flex h-screen w-full flex-col overflow-y-auto " >
+              {app.render()}
+            </aside>
           </div>
         </Transition>
       </div>
@@ -95,10 +72,13 @@ export function Layout() {
   return (
     <div className='flex-row flex'>
       <div className={`flex w-20 h-full flex-row`}>
-        <Rail/>
+        <Rail />
       </div>
-      <Split contentOnly={!desktopShowFiles} initialPrimarySize={splitSize + 'px'}>
-        <LocalDrawer onClose={() => { setDesktopShowFiles(false) }} />
+      <Split contentOnly={!world.showFiles} initialPrimarySize={splitSize + 'px'}>
+        <aside className=" flex h-screen w-full flex-col overflow-y-auto " >
+          {app.render()}
+        </aside>
+        {world.focusApp.render()}
       </Split>
     </div>
   )

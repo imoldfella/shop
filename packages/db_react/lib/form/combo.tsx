@@ -1,59 +1,64 @@
 
-import React,{ useState } from 'react'
+import React, { useState } from 'react'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid'
 import { Combobox } from '@headlessui/react'
 import { LabeledId } from '..'
 
-const people = [
-  { id: 1, name: 'Leslie Alexander' },
-  // More users...
-]
+
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
 }
 
 
- function Example() {
+
+export function Combo(props: React.PropsWithChildren<{
+  items: LabeledId[]
+  value: LabeledId
+  onChange: (x: LabeledId) => void
+}>) {
+
+  console.log(props)
   const [query, setQuery] = useState('')
-  const [selectedPerson, setSelectedPerson] = useState(null)
+  //const [selected, setSelected] = useState(props.value)
 
-  const filteredPeople =
+  const filtered =
     query === ''
-      ? people
-      : people.filter((person) => {
-          return person.name.toLowerCase().includes(query.toLowerCase())
-        })
+      ? props.items
+      : props.items.filter((item) => {
+        return item.label.toLowerCase().includes(query.toLowerCase())
+      })
+  console.log(query, props.value, filtered)
 
-  return (
-    <Combobox as="div" value={selectedPerson} onChange={setSelectedPerson}>
-      <Combobox.Label className="block text-sm font-medium text-gray-700">Assigned to</Combobox.Label>
+  return (<div className='items-center flex flex-row mx-4 my-4'>
+    <div className='flex-1 '>{props.children}</div>
+    <Combobox as="div" value={props.value} onChange={props.onChange} className='bg-gray-900 text-white'>
       <div className="relative mt-1">
         <Combobox.Input
-          className="w-full rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
+          className="w-full bg-gray-900 rounded-md border border-gray-300  py-2 pl-3 pr-10 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
           onChange={(event) => setQuery(event.target.value)}
-          displayValue={(person: {name:string}) => person?.name}
+          displayValue={(x: LabeledId) => x.label}
         />
         <Combobox.Button className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
           <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
         </Combobox.Button>
 
-        {filteredPeople.length > 0 && (
-          <Combobox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-            {filteredPeople.map((person) => (
+        {filtered.length > 0 && (
+          <Combobox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md  py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+            {filtered.map((item) => (
               <Combobox.Option
-                key={person.id}
-                value={person}
+                key={item.id}
+                value={item}
                 className={({ active }) =>
                   classNames(
                     'relative cursor-default select-none py-2 pl-3 pr-9',
-                    active ? 'bg-indigo-600 text-white' : 'text-gray-900'
+                    active ? ' text-white' : 'text-gray-400'
                   )
                 }
               >
                 {({ active, selected }) => (
                   <>
-                    <span className={classNames('block truncate', selected ? 'font-semibold':'')}>{person.name}</span>
+                    <span className={classNames('block truncate', selected ? 'font-semibold' : '')}>{item.label}</span>
 
                     {selected && (
                       <span
@@ -73,75 +78,6 @@ function classNames(...classes: string[]) {
         )}
       </div>
     </Combobox>
-  )
-}
-
-export function Combo(props: React.PropsWithChildren<{
-    items: LabeledId[]
-    value: string
-}>){
-
-    const [query, setQuery] = useState(props.value)
-    const [selectedPerson, setSelectedPerson] = useState(props.value)
-  
-    const filtered =
-      query === ''
-        ? people
-        : people.filter((item) => {
-            return item.name.toLowerCase().includes(query.toLowerCase())
-          })
-
-    const P = ()=> (<Combobox as="div" value={props.value} onChange={setSelectedPerson}>
-    <Combobox.Label className="block text-sm font-medium text-gray-700">Assigned to</Combobox.Label>
-    <div className="relative mt-1">
-      <Combobox.Input
-        className="w-full rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
-        onChange={(event) => setQuery(event.target.value)}
-        displayValue={(person: {name:string}) => person?.name}
-      />
-      <Combobox.Button className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
-        <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
-      </Combobox.Button>
-
-      {filtered.length > 0 && (
-        <Combobox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-          {filtered.map((person) => (
-            <Combobox.Option
-              key={person.id}
-              value={person}
-              className={({ active }) =>
-                classNames(
-                  'relative cursor-default select-none py-2 pl-3 pr-9',
-                  active ? 'bg-indigo-600 text-white' : 'text-gray-900'
-                )
-              }
-            >
-              {({ active, selected }) => (
-                <>
-                  <span className={classNames('block truncate', selected ? 'font-semibold':'')}>{person.name}</span>
-
-                  {selected && (
-                    <span
-                      className={classNames(
-                        'absolute inset-y-0 right-0 flex items-center pr-4',
-                        active ? 'text-white' : 'text-indigo-600'
-                      )}
-                    >
-                      <CheckIcon className="h-5 w-5" aria-hidden="true" />
-                    </span>
-                  )}
-                </>
-              )}
-            </Combobox.Option>
-          ))}
-        </Combobox.Options>
-      )}
-    </div>
-  </Combobox>)
-
-    return (<div className='flex flex-row mx-4'>
-              <div className='flex-1'>{props.children}</div>
-                        <P/>
-              </div>) 
+  </div>)
 }
 
