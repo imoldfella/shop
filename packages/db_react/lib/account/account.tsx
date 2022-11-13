@@ -29,7 +29,6 @@ export class AccountApp extends RailApp {
     }
 }
 
-
 export function ServerButtons() {
     const w = useWorld()
 
