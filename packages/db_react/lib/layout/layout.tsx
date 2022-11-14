@@ -14,12 +14,12 @@ import {
 } from '@heroicons/react/24/outline'
 import { SearchComplete } from './search'
 import { useMediaQuery } from 'react-responsive'
-import { useWorld } from './world'
+import { useWorld } from '../core/world'
 import { Split } from '../splitter'
-import { useIsMobile } from './hooks'
+import { useIsMobile } from '../core/hooks'
 import { Rail } from './rail'
 import { Localized } from '@fluent/react'
-
+import { Sidebar } from './sidebar'
 
 
 export function Layout() {
@@ -60,9 +60,7 @@ export function Layout() {
         >
           <div className={`flex w-screen fixed z-50 h-full flex-row`}>
             {!world.publicMode && <Rail />}
-            <aside className=" flex h-screen w-full flex-col overflow-y-auto " >
-              {app.render()}
-            </aside>
+            <Sidebar/>
           </div>
         </Transition>
       </div>
@@ -71,13 +69,11 @@ export function Layout() {
 
   return (
     <div className='flex-row flex'>
-      <div className={`flex w-20 h-full flex-row`}>
-        {!world.publicMode && <Rail />}
-      </div>
+      {!world.publicMode && <div className={`flex w-20 h-full flex-row`}>
+        <Rail />
+      </div>}
       <Split contentOnly={!world.showFiles} initialPrimarySize={splitSize + 'px'}>
-        <aside className=" flex h-screen w-full flex-col overflow-y-auto " >
-          {app.render()}
-        </aside>
+        <Sidebar/>
         {world.focusApp.render()}
       </Split>
     </div>

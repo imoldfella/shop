@@ -7,10 +7,11 @@ import { GridLoader } from 'react-spinners'
 import { usePromiseTracker, trackPromise } from 'react-promise-tracker'
 
 
+// this needs to identify if we are are a public address
 initialize().then(() => {
   ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
     <React.StrictMode>
-      <Datagrove/>
+      <Datagrove public='ironshop'/>
       <Spinner/>
     </React.StrictMode>
   )

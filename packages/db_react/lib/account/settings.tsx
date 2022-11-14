@@ -1,4 +1,7 @@
-import { RailApp, useWorld, Switch, Combo, LabeledId, Avatar } from '..'
+import { Switch, Avatar, Combo } from '../form'
+import { } from '../layout'
+import { RailApp, useWorld,  LabeledId} from '../core'
+
 import React, { useState } from 'react'
 import { Bars3Icon, MagnifyingGlassIcon, PlusIcon } from '@heroicons/react/24/outline';
 import { Localized } from '@fluent/react';

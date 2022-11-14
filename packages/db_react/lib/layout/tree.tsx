@@ -2,7 +2,7 @@
 import React, { } from 'react'
 import { Localized } from '@fluent/react'
 import { MagnifyingGlassIcon, PlusIcon, XCircleIcon } from '@heroicons/react/24/outline'
-import { RailApp, useWorld } from './world'
+import { RailApp, useWorld } from '../core/world'
 
 export function ServerSearch() {
     const w = useWorld()

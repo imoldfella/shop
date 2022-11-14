@@ -21,7 +21,7 @@ export function LoginPage(props: React.PropsWithChildren<{}>) {
     return (<LoginDialog />)
 }
 
-export function Datagrove() {
+export function Datagrove(props: {public: boolean }) {
   return (
     <div className='fixed h-screen w-screen'>
       <WorldProvider>
@@ -31,6 +31,11 @@ export function Datagrove() {
   )
 }
 
+// the public version of datagrove doesn't have a rail, and only browses a single branch or tag
+const publicWorld = {
+  public: true,
+  focusA
+}
 const newWorld = {
   login: true,
   rail: [
@@ -40,7 +45,7 @@ const newWorld = {
       icon: new Uint8Array(0),
     }),
     new ServerGroup({
-      name: 'Datagrove Users?',
+      name: 'Datagrove Users',
       icon: new Uint8Array(0),
     }),
     new ServerGroup({

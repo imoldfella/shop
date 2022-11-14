@@ -4,8 +4,7 @@ import { Database } from '@datagrove/db'
 import { FluentBundle, FluentResource } from '@fluent/bundle'
 import { negotiateLanguages } from '@fluent/langneg'
 import { ReactLocalization } from '@fluent/react'
-export * from './combo'
-export * from './toggle'
+
 // the database should be in a shared worker? a service worker?
 // it can't be in a shared worker on android.
 // in any event it needs some in-process handle

@@ -1,5 +1,6 @@
 import { RailApp, useWorld} from '../core'
-import {Avatar, ServerSearch } from '../core'
+import {Avatar } from '../form'
+import { ServerSearch } from '../layout'
 import { SettingsApp } from './settings'
 import React, { useState } from 'react'
 import { Bars3Icon, MagnifyingGlassIcon, PlusIcon } from '@heroicons/react/24/outline';

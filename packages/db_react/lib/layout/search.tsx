@@ -3,7 +3,7 @@ import { CheckIcon, ChevronUpDownIcon, Bars3Icon, MagnifyingGlassIcon } from '@h
 import { Combobox } from '@headlessui/react'
 import { faker } from '@faker-js/faker'
 
-import { Scroller } from './scroller'
+import { Scroller } from '../form/scroller'
 import { renderToString } from 'react-dom/server'
 
 interface Person {

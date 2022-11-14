@@ -1,6 +1,6 @@
 import { Reorder } from "framer-motion"
 import React, { useState } from "react"
-import { useWorld,classNames } from './world'
+import { useWorld,classNames } from '../core'
 
 function List() {
   const [items, setItems] = useState([0, 1, 2, 3])
