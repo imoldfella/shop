@@ -6,7 +6,8 @@ import {
 } from '@heroicons/react/24/outline'
 import { useMediaQuery } from 'react-responsive'
 import { Localized } from "@fluent/react";
-import { RailApp } from '..'
+import { RailApp } from '../core'
+
 
 // in full screen mode this needs a close which closes the rail as well.
 // drawers are typically sand boxed in in iframe, but we can have local ones
