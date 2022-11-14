@@ -1,27 +1,28 @@
 
 //import bip39 from 'bip39'
 import React, { useEffect, useState } from 'react'
-import { WorldProvider, Layout, World, useWorld } from '../core'
+import { WorldProvider, World, useWorld } from '../core'
+import { Layout } from '../layout'
 import { AccountApp, } from '../account'
 import { ServerGroup, } from '../server'
 import { LoginDialog } from './loginpage'
 import { OfflineWaiter } from './offlineWaiter'
 
-
-
 // this probably needs to be separated out somehow?
 export function LoginPage(props: React.PropsWithChildren<{}>) {
   const w = useWorld()
 
-  if (w.login) {
-    return <>{props.children}</>
+  if (w.publicMode) {
+    return (<>{props.children}</>)
+  } else if (w.login) {
+    return (<>{props.children}</>)
   } else if (false && !w.ws) {
-    return <OfflineWaiter />
+    return (<OfflineWaiter />)
   } else
     return (<LoginDialog />)
 }
 
-export function Datagrove(props: {public: boolean }) {
+export function Datagrove() {
   return (
     <div className='fixed h-screen w-screen'>
       <WorldProvider>
@@ -32,10 +33,6 @@ export function Datagrove(props: {public: boolean }) {
 }
 
 // the public version of datagrove doesn't have a rail, and only browses a single branch or tag
-const publicWorld = {
-  public: true,
-  focusA
-}
 const newWorld = {
   login: true,
   rail: [
@@ -83,9 +80,15 @@ export async function initialize(props?: {
   } else {
     // if we are offline then we are stuck here
     // if we can't get a websocket to the server we are stuck here
-    init = newWorld
+    init = {
+      publicMode: true,
+      focusApp: new ServerGroup({
+        name: 'How should we live?',
+        icon: new Uint8Array(0)
+      })
+    }
   }
-  console.log(init)
+  console.log("init", init)
   World.world = {
     ...World.world,
     ...init,

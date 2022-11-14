@@ -9,7 +9,7 @@ export function ServerSearch() {
 
     const close = () => {
         w.update({
-            showFiles: false
+            showSidebar: false
         })
     }
 

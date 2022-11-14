@@ -39,21 +39,21 @@ export interface App {
     icon: (x: any) => JSX.Element
     render: (x: any) => JSX.Element
 }
-export abstract class RailApp {
-    abstract fullScreen: boolean
-    abstract icon(): JSX.Element
-    abstract render(): JSX.Element
-}
-export class Wallpaper extends RailApp {
-    fullScreen = false
+export class RailApp {
     icon(): JSX.Element {
         return (<Avatar />)
     }
     render(): JSX.Element {
-        return (<div >Wallpaper</div>)
+        return (<div>WIP</div>)
+    }
+    renderMain(): JSX.Element {
+        return (<div>WIP</div>)
     }
 
+    open: App[] = []
+    selected = 0
 }
+
 export class World {
     publicMode = false
     login?: boolean
@@ -63,13 +63,11 @@ export class World {
 
     rail: RailApp[] = []
     app = new AppRegistry()
-    openFile = ""
-    focusApp = new Wallpaper()
+    focusApp = new RailApp()
+    railSelect = 0
 
     // local things, should these be in a different object?
-    railSelect = 0
-    fileSelect = 0
-    showFiles = true
+    showSidebar = true
     locale = { id: 'es', label: 'Español' }
     locales: LabeledId[] = []
     systemDark = true

@@ -32,6 +32,7 @@ export function Layout() {
     })
   }
   const mobile = useIsMobile()
+  console.log("layout", mobile, world)
 
   // in mobile mode, open the rail+files together as a dialog.
   const [mobileShowServers, setMobileShowServers] = useState(false)
@@ -60,7 +61,7 @@ export function Layout() {
         >
           <div className={`flex w-screen fixed z-50 h-full flex-row`}>
             {!world.publicMode && <Rail />}
-            <Sidebar/>
+            <Sidebar />
           </div>
         </Transition>
       </div>
@@ -72,9 +73,9 @@ export function Layout() {
       {!world.publicMode && <div className={`flex w-20 h-full flex-row`}>
         <Rail />
       </div>}
-      <Split contentOnly={!world.showFiles} initialPrimarySize={splitSize + 'px'}>
-        <Sidebar/>
-        {world.focusApp.render()}
+      <Split contentOnly={!world.showSidebar} initialPrimarySize={splitSize + 'px'}>
+        <Sidebar />
+        {world.focusApp.renderMain()}
       </Split>
     </div>
   )

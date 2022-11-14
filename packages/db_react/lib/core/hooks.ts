@@ -28,7 +28,6 @@ export const useIsMobile = (breakpoint = 640) => {
     };
   }, []);
 
-  console.log("ismobile", isMobile)
   return isMobile
 };
 

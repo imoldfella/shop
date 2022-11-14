@@ -11,8 +11,8 @@ import { usePromiseTracker, trackPromise } from 'react-promise-tracker'
 initialize().then(() => {
   ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
     <React.StrictMode>
-      <Datagrove public='ironshop'/>
-      <Spinner/>
+      <Datagrove />
+      <Spinner />
     </React.StrictMode>
   )
 })
@@ -28,10 +28,10 @@ export const Spinner = (props: {}) => {
   return (
     promiseInProgress ? (
       <div onClick={click} className='fixed inset-0 h-screen w-screen z-50 bg-gray-600 bg-opacity-50 '>
-      <div className="flex justify-center items-center h-screen">
-      <GridLoader color="#36d7b7" />
+        <div className="flex justify-center items-center h-screen">
+          <GridLoader color="#36d7b7" />
+        </div>
       </div>
-    </div>
     ) : (<></>)
   )
 }
