@@ -1,5 +1,5 @@
-import React, {useState } from 'react'
-import {  useEffect } from "react";
+import React, { useState } from 'react'
+import { useEffect } from "react";
 import { negotiateLanguages } from "@fluent/langneg";
 import { FluentBundle, FluentResource } from "@fluent/bundle";
 import { ReactLocalization, LocalizationProvider, useLocalization } from "@fluent/react";
@@ -55,8 +55,9 @@ export class Wallpaper extends RailApp {
 
 }
 export class World {
+    publicMode = true
     login?: boolean
-    ws: WebSocket|undefined
+    ws: WebSocket | undefined
     bip39: string = ""
     altLogin: Login[] = []
 
@@ -75,7 +76,7 @@ export class World {
     isMobile = false
     update = (x: Partial<World>) => { }
 
-    static  world = new World()
+    static world = new World()
 }
 
 const worldContext = React.createContext<World>(World.world)
@@ -108,13 +109,13 @@ function systemDark(): boolean {
 
 
 
-  function wait(milliseconds: number) {
+function wait(milliseconds: number) {
     return new Promise(resolve => setTimeout(resolve, milliseconds));
-  }
+}
 
 // this can be yes, no, maybe 
 // maybe if offline and we haven't used this identity before.
-export async function login(bip: string) : Promise<string>{
+export async function login(bip: string): Promise<string> {
     await wait(3000)
     return "connection-failed"
 }

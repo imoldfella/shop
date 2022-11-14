@@ -21,15 +21,12 @@ export function LoginPage(props: React.PropsWithChildren<{}>) {
     return (<LoginDialog />)
 }
 
-
-
 export function Datagrove() {
   return (
     <div className='fixed h-screen w-screen'>
       <WorldProvider>
         <LoginPage><Layout /></LoginPage>
       </WorldProvider>
-      <Spinner/>
     </div>
   )
 }
@@ -81,7 +78,7 @@ export async function initialize(props?: {
   } else {
     // if we are offline then we are stuck here
     // if we can't get a websocket to the server we are stuck here
-    // init = newWorld
+    init = newWorld
   }
   console.log(init)
   World.world = {

@@ -59,7 +59,7 @@ export function Layout() {
           leaveTo="-translate-x-full"
         >
           <div className={`flex w-screen fixed z-50 h-full flex-row`}>
-            <Rail />
+            {!world.publicMode && <Rail />}
             <aside className=" flex h-screen w-full flex-col overflow-y-auto " >
               {app.render()}
             </aside>
@@ -72,7 +72,7 @@ export function Layout() {
   return (
     <div className='flex-row flex'>
       <div className={`flex w-20 h-full flex-row`}>
-        <Rail />
+        {!world.publicMode && <Rail />}
       </div>
       <Split contentOnly={!world.showFiles} initialPrimarySize={splitSize + 'px'}>
         <aside className=" flex h-screen w-full flex-col overflow-y-auto " >
