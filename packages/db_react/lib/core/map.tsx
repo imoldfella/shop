@@ -1,7 +1,7 @@
-export * from '../../map/lib/main'
+export * from '../../../map/lib/main'
 import { Localized } from '@fluent/react'
 import React, { ReactNode, useEffect, useRef, useState } from 'react'
-import { mountDgMap, MapGl, MapClick, MapPosition } from '../../map/lib/main'
+import { mountDgMap, MapGl, MapClick, MapPosition } from '../../../map/lib/main'
 
 
 // we need a good method of overlaying markers etc.

@@ -1,11 +1,13 @@
-import React, { ChangeEvent, useState } from 'react'
+import React, { ChangeEvent, useEffect, useState } from 'react'
 import { QRCodeSVG } from 'qrcode.react';
 import { Logo } from './logo'
 import * as bip39 from '@scure/bip39';
 import { wordlist } from '@scure/bip39/wordlists/english';
 import { wordlist as spanish } from '@scure/bip39/wordlists/spanish';
 import { Localized } from '@fluent/react';
-import { useWorld } from '../world';
+import { login, useWorld } from '../core';
+import { useIsOnline } from './online'
+import { trackPromise } from 'react-promise-tracker'
 
 //   <imgnpm
 // className="mx-auto h-12 w-auto"
@@ -13,19 +15,16 @@ import { useWorld } from '../world';
 // alt="Your Company"
 // />
 
-export function CreateAccount() {
-
-}
-
 // armor hood air permit borrow tunnel ostrich knock three inspire pattern chapter
 
-
+// we need some kind of suspense while waiting for the login to complete
 export function LoginDialog() {
   const [isCreate, setCreate] = useState(false)
   const [writeDown, setWriteDown] = useState(false)
   const [validBip39, setValidBip39] = useState(false)
   const [bip39tx, setBip39tx] = useState("")
   const world = useWorld()
+  const online = useIsOnline()
 
   const validate = (x: ChangeEvent<HTMLTextAreaElement>) => {
     console.log(x)
@@ -33,13 +32,25 @@ export function LoginDialog() {
     setValidBip39(bip39.validateMnemonic(x.target.value, wordlist))
   }
 
+  // if we get this far we have "succeeded" because we have a valid identity
+  // the most awkward thing is if we are offline and we don't know if the identity should have a backup to restore or not?
+  // actually we do because we know how the user logged in. So they can fail here after waiting a bit.
+  // website is loaded, but offline. that 
+
+  async function  tryLogin() {
+    // trigger suspense
+    let x = await trackPromise(login(bip39tx))
+    if (x){
+        // failed, show message and try again
+
+    }
+  }
+  
   const Submit = (props: { enable: boolean }) => (<div>
     <button
       type="submit"
       disabled={!props.enable}
-      onClick={() => world.update({
-        login: true
-      })}
+      onClick={tryLogin}
       className="flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-75 disabled:text-gray-400"
     >
       Sign in
@@ -78,7 +89,7 @@ export function LoginDialog() {
 
         <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
           <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-            <form className="space-y-6" action="#" method="POST">
+            <div className="space-y-6" >
               {isCreate && <Localized id='explain-bip'>
                 <p>This BIP39 passphrase IS your identity. Print it, copy/paste it, write it on paper with pencil; whatever works for you. If you lose it, this identity is gone and any work associated with it.</p>
               </Localized>}
@@ -128,7 +139,7 @@ export function LoginDialog() {
               </div>
 
               <Submit enable={writeDown} />
-            </form>
+            </div>
 
           </div></div>
       </div>
@@ -214,6 +225,11 @@ export function LoginDialog() {
             </div>
           </div></div>
       </div>
+
+
     </>
   )
 }
+
+
+

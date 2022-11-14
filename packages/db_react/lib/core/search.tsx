@@ -3,7 +3,6 @@ import { CheckIcon, ChevronUpDownIcon, Bars3Icon, MagnifyingGlassIcon } from '@h
 import { Combobox } from '@headlessui/react'
 import { faker } from '@faker-js/faker'
 
-import { } from '../../db/lib'
 import { Scroller } from './scroller'
 import { renderToString } from 'react-dom/server'
 

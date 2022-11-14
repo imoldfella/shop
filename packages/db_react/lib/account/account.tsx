@@ -1,4 +1,6 @@
-import { RailApp, useWorld, Switch, Combo, LabeledId, Avatar, ServerSearch, SettingsApp } from '..'
+import { RailApp, useWorld} from '../core'
+import {Avatar, ServerSearch } from '../core'
+import { SettingsApp } from './settings'
 import React, { useState } from 'react'
 import { Bars3Icon, MagnifyingGlassIcon, PlusIcon } from '@heroicons/react/24/outline';
 import { Localized } from '@fluent/react';

@@ -1,19 +1,11 @@
-import React, { Fragment, ReactPropTypes, useState } from 'react'
-import { MagnifyingGlassIcon, PlusIcon } from '@heroicons/react/20/solid'
-import {
-
-    XCircleIcon
-} from '@heroicons/react/24/outline'
-import { SearchComplete } from './search'
-import { useMediaQuery } from 'react-responsive'
-import { Localized } from "@fluent/react";
-import { Children, useEffect, ReactNode } from "react";
-
+import React, {useState } from 'react'
+import {  useEffect } from "react";
 import { negotiateLanguages } from "@fluent/langneg";
 import { FluentBundle, FluentResource } from "@fluent/bundle";
 import { ReactLocalization, LocalizationProvider, useLocalization } from "@fluent/react";
 import { Avatar } from './avatar'
 import { useIsMobile } from './hooks'
+
 
 //let { l10n } = useLocalization();
 //alert(l10n.getString("hello"));
@@ -64,6 +56,8 @@ export class Wallpaper extends RailApp {
 }
 export class World {
     login?: boolean
+    ws: WebSocket|undefined
+    bip39: string = ""
     altLogin: Login[] = []
 
     rail: RailApp[] = []
@@ -111,6 +105,19 @@ function* lazilyParsedBundles(fetchedMessages: Array<[string, string]>) {
 function systemDark(): boolean {
     return window.matchMedia && window.matchMedia("(prefers-color-scheme:dark)").matches
 }
+
+
+
+  function wait(milliseconds: number) {
+    return new Promise(resolve => setTimeout(resolve, milliseconds));
+  }
+
+// this can be yes, no, maybe 
+// maybe if offline and we haven't used this identity before.
+export async function login(bip: string) : Promise<string>{
+    await wait(3000)
+    return "connection-failed"
+}
 export function WorldProvider(props: React.PropsWithChildren<{}>) {
     const mobile = useIsMobile()
     const locales = World.world.locales.map((e) => e.id)
@@ -137,6 +144,7 @@ export function WorldProvider(props: React.PropsWithChildren<{}>) {
         } else {
             document.documentElement.classList.remove('dark')
         }
+
 
         return World.world
     }

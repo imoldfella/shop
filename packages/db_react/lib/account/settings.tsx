@@ -43,12 +43,13 @@ function ExamplePanning() {
 
 }
 
-function ExampleMain({ showDrawer }: { uiLeft?: number, showDrawer?: () => void }) {
+function Scaffold(props: { uiLeft?: number, showDrawer?: () => void }) {
+
   return (<main className="min-w-0 flex-1  border-gray-200 ">
     <div className="bg-white text-black shadow sm:rounded-lg  m-4 w-[372px]">
       <div className='flex items-center' >
 
-        {showDrawer && <button className='h-6 w-6 m-2' onClick={showDrawer}><Bars3Icon className='text-black' /></button>}
+        {props.showDrawer && <button className='h-6 w-6 m-2' onClick={props.showDrawer}><Bars3Icon className='text-black' /></button>}
         <input className='outline-none py-2 pl-3 pr-10 w-full focus:ring-transparent sm:text-sm bg-transparent' placeholder='Find a provider' />
       </div>
     </div>

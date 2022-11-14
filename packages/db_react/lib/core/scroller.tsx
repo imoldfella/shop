@@ -1,6 +1,6 @@
 
 import React, { useEffect, useRef } from 'react'
-import { ScrollerProps, Snapshot, Scroller as ScrollerTs } from '../../db/lib'
+import { ScrollerProps, Snapshot, Scroller as ScrollerTs } from '../../../db/lib'
 //import styled from 'styled-components'
 export type { ScrollerProps, Snapshot }
 
