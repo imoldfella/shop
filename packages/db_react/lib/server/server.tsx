@@ -10,47 +10,6 @@ import { RailApp, useWorld } from '../core'
 import { SidebarSearch } from '../layout'
 
 
-function encode_utf8(s: string) {
-    return new TextEncoder().encode(s);
-}
-
-function decode_utf8(s: Uint8Array) {
-    return new TextDecoder().decode(s);
-}
-export class Entry<K, V> {
-
-}
-export class Query<K, V> {
-    get length() {
-        return 0
-    }
-    async slice(from: K, to: K): Promise<Entry<K, V>[]> {
-        return [];
-    }
-}
-// materialized
-class Materialized {
-    view = new Map<string, View<any, any>>
-}
-class View<K, V> {
-
-    async Search(query: String): Query<{
-    }
-}
-
-// maybe the public mode can only view tags, since they are releases.
-// public mode 
-export class Fs {
-    async readFile(path: string): Promise<Uint8Array> {
-        return new Uint8Array()
-    }
-    query(from: string, to: string) {
-
-    }
-    get length() {
-        return 0
-    }
-}
 function Wip() {
     return (<b>Work in progress</b>)
 }

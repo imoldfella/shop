@@ -1,0 +1,48 @@
+.navbar {
+  display: grid;
+  grid-template-columns: 44px 1fr 88px;
+  width: 100%;
+  font-size: 24px;
+  background-color: rgb(18, 18, 18);
+  height: 44px;
+}
+
+.navbar a,
+.navbar a:hover,
+.navbar:visited {
+  text-decoration: none;
+  color: white
+}
+
+
+.navbar-tool {
+  width: 32px;
+  background-color: transparent;
+  border: none;
+  margin: 0;
+  padding: 0;
+  margin-right: 8px;
+  margin-left: 8px;
+  line-height: 0;
+  font-size: 0;
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.navbar-item {
+  vertical-align: middle;
+}
+
+.navbar-left {
+  align-items: center;
+  display: flex;
+}
+
+.navbar-right {
+  align-items: center;
+  display: flex;
+}

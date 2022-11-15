@@ -1,7 +1,5 @@
 export * from './core'
 export * from './account'
 export * from './server'
-export * from './form'
 export * from './login'
-export * from './form'
 export * from './layout'

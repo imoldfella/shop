@@ -1,0 +1,34 @@
+---
+export interface Props {
+	title: string;
+	href: string;
+	src: string
+}
+
+const { href, title,src } = Astro.props;
+---
+	<a class="card" href={href}>
+		<div class="text-center"> 
+			<img width='90' height='90' alt={title} class='cat' src={src} /></div>
+		<div class="caption">{title}</div>
+		</a>
+<style>
+.cat {
+  border-radius: 8px;
+  height: 90px;
+  width: 90px;
+}
+.card {
+  margin: 8px;
+  text-decoration: none;
+  color: white;
+}
+.caption {
+  text-align: center;
+  text-overflow: ellipsis;
+  height: 38px;
+  width: 100%;
+  overflow: hidden;
+}
+
+</style>

@@ -55,7 +55,6 @@ export class RailApp {
 }
 
 export class World {
-    publicMode = false
     login?: boolean
     ws: WebSocket | undefined
     bip39: string = ""

@@ -1,10 +1,18 @@
 
 
 
+// a public web site is materialized view that was published together with user owned database comparable to localStorage
+export function toUtf8(s: string) {
+    return new TextEncoder().encode(s);
+}
+
+export function fromUtf8(s: Uint8Array) {
+    return new TextDecoder().decode(s);
+}
 
 type Listener = ()=>void
 
-class ChangeNotifier{
+export class ChangeNotifier{
     listener = new Set<Listener>()
 
     addListener(l: Listener){

@@ -1,0 +1,525 @@
+                <div class="showLines">
+                    <div class="pickLine">
+                        <div>99999 I did something and this will need elipsis</div>
+                        <div>99999 I did something and this will need elipsis</div>
+                        <div>99999 I did something and this will need elipsis</div>
+                    </div>
+                    <div class="showLine">
+                        <table class="data">
+                            <tr>
+                                <td> You will owe</td>
+                                <td> $99999.99</td>
+                            </tr>
+                        </table>
+        
+                    </div>
+                </div>
+
+                        .pickLine {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(106px, 1fr));
+        }
+
+        div.pickLine>div {
+            background-color: white;
+            color: black;
+            margin: 4px;
+            border-radius: 3px;
+            height: 44px;
+        }
+
+
+                <div class="cardList">
+            <div class="card">
+                <h1><span>Your Cost In-Network</span></h1>
+                <h2>$150.00</h2>
+                <p> If
+                    you choose an in-network provider you can expect to be responsible for $150.00. This is a good faith
+                    estimate of your responsibility for payment given the services
+                    selected in this cart.
+
+                <table class="data">
+                    <thead>
+                        <th></th>
+                        <th></th>
+                    </thead>
+                    <tr>
+                        <td>Billed</td>
+                        <td class="ncol"> $99999.99</td>
+                    </tr>
+                    <tr>
+                        <td> Allowed</td>
+                        <td class="ncol"> $99.99</td>
+                    </tr>
+                    <tr>
+                        <td>Plan Paid</td>
+                        <td class="ncol"> $999.99</td>
+                    </tr>
+                </table>
+
+                <p>
+
+                    <!-- this will show a list of lines, and another table-->
+                <div class="wrapper">
+                    <table class="scrollTable">
+                        <thead>
+                            <th class='fix'></th>
+                            <th>Col 1</th>
+                            <th>Col 2</th>
+                            <th>Col 3</th>
+                            <th>Col 4</th>
+                            <th>Col 5</th>
+
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class='fix'>First Content</td>
+                                <td>A1</td>
+                                <td>A2 (with longer content)</td>
+                                <td>A3</td>
+                                <td>A4</td>
+                                <td>A5</td>
+
+                            </tr>
+                            <tr>
+                                <td class='fix'>First Content (with longer content)</td>
+                                <td>B1</td>
+                                <td>B2</td>
+                                <td>B3</td>
+                                <td>B4</td>
+                                <td>B5</td>
+
+                            </tr>
+                            <tr>
+                                <td class='fix'>First Content</td>
+                                <td>C1</td>
+                                <td>C2</td>
+                                <td>C3</td>
+                                <td>C4</td>
+                                <td>C5</td>
+
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <p>
+                <div class='sumChart'>
+                    <h1>Out of Pocket</h1>
+                    <svg width='100%' height='24px' viewBox='0 0 1132 24'>
+                        <g class='bars'>
+                            <rect class='bg' fill='#ccc' width='100%' height='25'></rect>
+                            <rect class='data' fill='#0074d9' width='45%' height='25'></rect>
+                        </g>
+                        <div>$1732.20 paid of a maximum 3,000.00</div>
+                    </svg>
+                </div>
+                <div class='sumChart'>
+                    <h1>Deductible</h1>
+                    <svg width='100%' height='24px' viewBox='0 0 1132 24'>
+                        <g class='bars'>
+                            <rect class='bg' fill='#ccc' width='100%' height='25'></rect>
+                            <rect class='data' fill='#0074d9' width='45%' height='25'></rect>
+                        </g>
+                        <div>$1732.20 paid of a maximum 3,000.00</div>
+                    </svg>
+                </div>
+            </div>
+            <p>
+            <div class="card">
+                <h1><span>Your Cost Out-Of-Network</span></h1>
+                <h2>$150.00</h2>
+                <p> If
+                    you choose an in-network provider you can expect to be responsible for $150.00. This is a good faith
+                    estimate of your responsibility for payment given the services
+                    selected in this cart.
+
+                <table class="data">
+                    <tr>
+                        <td>Billed</td>
+                        <td class="ncol"> $99999.99</td>
+                    </tr>
+                    <tr>
+                        <td> Allowed</td>
+                        <td class="ncol"> $99.99</td>
+                    </tr>
+                    <tr>
+                        <td>Plan Paid</td>
+                        <td class="ncol"> $999.99</td>
+                    </tr>
+                </table>
+
+                <p>
+
+                    <!-- this will show a list of lines, and another table-->
+                <div class="wrapper">
+                    <table class="scrollTable">
+                        <thead>
+                            <th class='fix'></th>
+                            <th>Col 1</th>
+                            <th>Col 2</th>
+                            <th>Col 3</th>
+                            <th>Col 4</th>
+                            <th>Col 5</th>
+
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class='fix'>First Content</td>
+                                <td>A1</td>
+                                <td>A2 (with longer content)</td>
+                                <td>A3</td>
+                                <td>A4</td>
+                                <td>A5</td>
+
+                            </tr>
+                            <tr>
+                                <td class='fix'>First Content (with longer content)</td>
+                                <td>B1</td>
+                                <td>B2</td>
+                                <td>B3</td>
+                                <td>B4</td>
+                                <td>B5</td>
+
+                            </tr>
+                            <tr>
+                                <td class='fix'>First Content</td>
+                                <td>C1</td>
+                                <td>C2</td>
+                                <td>C3</td>
+                                <td>C4</td>
+                                <td>C5</td>
+
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <p>
+
+            </div>
+        </div>
+        <p>
+
+               const { PDFDocument, StandardFonts, rgb } = PDFLib
+        async function createPdf() {
+            // Create a new PDFDocument
+            const pdfDoc = await PDFDocument.create()
+
+            // Embed the Times Roman font
+            const timesRomanFont = await pdfDoc.embedFont(StandardFonts.TimesRoman)
+
+            // Add a blank page to the document
+            const page = pdfDoc.addPage()
+
+            // Get the width and height of the page
+            const { width, height } = page.getSize()
+
+            // Draw a string of text toward the top of the page
+            const fontSize = 30
+            page.drawText('Creating PDFs in JavaScript is awesome!', {
+                x: 50,
+                y: height - 4 * fontSize,
+                size: fontSize,
+                font: timesRomanFont,
+                color: rgb(0, 0.53, 0.71),
+            })
+
+            // Serialize the PDFDocument to bytes (a Uint8Array)
+            const pdfBytes = await pdfDoc.save()
+
+            // Trigger the browser to download the PDF document
+            download(pdfBytes, "pdf-lib_creation_example.pdf", "application/pdf");
+        }
+
+
+
+
+        // an eob can return multiple networks
+        // each is displayed as a card.
+        // each needs to be keyed to a client specific schema
+        // so we know how to present it.
+
+        function planRules1(key, name) {
+            return {
+                name: name,
+                key: key,
+            }
+        }
+        // eob schema's are driven by plan rules and user elections
+        // each line has a network, but to hypotheticate, we can
+        // set them all to that network and readjudicate
+
+        standardFormat = {
+            claim: [
+                { name: 'Member', key: 'member' },
+                { name: 'Billed', key: 'billed' },
+                { name: 'Plan paid', key: 'paid' }
+            ],
+            maxes: [
+                // keys match to member counters
+                //  there are counters per life and per member.
+                { name: 'Out of Pocket', set: 'life', key: 'pocket' },
+                { name: 'Deductible', set: 'life', key: 'deduct' },
+                { name: 'Family Out of Pocket', set: 'family', key: 'pocket' },
+                { name: 'Family Deductible', set: 'family', key: 'deduct' }
+            ],
+            line: [
+                {
+                    name: 'Description',
+                    key: 'desc'
+                },
+                {
+                    name: 'Code',
+                    key: 'code'
+                },
+                {
+                    name: 'Billed',
+                    key: 'billed'
+                },
+                {
+                    name: 'Allowed',
+                    key: 'allowed'
+                },
+                {
+                    name: 'Paid',
+                    key: 'paid'
+                },
+                {
+                    name: 'Member Owes',
+                    key: 'member'
+                },
+                {
+                    name: 'Deductible',
+                    key: 'deductible'
+                },
+                {
+                    name: 'Copay',
+                    key: 'copay'
+                },
+            ]
+        }
+        // are all plans calendar year?
+        // children can sometimes have different rules than adults by law
+        function planRules(member, year) {
+            // some extra complication here in case we want some rules
+            // that are not strictly per network. maybe maxes should be here.
+            // It's not clear that thing like lines should be different either
+            // what should be different then?
+            return {
+                ...standardFormat,
+                maxValue: {
+                    'life': {
+                        deduct: 1800,
+
+                    },
+                    'family': {
+
+                    }
+                },
+                network: [
+                    planRules1("in", "In Network"),
+                    planRules1("out", "Out of Network")
+                ]
+            }
+        }
+
+
+
+        // we can use line 0 for totals;
+        // each line of the cart indicates the network
+        // each user has their own set of counters that we need to fetch from server. counters 
+        function adjudicate1(cart, plan, member, covered) {
+            var counters = await getCounters(member, covered)
+
+            // sums ag
+            var claim = {
+                member: 0,
+                billed: 0,
+                allowed: 0,
+                paid: 0
+            }
+
+            var lines = []
+            // as we adudicate the claim we update the counters and summary
+            for (i of cart) {
+                i.code
+                i.desc
+                i.network
+
+                if ("in" == i.network) {
+                    i.charge = 100
+                    i.allowed = 80
+                    i.paid = 80
+                } else {
+                    i.paid = 100
+                }
+
+                // adjust sums and maxes
+                claim.billed += i.billed
+                claim.allowed += i.allowed
+
+
+            }
+
+            // how to specify the order of maxes?
+            // do we partially render things here (toFixed, order)?
+            // I think its easiest to do it here
+            // we need to build the max array from the plan rules and updated counters
+
+            var maxes = plan.maxes.map(e => {
+                // value comes from counter
+                // maxvalue comes plan
+                var value = counters[e.set][e.key]
+                var maxvalue = plan.maxValue[e.set][e.key]
+                return [e.name, value, maxvalue]
+            })
+
+            return {
+                claim: claim,
+                maxes: maxes,
+                line: lines,
+            }
+        }
+        // an eob results from codes adjudicated to plan rules
+        // and provider status
+
+
+
+        // cart is a list of { code:, desc: }
+        // code eventually could include :modifier
+        // code could be namespaced.
+
+        // hypothetically adjudicate in each possible network.
+        // we can sort the results to have the cheapest network first
+
+        async function getCounters() {
+            // this has to be an async, await , fetch, cache for time
+            return {
+                'asof': Date.now(),
+                'life': {
+                    pocket: 123,
+                    deduct: 123,
+                },
+                'family': {
+                    deduct: 256,
+                    pocket: 256
+                }
+            }
+        }
+
+        // we could embed the schema into the eob, the eob = fn(cart,planRules)
+
+        // this renders just one eob option in a "card"
+        function renderCard(eob, eobAll) {
+
+            console.log(cardSchema, eob)
+
+            var data = eob[cardSchema.key]
+            if (!data) return ""
+            memberPay = data.claim['member']
+            claim = cardSchema.claim.map(e => `
+                <tr><td>${e.name}</td><td class="ncol">${data.claim[e.key]}</td></tr>`).join("")
+
+            maxes = cardSchema.maxes.map(e => renderMaxes(e, data.maxes[e.key])).join("")
+            // lines have to mapped in the order we receive in eob
+            // headers in the order of the schema
+            var line = `` //eob.line.map(e => renderLine(cardSchema.line, e)).join()
+            for (var i = 0; i < data.line.length; i++) {
+                var ln = ""
+                var d = data.line[i]
+                for (var j = 0; j < cardSchema.line.length; j++) {
+                    v = d[cardSchema.line[j].key]
+                    if (j == 0) {
+                        ln += `<td class='fix'>${v}</td>`
+                    } else {
+                        ln += `<td class="ncol">${v}</td>`
+                    }
+                }
+                line += `<tr>${ln}</tr>`
+            }
+            console.log(line)
+
+            header = cardSchema.line.slice(1).map(e => `<th class="ncol">${e.name}</th>`).join("")
+            return `<div class="card">
+                <h1><span>Your Cost ${cardSchema.name}</span></h1>
+                <h2>$${memberPay}</h2>
+                <p> If
+                    you choose an in-network provider you can expect to be responsible for $${memberPay} This is a good faith
+                    estimate of your responsibility for payment given the services
+                    selected in this cart.
+                <table class="data">
+                ${claim}
+                </table><p>
+                <div class="wrapper">
+                    <table class="scrollTable">
+                        <thead>
+                        <th class="fix"></th>${header}
+                        </thead><tbody>
+                ${line}
+                </tbody></table></div><p>
+                ${maxes}</div>`
+        }
+
+        function renderMaxes(sch, d) {
+            return `<div class='sumChart'>
+        <h1>${sch.name}</h1>
+        <svg width='100%' height='24px' viewBox='0 0 1132 24'>
+            <g class='bars'>
+                <rect class='bg' fill='#ccc' width='100%' height='25'></rect>
+                <rect class='data' fill='#0074d9' width='45%' height='25'></rect>
+            </g>
+            <div>${d[0]} paid of a maximum ${d[1]}</div>
+        </svg>
+    </div>`
+        }
+
+        function createPdf() {
+            var pdfBytes = new Uint8Array(0)
+            // Serialize the PDFDocument to bytes (a Uint8Array)
+            //const pdfBytes = await pdfDoc.save()
+            var docDefinition = {
+                content: [
+                    {
+                        layout: 'lightHorizontalLines', // optional
+                        table: {
+                            // headers are automatically repeated if the table spans over multiple pages
+                            // you can declare how many rows should be treated as headers
+                            headerRows: 1,
+                            widths: ['*', 'auto', 100, '*'],
+
+                            body: [
+                                ['First', 'Second', 'Third', 'The last one'],
+                                ['Value 1', 'Value 2', 'Value 3', 'Value 4'],
+                                [{ text: 'Bold value', bold: true }, 'Val 2', 'Val 3', 'Val 4']
+                            ]
+                        }
+                    }
+                ]
+            };
+            pdfMake.createPdf(docDefinition).download()
+
+        }
+
+        function clearCart() {
+            localStorage.cart = "[]"
+            updateCart()
+        }
+        function logout() {
+            clearCart()
+            localStorage.logout = "1"
+            updateCart()
+        }
+
+        // eventually support cart edits (like +/-) with re-render.
+        // because we use local storage we can even keep the cart open
+        // in another window! (flex)
+        // we might want to cache the plan rules? caching has its downsides
+        var plan = planRules()
+        var cart = JSON.parse(localStorage.cart || "[]")
+
+        function updateCart() {
+
+            document.getElementById('content').innerHTML = content
+        }
+        updateCart(plan)

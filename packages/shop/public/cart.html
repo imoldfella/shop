@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+    <title>Iron Shop</title>
+    <meta charset=UTF-8>
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, width=device-width, user-scalable=no" />
+    <link rel="stylesheet" href="style.css">
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.5/pdfmake.min.js"
+        integrity="sha512-rDbVu5s98lzXZsmJoMa0DjHNE+RwPJACogUCLyq3Xxm2kJO6qsQwjbE5NDk2DqmlKcxDirCnU1wAzVLe12IM3w=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.5/vfs_fonts.min.js"
+        integrity="sha512-BDZ+kFMtxV2ljEa7OWUu0wuay/PAsJ2yeRsBegaSgdUhqIno33xmD9v3m+a2M3Bdn5xbtJtsJ9sSULmNBjCgYw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="cart3.js"></script>
+    <script>
+
+        function eobPdf() {
+            var pdfBytes = new Uint8Array(0)
+            // Serialize the PDFDocument to bytes (a Uint8Array)
+            //const pdfBytes = await pdfDoc.save()
+            var docDefinition = {
+                content: [
+                    {
+                        layout: 'lightHorizontalLines', // optional
+                        table: {
+                            // headers are automatically repeated if the table spans over multiple pages
+                            // you can declare how many rows should be treated as headers
+                            headerRows: 1,
+                            widths: ['*', 'auto', 100, '*'],
+
+                            body: [
+                                ['First', 'Second', 'Third', 'The last one'],
+                                ['Value 1', 'Value 2', 'Value 3', 'Value 4'],
+                                [{ text: 'Bold value', bold: true }, 'Val 2', 'Val 3', 'Val 4']
+                            ]
+                        }
+                    }
+                ]
+            };
+            pdfMake.createPdf(docDefinition).download()
+        }
+
+    </script>
+    <style>
+        button {
+            color: #0E7AFE;
+            text-decoration: none;
+            font-size: 1em;
+        }
+
+        /*
+
+        .login {
+            margin-top: 16px;
+            padding: 8px;
+        }
+
+        input[type=text],
+        input[type=password] {
+            width: 100%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            border: default;
+        }
+
+        div.login>form>button {
+            background-color: #202ade;
+            color: white;
+            padding: 14px;
+            margin: 8px 0;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+
+        }
+
+        .tb {
+          
+            width: 100%;
+            color: white;
+            text-align: left;
+        }*/
+
+        .card {
+            background-color: #202020;
+            padding: 8px;
+            margin-left: 0;
+            margin-right: 0;
+            margin-top: 0;
+            margin-bottom: .5em;
+            border-radius: 4px;
+        }
+
+        div.card>h1 {
+            padding: 0;
+            margin: 0
+        }
+
+        .eob {
+            padding: 8px;
+        }
+
+        .data {
+
+            width: default;
+            padding-bottom: 1em;
+        }
+
+        .data1 {
+            width: 10em;
+
+        }
+
+        .wrapper {
+
+            overflow-x: scroll;
+            width: 100%;
+            padding-bottom: 1em;
+        }
+
+        .scrollTable {
+            table-layout: fixed;
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table {
+            padding-top: 8px;
+        }
+
+        td,
+        th {
+            vertical-align: top;
+            text-align: left;
+            padding: 2px;
+        }
+
+        .fix {
+            position: sticky;
+            background-color: #202020;
+        }
+
+        .fix:first-child {
+            left: 0;
+            width: 30vw;
+
+        }
+
+        td.fix>div {
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        th.ncol {
+            text-align: right;
+            width: 5em;
+            padding: 4px;
+            font-weight: 400;
+        }
+
+        .ncol {
+            text-align: right;
+        }
+
+        .sumChart {
+
+            margin-top: .1em
+        }
+
+        .sumLeft {
+            margin: 0;
+        }
+
+        .sumRight {
+            margin: 0;
+            text-align: right;
+            font-weight: 100;
+            color: #a0a0a0;
+
+        }
+
+        h2 {
+            margin-top: 8px;
+            margin-bottom: 0;
+        }
+    </style>
+
+<body>
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+
+        <button class="navbar-tool" onclick='history.back()'>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="#808080"
+                stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+            </svg></button>
+
+
+        <div class="navbar-brand">Cart</div>
+
+        <div class="navbar-right">
+            <div class="navbar-tool"></div>
+            <button class="navbar-tool" onclick="eobPdf()"> <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6"
+                    fill="none" viewBox="0 0 24 24" stroke="#808080" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                </svg></button>
+        </div>
+    </nav>
+
+    <div class="error" style="display: none" id="error1"></div>
+    <div class="login" id="login" style="display: none">
+
+        <p>
+
+            <input placeholder="Enter phone number">
+            <input placeholder="Or email address">
+            <button onclick="">Send access token</button>
+            <input placeholder="Enter code from message">
+        </p>
+    </div>
+    <div class="login" id="login2" style="display: none">
+        <p>
+            <input id="accessToken" placeholder="Enter code from message">
+            <button onclick="login()" style="margin-left: 8px;">LOGIN</button>
+        </p>
+    </div>
+    <div class="eob" id="cart" style="display: none">
+        <div id="content"></div>
+        <button onclick="clearCart()" style="margin-left: 8px;">CLEAR</button>
+        <button onclick="logout()" style="margin-left: 16px">LOGOUT</button>
+    </div>
+    <script>
+
+        function setStep(i) {
+            var show = "cart"
+            switch (i) {
+                case 0:
+                    show = "login";
+                    break;
+                case 1:
+                    show = "login2";
+                    break;
+            }
+            document.getElementById('login').style.display = 'none'
+            document.getElementById('login2').style.display = 'none'
+            document.getElementById('cart').style.display = 'none'
+            document.getElementById(show).style.display = 'block'
+        }
+
+        function refresh() {
+            var s = localStorage.secret
+            console.log(`init (${s})`)
+
+            if (s) {
+                setStep(2)
+                updateCart()
+            } else {
+                setStep(0)
+            }
+        }
+        function login() {
+
+            refresh()
+        }
+        function login2() {
+            token = document.getElementById('accessToken').value;
+            localStorage.secret = "secret"
+        }
+        function logout() {
+            clearCart()
+            localStorage.secret = ""
+            refresh()
+        }
+        function init() {
+            onstorage = () => refresh()
+            refresh()
+        }
+        init()
+    </script>
+</body>
+
+</html>
+
+<!-- 
+            <button onclick="addOne()" style="margin-left: 16px">ADD</button>
+
+         <button class="tb"> Send code to j***@***ve.com</button>
+        <button class="tb"> Text code to 484-366-4923</button>
+        <button class="tb"> Call me with code at 484-366-4923</button>
+        <form>
+            <label for="uname"><b>Access Code</b></label>
+            <input type="text" placeholder="Enter Access Code" name="uname" required>
+
+            <button type="submit">Login</button>
+            <label>
+                <input type="checkbox" checked="checked" name="remember"> Remember me
+            </label>
+        </form> --.

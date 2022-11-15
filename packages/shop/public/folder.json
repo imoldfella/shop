@@ -1,0 +1,48 @@
+[
+    {
+        "begin": "J|S",
+        "end": "J~|S~",
+        "name": "Drugs"
+    },
+
+    {
+        "begin": "G",
+        "end": "G~",
+        "name": "Services"
+    },
+    {
+        "begin": "99202",
+        "end": "99499",
+        "name": "Evaluation"
+    },
+    {
+        "begin": "00100",
+        "end": "01999",
+        "name": "Anesthesia"
+    },
+    {
+        "begin": "10021",
+        "end": "69990",
+        "name": "Surgery"
+    },
+    {
+        "begin": "70010",
+        "end": "79999",
+        "name": "Radiology"
+    },
+    {
+        "begin": "80047",
+        "end": "89398",
+        "name": "Pathology"
+    },
+    {
+        "begin": "90281",
+        "end": "99607",
+        "name": "Services"
+    },
+    {
+        "begin": "00000",
+        "end": "99999",
+        "name": "Medical"
+    }
+]

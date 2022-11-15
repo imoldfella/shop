@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+    <title>Iron Shop</title>
+    <meta charset=UTF-8>
+    <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, width=device-width, user-scalable=no" />
+    <link rel="stylesheet" href="style.css" />
+    <script src="cart.js"></script>
+    <style>
+        .pl-4 {
+            padding-left: 4px;
+            padding-top: 8px;
+        }
+
+        input,
+        input:focus-visible {
+            width: 100%;
+            background-color: transparent;
+            border: none;
+            margin: 0;
+            outline: none;
+            color: white;
+            font-size: 16px;
+        }
+    </style>
+
+<body>
+    <nav class="searchbar" role="navigation" aria-label="main navigation">
+
+        <button class="navbar-tool" onclick='history.back()'>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="#808080"
+                stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+            </svg></button>
+
+
+        <input id="s1" autofocus type="text" placeholder="Search for service" oninput="search()">
+
+
+        <div class="navbar-right">
+            <button aria-label="edit" class="navbar-tool" href="https://datagrovecr.com" onclick="clearSearch()"><svg
+                    xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="#808080">
+                    <path fill-rule="evenodd"
+                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                        clip-rule="evenodd" />
+                </svg></button>
+        </div>
+
+    </nav>
+    <svg class='hide' version="2.0">
+        <defs>
+            <symbol id='cart' class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="#808080" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+            </symbol>
+            <symbol id="right" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="#808080" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+            </symbol>
+            <defs>
+    </svg>
+    <div id="results">
+        <div class="fileList">
+            <a class="fl-tool pl-4">
+                <svg width="32" height="32">
+                    <use href='#cart' />
+                </svg>
+            </a>
+            <a class="card" href="#">
+                <div class="fl-title"><span>asdf</span></div>
+                <div class="fl-subtitle"><span>asfdsd</span></div>
+            </a>
+            <a class="fl-tool" href="#">
+                <svg width="44" height="32">
+                    <use href='#right' />
+                </svg>
+            </a>
+        </div>
+    </div>
+    <script>
+        // subtitle, title, service code
+        var data = []
+        var hidden = []
+        var el = []
+
+
+        // worth using preact at all? isn't preact just setting dom anyway?
+        function clearSearch() {
+            document.getElementById('s1').value = ""
+            search()
+        }
+        function search() {
+            var s = document.getElementById('s1').value.toLowerCase()
+            console.log("search", s)
+            for (var i = 0; i < hidden.length; i++) {
+                var h = !(data[3 * i].includes(s) || data[3 * i + 1].includes(s))
+                if (h != hidden[i]) {
+                    el[i].style.display = h ? "none" : "grid"
+                }
+            }
+        }
+        // two types of links, shopping cart puts directly into cart
+        // other goes to reference page.
+
+        function clickCart(event) {
+            id = idOf(event.target)
+            addCart(id)
+            window.location.href = "cart.html"
+        }
+        function clickView(event) {
+            //console.log("view ", idOf(event.target))
+            window.location.href = idOf(event.target) + ".html"
+        }
+        function idOf(el) {
+            if (!el) return el
+            if (el.id) return el.id
+            else return idOf(el.parentElement)
+        }
+        function init() {
+            fetch("search.json")
+                .then(response => response.json())
+                .then(data => init2(data))
+        }
+        function init2(d) {
+            data = d
+            hidden.length = data.length / 3
+            el.length = hidden.length
+
+            var results = document.getElementById('results')
+            var t1 = results.children[0]
+            el[0] = t1
+            for (var i = 0; i < hidden.length - 1; i++) {
+                var o = t1.cloneNode(true)
+                results.appendChild(o)
+                el[i + 1] = o
+            }
+            for (var i = 0; i < hidden.length; i++) {
+                var desc = data[i * 3]
+                var code = data[i * 3 + 1]
+                data[i * 3] = desc.toLowerCase()
+                data[i * 3 + 1] = code.toLowerCase()
+                var id = data[i * 3 + 2]
+                el[i].id = id
+                var d = el[i].querySelectorAll('span')
+                d[0].innerHTML = desc
+                d[1].innerHTML = code
+
+                var a = el[i].querySelectorAll('a')
+                a[0].addEventListener('click', clickCart)
+                a[1].addEventListener('click', clickView)
+                a[2].addEventListener('click', clickView)
+            }
+        }
+        init()
+    </script>
+</body>
