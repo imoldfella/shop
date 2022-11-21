@@ -1,6 +1,8 @@
-import React,{useState} from 'react'
-import {XMarkIcon,ChevronLeftIcon,ChevronRightIcon,ShoppingCartIcon  } from '@heroicons/react/20/solid'
+// import React,{useState} from 'react'
+import {Icon} from "solid-heroicons"
+import {xMark,chevronLeft,chevronRight,shoppingCart  } from 'solid-heroicons/solid'
 import codes from './shop500.json'
+import {createSignal} from 'solid-js'
 
 // subtitle, title, service code
 const data: any[] = []
@@ -32,16 +34,16 @@ export async function addCart(id: string) {
 
 
 export function Result(props:{title: string, subtitle: string}){
-    return (<div className="fileList hover:bg-slate-900">
-        <a className="fl-tool pl-4">
-            <ShoppingCartIcon className='h-6 w-6'/>
+    return (<div class="fileList hover:bg-slate-900">
+        <a class="fl-tool pl-4">
+            <Icon path={shoppingCart} class='h-6 w-6'/>
         </a>
-        <a className="card" href="#">
-            <div className="fl-title"><span>{props.title}</span></div>
-            <div className="fl-subtitle"><span>{props.subtitle}</span></div>
+        <a class="card" href="#">
+            <div class="fl-title"><span>{props.title}</span></div>
+            <div class="fl-subtitle"><span>{props.subtitle}</span></div>
         </a>
-        <a className="fl-tool" href="#">
-            <ChevronRightIcon className='w-6 h-6'/>
+        <a class="fl-tool" href="#">
+            <Icon path={chevronRight} class='w-6 h-6'/>
         </a>
         </div>)
 }
@@ -49,13 +51,13 @@ export function Result(props:{title: string, subtitle: string}){
 export function Button(props: React.PropsWithChildren<{
     onClick: ()=>void
 }>) {
-    return (<div className="navbar-right opacity-50 hover:opacity-100">
-        <button aria-label="edit" className="navbar-tool"  onClick={props.onClick}>{props.children}</button>
+    return (<div class="navbar-right opacity-50 hover:opacity-100">
+        <button aria-label="edit" class="navbar-tool"  onClick={props.onClick}>{props.children}</button>
     </div>)
 }
 
 export function Search() {
-    const [search,setSearch] = useState('')
+    const [search,setSearch] = createSignal('')
 
     let results = codes;
     if (search) {
@@ -70,19 +72,19 @@ export function Search() {
         setSearch(v)
     }
 
-    return (<div><nav className="searchbar" role="navigation" aria-label="main navigation">
+    return (<div><nav class="searchbar" role="navigation" aria-label="main navigation">
 
       <Button onClick={()=>history.back()}>
-        <ChevronLeftIcon className='h-6 w-6' />
+        <Icon path={chevronLeftIcon} class='h-6 w-6' />
     </Button>
 
 
     <input id="s1" value={search}
-        className=' bg-transparent focus:outline-none text-sm'
+        class=' bg-transparent focus:outline-none text-sm'
      autoFocus type="text" placeholder="Search for service" onInput={oninput}/>
 
     <Button onClick={()=>setSearch('')}>
-        <XMarkIcon className='h-6 w-6' />
+        <XMarkIcon class='h-6 w-6' />
     </Button>
 
 
@@ -93,6 +95,6 @@ export function Search() {
 }  
 
 
-{/* <div className="navbar-right">
-        <button aria-label="edit" className="navbar-tool"  onClick={}><XMarkIcon className='h-6 w-6' /></button>
+{/* <div class="navbar-right">
+        <button aria-label="edit" class="navbar-tool"  onClick={}><XMarkIcon class='h-6 w-6' /></button>
     </div> */}
