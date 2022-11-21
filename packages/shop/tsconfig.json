@@ -4,8 +4,8 @@
     "src"
   ],
   "compilerOptions": {
-    "jsx": "react-jsx",
+    "jsx": "preserve",
     "tsx": "react-tsx",
-    "jsxImportSource": "react"
+    "jsxImportSource": "solid-js"
   }
 }

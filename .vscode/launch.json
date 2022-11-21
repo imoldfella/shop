@@ -5,11 +5,25 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "type": "chrome",
+            "name": "ts-node",
+            "type": "node",
             "request": "launch",
-            "name": "db test",
-            "url": "http://localhost:5173",
-            "webRoot": "${workspaceFolder}/packages/db"
+            "args": [
+                "${workspaceRoot}/packages/dg/src/main.ts"
+            ],
+            "runtimeArgs": [
+                "-r",
+                "ts-node/register",
+                "-r",
+                "tsconfig-paths/register",
+            ],
+            
+            "cwd": "${workspaceRoot}/packages/dg",
+            "protocol": "inspector",
+            "internalConsoleOptions": "openOnSessionStart",
+            "skipFiles": [
+                "<node_internals>/**"
+            ]
         }
     ]
 }

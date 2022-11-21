@@ -1,0 +1,41 @@
+{
+  "name": "dg",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./dist/src/main.js",
+  "exports": {
+    "./*": "./dist/src/*"
+  },
+  "typesVersions": {
+    "*": {
+      "*": ["dist/src/*"]
+    }
+  },
+  "type": "module",
+  "devDependencies": {
+    "@types/node": "^18.11.9",
+    "ts-node": "^10.9.1",
+    "tsconfig-paths": "^4.1.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/imoldfella/shop.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/imoldfella/shop/issues"
+  },
+  "homepage": "https://github.com/imoldfella/shop#readme",
+  "dependencies": {
+    "@datagrove/dgpm": "^1.10.1",
+    "jsdom": "^20.0.2",
+    "ncp": "^2.0.0",
+    "prosemirror-markdown": "^1.10.1",
+    "prosemirror-schema-basic": "^1.2.0",
+    "zeed-dom": "^0.9.26"
+  }
+}
