@@ -13,8 +13,8 @@ import folders from "../config/folder.json";
 			folders.map((e) => (
 				 <Card
 					title={e.name}
-					href={"category/"+e.name}
-					src={e.name.toLowerCase() + ".jpeg"}
+					href={"/category/"+e.name}
+					src={"/"+e.name.toLowerCase() + ".jpeg"}
 				/>
 			))
 		}

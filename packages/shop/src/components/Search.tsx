@@ -1,7 +1,7 @@
 // import React,{useState} from 'react'
 import { Icon } from "solid-heroicons"
 import { xMark, chevronLeft, chevronRight, shoppingCart } from 'solid-heroicons/solid'
-import codes from '../config/services/shop.json'
+import codes from '../config/codes.json'
 import { createSignal, ComponentProps, ParentProps } from 'solid-js'
 import { CodeItem } from './CodeItem'
 
@@ -49,7 +49,7 @@ export function Search() {
 
     let results = () => {
         var s = search().toLowerCase()
-        return s ? codes.filter((e) => [e.code + " " + e.description.short].join(" ").toLowerCase().includes(s)) : codes
+        return s ? codes.filter((e: Code) => [e.code + " " + e.description.short].join(" ").toLowerCase().includes(s)) : codes
     }
 
     const oninput = (e: any) => {
@@ -74,11 +74,19 @@ export function Search() {
 
 
     </nav>
-        {results().map((e) => (<CodeItem title={e.description.short} subtitle={e.code} code={e.code} />))}
+        {results().map((e: Code) => (<CodeItem title={e.description.short} subtitle={e.code} code={e.code} />))}
 
     </div>)
 }
 
+interface Code {
+    code: string
+    description: {       
+        short: string,
+        long: string,
+        gpt3: string     
+    }
+}
 
 {/* <div class="navbar-right">
         <button aria-label="edit" class="navbar-tool"  onClick={}><XMarkIcon class='h-6 w-6' /></button>

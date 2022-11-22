@@ -1,8 +1,7 @@
 ---
-import codes from "../../components/shop.json"
-import fs from "fs";
+import codes from "../../config/codes.json"
 import Page  from "../../layouts/Page.astro"
-
+import {AddToCart, CartButtonCounted} from "../../components/AddToCart"
 // this seems slow, even if not called?
 export function getStaticPaths() {
     return codes.map((e) => {
@@ -19,14 +18,6 @@ export function getStaticPaths() {
         };
     });
 }
-
-// export function getStaticPaths() {
-//     return [
-//         { 
-//         params: { id: 'x'}, 
-//         props: { short: "short", long: "long", gpt3: "gpt3"}
-//         } ]
-// }
 
 const { code, short, long, gpt3 } = Astro.props;
 ---
@@ -61,7 +52,7 @@ const { code, short, long, gpt3 } = Astro.props;
         </div>
     </div>
 
-    <p><button>Add to Cart</button></p>
+    <AddToCart client:load/><CartButtonCounted client:load/>
 </main>
 </Page>
 
