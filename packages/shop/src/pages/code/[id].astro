@@ -1,24 +1,20 @@
 ---
-import codes from "../../components/shop500.json"
+import codes from "../../components/shop.json"
 import fs from "fs";
 import Page  from "../../layouts/Page.astro"
 
 // this seems slow, even if not called?
 export function getStaticPaths() {
-    const fn = (e: string) => ("00000" + e).substring(e.length);
     return codes.map((e) => {
-        const gpt3 = fs.readFileSync(
-            `./src/components/gpt3/${fn(e.ENT[0] + "")}.txt`,
-            { encoding: "utf8" }
-        );
         return {
             params: {
-                id: e.ENT[0],
+                id: e.code,
             },
             props: {
-                short:  e.ENT[1],
-                long: e.ENT[2],
-                gpt3,
+                code: e.code,
+                short: e.description.short,
+                long: e.description.long,
+                gpt3: e.description.gpt3,
             },
         };
     });
@@ -32,9 +28,9 @@ export function getStaticPaths() {
 //         } ]
 // }
 
-const { short, long, gpt3 } = Astro.props;
+const { code, short, long, gpt3 } = Astro.props;
 ---
-<Page>
+<Page title={short} back={true}>
 <main class="msger-chat dark:bg-black">
     <div class="msg left-msg">
         <div
@@ -48,7 +44,7 @@ const { short, long, gpt3 } = Astro.props;
             </div>
             <div class="msg-text">
                 {long}
-                <p class="short">{short}</p>
+                <p class="short">{code} {short}</p>
             </div>
         </div>
     </div>
@@ -64,6 +60,8 @@ const { short, long, gpt3 } = Astro.props;
             </div>
         </div>
     </div>
+
+    <p><button>Add to Cart</button></p>
 </main>
 </Page>
 

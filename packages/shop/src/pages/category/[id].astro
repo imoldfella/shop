@@ -1,5 +1,8 @@
 ---
-import folders from "../../components/folder.json";
+import folders from "../../components/folder.json"
+import shop from "../../components/shop.json"
+import {CodeItem} from "../../components/CodeItem.js"
+import Page from "../../layouts/Page.astro"
 
 // generate the codes in a category
 export function getStaticPaths() {
@@ -8,13 +11,25 @@ export function getStaticPaths() {
             params: {
                 id: e.name,
             },
+            props: {
+                name: e.name,
+                begin: e.begin,
+                end: e.end
+            }
         };
     });
 }
 
-const { id } = Astro.params;
+const { name, begin,end } = Astro.props;
 ---
 
+<Page title={name+""} back={true}>
 <main>
-    wip {id}
+    { name } { begin} { end} 
+    { shop.filter((e)=>{
+        return false || ( e.code >= begin! && e.code < end!)
+    }).map((e)=>{
+        <CodeItem title={e.description.short} subtitle={e.code} code={e.code} />
+    }) }
 </main>
+</Page>

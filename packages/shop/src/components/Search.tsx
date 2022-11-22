@@ -1,8 +1,9 @@
 // import React,{useState} from 'react'
 import { Icon } from "solid-heroicons"
 import { xMark, chevronLeft, chevronRight, shoppingCart } from 'solid-heroicons/solid'
-import codes from './shop500.json'
+import codes from './shop.json'
 import { createSignal, ComponentProps, ParentProps } from 'solid-js'
+import { CodeItem } from './CodeItem'
 
 // subtitle, title, service code
 const data: any[] = []
@@ -33,20 +34,7 @@ export async function addCart(id: string) {
 // other goes to reference page.
 
 
-export function Result(props: { title: string, subtitle: string, code: string }) {
-    return (<div class="fileList hover:bg-slate-900">
-        <a class="fl-tool pl-4">
-            <Icon path={shoppingCart} class='h-6 w-6' />
-        </a>
-        <a class="card" href={"code/" + props.code}>
-            <div class="fl-title"><span>{props.title}</span></div>
-            <div class="fl-subtitle"><span>{props.subtitle}</span></div>
-        </a>
-        <a class="fl-tool" href={"code/" + props.code}>
-            <Icon path={chevronRight} class='w-6 h-6' />
-        </a>
-    </div>)
-}
+
 
 export function Button(props: ParentProps<{
     onClick: () => void,
@@ -61,7 +49,7 @@ export function Search() {
 
     let results = () => {
         var s = search().toLowerCase()
-        return s ? codes.filter((e) => e.ENT.join(" ").toLowerCase().includes(s)) : codes
+        return s ? codes.filter((e) => [e.code + " " + e.description.short].join(" ").toLowerCase().includes(s)) : codes
     }
 
     const oninput = (e: any) => {
@@ -86,7 +74,7 @@ export function Search() {
 
 
     </nav>
-        {results().map((e) => (<Result title={e.ENT[1] + ""} subtitle={e.ENT[0] + ""} code={e.ENT[0]} />))}
+        {results().map((e) => (<CodeItem title={e.description.short} subtitle={e.code} code={e.code} />))}
 
     </div>)
 }

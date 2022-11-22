@@ -11,9 +11,9 @@ import folders from "../components/folder.json";
 	<div class="mt-8 flex flex-wrap">
 		{
 			folders.map((e) => (
-				<Card
+				 <Card
 					title={e.name}
-					href="#"
+					href={"category/"+e.name}
 					src={e.name.toLowerCase() + ".jpeg"}
 				/>
 			))
