@@ -1,0 +1,3 @@
+
+
+This is a code for a medical procedure where a liquid medication is injected into a vein using a syringe. The medication is pushed into the vein all at once (as opposed to being dripped in slowly over time). This type of injection is often used for treatments that need to act quickly, or for medications that cannot be taken by mouth.

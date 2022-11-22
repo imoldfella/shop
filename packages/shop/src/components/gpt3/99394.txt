@@ -1,0 +1,3 @@
+
+
+This means that a new patient, who is between 12 and 17 years old, will have a preventative visit.

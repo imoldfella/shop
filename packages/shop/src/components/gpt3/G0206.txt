@@ -1,0 +1,3 @@
+
+
+G0206 is a code for Diagnostic mammography, which is a special X-ray of the breasts used to find problems such as tumors. The code includes computer-aided detection (cad), which means that a computer is used to help find tumors that might not be seen on the X-ray alone. The code is for unilateral mammography, which means that only one breast is X-rayed.

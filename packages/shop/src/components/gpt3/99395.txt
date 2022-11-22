@@ -1,0 +1,3 @@
+
+
+This is a medical code for an established patient (someone who has been to the doctor before) between the ages of 18 and 39 who is coming in for a "periodic preventive medicine examination."

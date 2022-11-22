@@ -1,0 +1,3 @@
+
+
+This is a medical order for a special kind of X-ray. The radiologist will take X-rays of both of the patient's arms and legs. This X-ray exam is used to look for problems with the bones or joints in the extremities.

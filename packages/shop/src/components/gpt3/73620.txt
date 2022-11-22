@@ -1,0 +1,3 @@
+
+
+A doctor performs an x-ray examination of a patient's foot. The doctor takes two different pictures (views) of the foot, from different angles.

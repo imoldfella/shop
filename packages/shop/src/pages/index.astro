@@ -1,33 +1,31 @@
 ---
-import Page from '../layouts/Page.astro';
-import Card from '../components/Card.astro';
-import Welcome from '../components/Welcome.md'
-import Warning from '../components/Warning.md'
-import folders from '../../public/folder.json'
+import Page from "../layouts/Page.astro";
+import Card from "../components/Card.astro";
+import Welcome from "../components/Welcome.md";
+import Warning from "../components/Warning.md";
+import folders from "../components/folder.json";
 ---
 
-<Page title="Welcome to Astro." back={false}  >
-	<Welcome  />	
-		<div class='mt-8 flex flex-wrap'>
+<Page title="Iron shop" back={false}>
+	<Welcome />
+	<div class="mt-8 flex flex-wrap">
 		{
-			folders.map((e)=><Card title={e.name}  
-				href='#'
-				src={e.name.toLowerCase()+".jpeg"} ></Card>)
-		}</div>	
-		
-	
-		
+			folders.map((e) => (
+				<Card
+					title={e.name}
+					href="#"
+					src={e.name.toLowerCase() + ".jpeg"}
+				/>
+			))
+		}
+	</div>
 
-
-<Warning />
-	
+	<Warning />
 </Page>
 
 <style>
-.container {
-
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(106px, 1fr));
-}
-
+	.container {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(106px, 1fr));
+	}
 </style>

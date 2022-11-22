@@ -1,0 +1,3 @@
+
+
+This is a medical code for a skin excision that is 0.6-1 centimeters (about the width of a dime). The code includes the margin (the healthy tissue around the tumor that is removed to prevent the cancer from coming back) and the excision (the removal of the tumor).

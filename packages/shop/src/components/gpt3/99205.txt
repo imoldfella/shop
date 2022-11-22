@@ -1,0 +1,3 @@
+
+
+This is the code for a doctor's appointment for a new patient who is not in the hospital. The visit usually lasts about an hour.

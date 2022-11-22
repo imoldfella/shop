@@ -1,19 +1,10 @@
 ---
-import Bare from '../layouts/Bare.astro';
-import Card from '../components/Card.astro';
-import Welcome from '../components/Welcome.md'
-import Warning from '../components/Warning.md'
-import folders from '../../public/folder.json'
-import '../styles/nav.css'
-import '../styles/global.css'
-import { Search } from '../components/Search'
+import Bare from "../layouts/Bare.astro";
+import "../styles/nav.css";
+import "../styles/global.css";
+import { Search } from "../components/Search";
 ---
-<Bare >
-    <Search client:only />
+
+<Bare>
+    <Search client:only="solid" />
 </Bare>
-
-<script>
-    import { init, search,clearSearch} from '../ts/searchlib'
-    init()
-</script>
-

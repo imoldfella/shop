@@ -1,0 +1,3 @@
+
+
+This is a code for a medical service. It means that a doctor or other health care provider will talk to a patient on the phone for 11-20 minutes. During this time, they will assess the patient's condition and discuss possible treatments.

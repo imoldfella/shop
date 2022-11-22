@@ -1,0 +1,3 @@
+
+
+A 99204 office/outpatient visit is a visit to a doctor's office or outpatient clinic. This is for a new patient who has never seen this doctor before, and it typically lasts 45 minutes.

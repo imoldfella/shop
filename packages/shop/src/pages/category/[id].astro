@@ -1,0 +1,20 @@
+---
+import folders from "../../components/folder.json";
+
+// generate the codes in a category
+export function getStaticPaths() {
+    return folders.map((e) => {
+        return {
+            params: {
+                id: e.name,
+            },
+        };
+    });
+}
+
+const { id } = Astro.params;
+---
+
+<main>
+    wip {id}
+</main>

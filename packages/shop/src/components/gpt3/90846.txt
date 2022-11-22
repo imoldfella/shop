@@ -1,0 +1,3 @@
+
+
+This is a code for billing purposes that indicates that the therapist provided 50 minutes of family therapy, with the patient present, and additional 50 minutes of family therapy without the patient present.

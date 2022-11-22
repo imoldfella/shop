@@ -1,8 +1,8 @@
 // import React,{useState} from 'react'
-import {Icon} from "solid-heroicons"
-import {xMark,chevronLeft,chevronRight,shoppingCart  } from 'solid-heroicons/solid'
+import { Icon } from "solid-heroicons"
+import { xMark, chevronLeft, chevronRight, shoppingCart } from 'solid-heroicons/solid'
 import codes from './shop500.json'
-import {createSignal} from 'solid-js'
+import { createSignal, ComponentProps, ParentProps } from 'solid-js'
 
 // subtitle, title, service code
 const data: any[] = []
@@ -33,66 +33,63 @@ export async function addCart(id: string) {
 // other goes to reference page.
 
 
-export function Result(props:{title: string, subtitle: string}){
+export function Result(props: { title: string, subtitle: string, code: string }) {
     return (<div class="fileList hover:bg-slate-900">
         <a class="fl-tool pl-4">
-            <Icon path={shoppingCart} class='h-6 w-6'/>
+            <Icon path={shoppingCart} class='h-6 w-6' />
         </a>
-        <a class="card" href="#">
+        <a class="card" href={"code/" + props.code}>
             <div class="fl-title"><span>{props.title}</span></div>
             <div class="fl-subtitle"><span>{props.subtitle}</span></div>
         </a>
-        <a class="fl-tool" href="#">
-            <Icon path={chevronRight} class='w-6 h-6'/>
+        <a class="fl-tool" href={"code/" + props.code}>
+            <Icon path={chevronRight} class='w-6 h-6' />
         </a>
-        </div>)
+    </div>)
 }
 
-export function Button(props: React.PropsWithChildren<{
-    onClick: ()=>void
+export function Button(props: ParentProps<{
+    onClick: () => void,
 }>) {
     return (<div class="navbar-right opacity-50 hover:opacity-100">
-        <button aria-label="edit" class="navbar-tool"  onClick={props.onClick}>{props.children}</button>
+        <button aria-label="edit" class="navbar-tool" onClick={props.onClick}>{props.children}</button>
     </div>)
 }
 
 export function Search() {
-    const [search,setSearch] = createSignal('')
+    const [search, setSearch] = createSignal('')
 
-    let results = codes;
-    if (search) {
-        results = []
-        var s = search.toLowerCase()
-        results = codes.filter((e) => e.ENT[0]==search || (e.ENT[1]+"").includes(s))
+    let results = () => {
+        var s = search().toLowerCase()
+        return s ? codes.filter((e) => e.ENT.join(" ").toLowerCase().includes(s)) : codes
     }
 
-    const oninput = (e: any)=>{
+    const oninput = (e: any) => {
         if (!e) return
-        const v = (e.target as HTMLInputElement)?.value??""
+        const v = (e.target as HTMLInputElement)?.value ?? ""
         setSearch(v)
     }
 
     return (<div><nav class="searchbar" role="navigation" aria-label="main navigation">
+        <Button onClick={() => history.back()}>
+            <Icon path={chevronLeft} class='h-6 w-6' />
+        </Button>
 
-      <Button onClick={()=>history.back()}>
-        <Icon path={chevronLeftIcon} class='h-6 w-6' />
-    </Button>
 
+        <input id="s1" value={search()}
+            class=' bg-transparent focus:outline-none text-sm'
+            autofocus type="text" placeholder="Search for service" onInput={oninput} />
 
-    <input id="s1" value={search}
-        class=' bg-transparent focus:outline-none text-sm'
-     autoFocus type="text" placeholder="Search for service" onInput={oninput}/>
-
-    <Button onClick={()=>setSearch('')}>
-        <XMarkIcon class='h-6 w-6' />
-    </Button>
+        <Button onClick={() => setSearch('')}>
+            <Icon path={xMark} class='h-6 w-6' />
+        </Button>
 
 
     </nav>
-    { results.map((e) => (<Result title={e.ENT[1]+""} subtitle={e.ENT[0]+""} />))}
-    
+        {results().map((e) => (<Result title={e.ENT[1] + ""} subtitle={e.ENT[0] + ""} code={e.ENT[0]} />))}
+
     </div>)
-}  
+}
 
 
 {/* <div class="navbar-right">

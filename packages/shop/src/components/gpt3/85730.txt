@@ -1,0 +1,3 @@
+
+
+A blood clotting test. A sample of blood is drawn and mixed with a liquid that starts the process of clotting. The time it takes for the blood to clot is then measured.

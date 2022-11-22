@@ -1,0 +1,3 @@
+
+
+This code is for when a qualified non-physician health care professional (like a nurse or a physician assistant) provides online digital assessment and management services to an established patient. These services can be provided for up to 7 days, and can cumulatively total 21 or more minutes.

@@ -1,0 +1,3 @@
+
+
+The respiratory flow volume loop shows how much air someone takes in with each breath and how much air they breathe out. The left side of the graph is inspiration (breathing in) and the right side is expiration (breathing out). The top of the graph is the total amount of air that was taken in and the bottom is the total air that was breathed out.

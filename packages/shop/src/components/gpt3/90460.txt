@@ -1,0 +1,3 @@
+
+
+The 90460 IM ADMIN 1ST/ONLY COMPONENT; Immunization administration in children < 18 is a code that is used to tell the insurance company that the doctor administered an immunization to a child who is less than 18 years old.
