@@ -1,7 +1,7 @@
 // import React,{useState} from 'react'
 import { Icon } from "solid-heroicons"
 import { xMark, chevronLeft, chevronRight, shoppingCart } from 'solid-heroicons/solid'
-import codes from './shop.json'
+import codes from '../config/services/shop.json'
 import { createSignal, ComponentProps, ParentProps } from 'solid-js'
 import { CodeItem } from './CodeItem'
 
