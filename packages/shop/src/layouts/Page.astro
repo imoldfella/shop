@@ -10,7 +10,7 @@ import '../styles/nav.css'
 import { Icon } from 'solid-heroicons'
 import { chartBar,magnifyingGlass, xMark, chevronLeft, chevronRight, shoppingCart, printer } from 'solid-heroicons/solid'
 import { Show } from 'solid-js'
-import {CartButtonCounted} from '../components/AddToCart'
+import {CartButtonCounted, Aicon} from '../components/AddToCart'
 
 const { title='Ironshop', back=true, cart=false} = Astro.props;    
 ---
@@ -30,11 +30,11 @@ const { title='Ironshop', back=true, cart=false} = Astro.props;
   <body class='dark:bg-black dark:text-white' >
   <nav class="navbar" role="navigation" aria-label="main navigation">
   <div class='navbar-left'>
-  {back &&  <button class="navbar-tool" onclick='history.back()' >
-  <Icon path={chevronLeft}/></button>
+  {back &&  <button  onclick='history.back()' >
+  <Icon class="h-6 w-6 text-blue-600 hover:text-blue-400 mx-2" path={chevronLeft}/></button>
 }
-  {!back && <a href='https://datagrove.com' class="navbar-tool" aria-label="logo" >
-    <Icon path={chartBar} />
+  {!back && <a href='https://datagrove.com' class="" aria-label="logo" >
+    <Icon path={chartBar} class='h-6 w-6 text-blue-600 hover:text-blue-400 mx-2'/>
   </a>
 }
   </div>
@@ -45,10 +45,10 @@ const { title='Ironshop', back=true, cart=false} = Astro.props;
   </div>
   <div class="navbar-right">
     <Show when={cart}>
-      <a class="navbar-tool" href='/cart'><Icon path={printer }/> </a>
+      <Aicon  href='/cart' path={printer }/>
     </Show>
     <Show when={!cart}>
-    <a class="navbar-tool" href='/search'><Icon path={magnifyingGlass }/> </a>
+      <Aicon href='/search' path={magnifyingGlass}/>
       <CartButtonCounted/>
     </Show>
   </div>
