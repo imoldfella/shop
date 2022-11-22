@@ -1,6 +1,6 @@
 import { Icon } from "solid-heroicons";
 import { shoppingCart } from "solid-heroicons/solid";
-import { createSignal, ParentProps } from "solid-js"
+import { createSignal, ParentProps , JSX} from "solid-js"
 
 export class Cart {
     count = 0
@@ -29,6 +29,7 @@ export function AlertBubble(props: ParentProps<{
     </div>)
 }
 
+// this is client loaded so why isn't it working?
 export function CartButtonCounted() {
     const countstr = () => getCart().count ? getCart().count + "" : ""
     return (<a class="" href='/cart'>
@@ -37,10 +38,12 @@ export function CartButtonCounted() {
             <Icon class='h-6 w-6  text-blue-600 hover:text-blue-400' path={shoppingCart} /></div></a>)
 }
 
-export function Aicon(props: { path: string, href: string }) {
+
+export function Aicon<T>(props: { path: {path:JSX.Element}, href: string }) {
     return <a href={props.href}>
         <div class='inline-block mt-2'>
-            <Icon class='h-6 w-6 px-4 text-blue-600 hover:text-blue-400' path={props.path} /></div> </a>
+            <Icon path={props.path} class='h-6 w-6 px-4 text-blue-600 hover:text-blue-400' 
+                 /></div> </a>
 }
 
 /*

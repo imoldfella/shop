@@ -49,7 +49,7 @@ const { title='Ironshop', back=true, cart=false} = Astro.props;
     </Show>
     <Show when={!cart}>
       <Aicon href='/search' path={magnifyingGlass}/>
-      <CartButtonCounted/>
+      <CartButtonCounted client:load/>
     </Show>
   </div>
 
