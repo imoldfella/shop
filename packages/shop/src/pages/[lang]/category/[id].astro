@@ -1,0 +1,63 @@
+---
+import { Icon } from "solid-heroicons"
+import { For } from "solid-js"
+import { procFolders, ProcFolder, ProcCode } from "../../../claims"
+import { CodeItem } from "../../../components/CodeItem.js"
+import Page from "../../../layouts/Page.astro"
+import { folder as folderIcon, chevronRight } from "solid-heroicons/solid";
+
+// generate the codes in a category for a language
+export async function getStaticPaths() {
+    const folders = await procFolders();
+    return folders.map((e) => {
+        return {
+            params: {
+                id: e.name,
+                lang: e.lang
+            },
+            props: {
+                ...e,
+            },
+        };
+    });
+}
+
+/*
+    <For each={folder}>{(cat,i)=>
+        ss
+    } }</For>
+    <For each={code}>
+       
+    </For>*/
+
+export interface Props {
+    name: string;
+    icon: JSX.Element;
+    folder: ProcFolder[];
+    code: ProcCode[];
+}
+
+const {  folder, code } = Astro.props;
+---
+
+<Page>
+    <main>
+        <For each={folder}>{(e) => 
+            <li class='flex'>
+                <Icon class='w-6 h-6 flex-none' path={folderIcon}/>
+                <div class='flex-1'>e.label</div>
+                <a href={"/category/"+e.name} ><Icon class='w-6 h-6 flex-none' path={chevronRight} /></a>
+            </li>}</For>
+        <For each={code}
+            >{
+                (e) => (
+                    <CodeItem
+                        title={e.description.short}
+                        subtitle={e.code}
+                        code={e.code}
+                    />
+                )
+            }</For
+        >
+    </main>
+</Page>

@@ -15,34 +15,6 @@ export function ModalNav(props: { title: string, setClose: () => void }) {
     </nav>)
 }
 
-export function Nav(props: { back: boolean, cart: boolean }) {
-    return (<nav class="navbar" role="navigation" aria-label="main navigation">
-        <div class='navbar-left'>
-            {props.back && <button onclick={() => history.back()} >
-                <Icon class="h-6 w-6 text-blue-600 hover:text-blue-400 mx-2" path={chevronLeft} /></button>
-            }
-            {!props.back && <a href='https://datagrove.com' class="" aria-label="logo" >
-                <Icon path={chartBar} class='h-6 w-6 text-blue-600 hover:text-blue-400 mx-2' />
-            </a>
-            }
-        </div>
-        <div class="navbar-brand">
-            <a class="navbar-item" href="/index.html">
-                💪 Iron Shop
-            </a>
-        </div>
-        <div class="navbar-right">
-            <Show when={props.cart}>
-                <Aicon href='/cart' path={printer} />
-            </Show>
-            <Show when={!props.cart}>
-                <Aicon href='/search' path={magnifyingGlass} />
-                <CartButtonCounted />
-            </Show>
-        </div>
-
-    </nav>)
-}
 
 // search as nav
 export function searchInput() {

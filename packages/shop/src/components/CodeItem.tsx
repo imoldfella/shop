@@ -3,6 +3,11 @@ import { Icon } from "solid-heroicons"
 import { xMark, chevronLeft, chevronRight, shoppingCart } from 'solid-heroicons/solid'
 import '@astrojs/solid-js'
 
+
+// what if ListItem had three children; leading, content, trailing?
+// ist that doing any thing useful though that flex doesn't already do?
+
+
 export function CodeItem(props: { title: string, subtitle: string, code: string }) {
     return (<div class="fileList hover:bg-slate-900">
         <a class="fl-tool pl-4">

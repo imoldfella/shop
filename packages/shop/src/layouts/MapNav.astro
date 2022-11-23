@@ -1,0 +1,35 @@
+---
+import { Icon } from "solid-heroicons";
+import { Show } from "solid-js";
+import { Aicon, CartButtonCounted } from "../components/AddToCart";
+import { chartBar, chevronLeft, magnifyingGlass, printer } from "solid-heroicons/solid";
+
+const { title="💪 Iron Shop",  back = true, cart = false } = Astro.props;
+---
+
+<nav class="navbar" role="navigation" aria-label="main navigation">
+    <div class='navbar-left'>
+        {back && <button onclick='history.back()' >
+            <Icon class="h-6 w-6 text-blue-600 hover:text-blue-400 mx-2" path={chevronLeft} /></button>
+        }
+        {!back && <a href='https://datagrove.com' class="" aria-label="logo" >
+            <Icon path={chartBar} class='h-6 w-6 text-blue-600 hover:text-blue-400 mx-2' />
+        </a>
+        }
+    </div>
+    <div class="navbar-brand">
+        <a class="navbar-item" href="/index.html">
+            {title}
+        </a>
+    </div>
+    <div class="navbar-right">
+        <Show when={cart}>
+            <Aicon href='/cart' path={printer} />
+        </Show>
+        <Show when={!cart}>
+            <Aicon href='/search' path={magnifyingGlass} />
+            <CartButtonCounted client:load/>
+        </Show>
+    </div>
+
+</nav>

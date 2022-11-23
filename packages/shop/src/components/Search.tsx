@@ -1,8 +1,9 @@
 // import React,{useState} from 'react'
 import { Icon } from "solid-heroicons"
 import { xMark, chevronLeft, chevronRight, shoppingCart } from 'solid-heroicons/solid'
-import codes from '../config/codes.json'
+
 import { createSignal, ComponentProps, ParentProps } from 'solid-js'
+import type { ProcCode } from "../claims"
 import { CodeItem } from './CodeItem'
 
 // subtitle, title, service code
@@ -44,7 +45,9 @@ export function Button(props: ParentProps<{
     </div>)
 }
 
-export function Search() {
+export function Search({codes}: {
+    codes: ProcCode[]
+}) {
     const [search, setSearch] = createSignal('')
 
     let results = () => {

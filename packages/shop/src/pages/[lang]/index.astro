@@ -1,0 +1,45 @@
+---
+import { useLanguages } from "../../claims";
+import Page from "../../layouts/Page.astro";
+//import Card from "../../components/Card.astro";
+import Welcome from "../components/Welcome.md";
+
+
+// here we want to start with the root category, plus some welcome things?
+// the root category is not really what we want though, we designed this for icons
+export async function languagePaths() {
+	const l = await useLanguages()
+	return l.map( (e) => {
+		return {
+			params:  {
+				lang: e.lang
+			},
+			props: {
+				lang: e.lang
+			}
+		}
+	})
+}
+
+export const getStaticPaths = languagePaths
+export interface Props {
+	lang: string
+}
+const {lang} = Astro.props
+---
+
+<Page title="Iron shop" back={false}>
+	<Welcome />
+	<div class="mt-8 flex flex-wrap">
+
+	</div>
+
+	
+</Page>
+
+<style>
+	.container {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(106px, 1fr));
+	}
+</style>

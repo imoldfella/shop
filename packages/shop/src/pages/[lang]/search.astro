@@ -1,0 +1,37 @@
+---
+import Bare from "../../layouts/Bare.astro";
+import "../styles/nav.css";
+import "../styles/global.css";
+import { Search } from "../../components/Search";
+import { ProcCode, procCodes1, useLanguages } from "../../claims";
+
+// we need to get static paths for all languages, put just one language in props?
+export async function generateStaticPaths(){
+    const lang = await useLanguages()
+
+
+    return lang.map(async (e)=>{
+       
+
+        return {
+            params: {
+                lang: e.lang
+            },
+            props: {
+                codes: await procCodes1(e.lang)
+            }
+        }
+    })
+
+}
+export interface Props {
+    codes: ProcCode[]
+}
+const { codes } = Astro.props
+---
+
+<Bare>
+    <Search codes={ codes } client:load />
+</Bare>
+
+<!--   -->
