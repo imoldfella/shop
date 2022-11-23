@@ -1,43 +1,41 @@
 
-// implement your own payer for custom plans
+// should be mostly types
+
+// implement your own payer for custom plans - recompile with changes?
 export interface Payor {
     login: string,   // a bot handle we can fetch data from
     // this is the list of plans used anonymously
     anonPlan: Plan[]
     plan: PlanFn
 }
+export type PlanFn = (state: Subscriber, covered: string | undefined) => Plan[]
+
+// cart can be serialize to string for localstorage
+export interface AdjudicationInput {
+    payor: Payor
+    subscriber: Subscriber
+    patient: string
+}
+
 
 
 export class Adjudication {
     version: number | undefined = 1
     constructor(public input: AdjudicationInput, eob: Eob[]) {
     }
-    static empty(): Adjudication {
-        return {
 
+    static fromJson(store: string): Adjudication | undefined {
+        if (store) {
+            return JSON.parse(store) as Adjudication
         }
-    }
-    static fromJson(store: string): Adjudication {
-        if (!store) { return Adjudication.empty() }
-
-        const o = JSON.parse(store) as Adjudication
-
-        return o
+        return undefined
     }
 
-    toJson() {
+    toJson(): string {
         return JSON.stringify(this)
     }
 }
 
-export class AdjudicationInput {
-    constructor(
-        public claim: Claim = ,
-        public payor: Payor,
-        public subscriber?: Subscriber,
-        public patient?: string) {
-    }
-}
 type AdjudicateFn = (claim: AdjudicationInput) => Promise<Eob[]>
 
 async function adjudicate(a: AdjudicationInput): Promise<Eob[]> {
@@ -52,7 +50,6 @@ async function adjudicate(a: AdjudicationInput): Promise<Eob[]> {
     return r.flat(1)
 }
 
-export type PlanFn = (state: Subscriber, covered: string | undefined) => Plan[]
 
 
 // Claim -> *pricing* -> PricedClaim -> *sharing* -> Eob
@@ -76,22 +73,7 @@ export class Claim {
 
     }
 
-    static random() {
-        return new Claim([
-            {
-                code: '70450',
-                desc: ' CT scan head or brain without dye',
-                npi: '1234567890',
-                provider: 'Jill, MD'
-            },
-            {
-                code: '70451',
-                desc: 'Anesthesia',
-                npi: '1234567891',
-                provider: 'Joe, MD',
-            }
-        ])
-    }
+
 }
 
 
@@ -129,41 +111,29 @@ export function simplePlan(x: string) {
             contract,
         ],
         sharing: sharing(),
-        adjudicate: adjudicate(),
-        plan: plan()
+        // adjudicate: adjudicate(),
+        // plan: plan()
     }
 }
 
 // should just be pricing followed by sharing
-
-export function adjudicate3(): AdjudicateFn {
-    return async (claim: Claim) => {
-        return []
-    }
-}
-
 // the shopper can pick the contract to process the claim under
 // some contracts may be more expensive but offer different providers.
 // do that though we process it under every contract and coalesce the ones with the same price
 
 
 // maybe these need to be async to allow fetch?
-export function simplePayor(): Payor {
-    let p = simplePlan("")
-    return {
-        login: "",
-        anonPlan: [
-            p
-        ],
-        plan: (state: Subscriber, covered: Patient) => p
-    }
-}
+// export function simplePayor(): Payor {
+//     let p = simplePlan("")
+//     return {
+//         login: "",
+//         anonPlan: [
+//             p
+//         ],
+//         plan: (state: Subscriber, covered: Patient) => p
+//     }
+// }
 
-export function plan(): PlanFn {
-    return (state: Subscriber, covered: Patient): Plan => {
-        throw "not done"
-    }
-}
 
 // the priced claim may provide some category information too: generic, etc.
 type SharingFn = (claim: PricedClaim, subscriber: Subscriber) => Eob

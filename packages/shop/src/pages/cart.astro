@@ -1,9 +1,8 @@
 ---
 import Page from "../layouts/Page.astro";
-
+import { Eob } from "../components/eob";
 ---
 
 <Page title="Iron shop" back={true} cart={true}>
-    Show me a cart
+    <Eob client:load />
 </Page>
-
