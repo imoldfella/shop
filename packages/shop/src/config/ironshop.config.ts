@@ -1,6 +1,6 @@
 
 
 export const config = {
-    login: 'xx',
+    title: 'Iron Shop'
 
 }

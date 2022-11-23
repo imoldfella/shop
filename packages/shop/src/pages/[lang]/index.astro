@@ -1,41 +1,17 @@
 ---
-import { useLanguages } from "../../claims";
-import Page from "../../layouts/Page.astro";
-//import Card from "../../components/Card.astro";
-import Welcome from "../components/Welcome.md";
+import MapPage from "~/layouts/MapPage.astro";
+import languages from '../../i18n/languages';
+import * as br from "~/config/"
 
 
-// here we want to start with the root category, plus some welcome things?
-// the root category is not really what we want though, we designed this for icons
-export async function languagePaths() {
-	const l = await useLanguages()
-	return l.map( (e) => {
-		return {
-			params:  {
-				lang: e.lang
-			},
-			props: {
-				lang: e.lang
-			}
-		}
-	})
-}
+export const getStaticPaths = () => Object.keys(languages).map((lang) => ({ params: { lang } }));
 
-export const getStaticPaths = languagePaths
-export interface Props {
-	lang: string
-}
-const {lang} = Astro.props
+
 ---
-
-<Page title="Iron shop" back={false}>
-	<Welcome />
-	<div class="mt-8 flex flex-wrap">
-
-	</div>
-
+<!-- start right out on a map page -->
+<MapPage title={br.config.title} back={false}>
 	
-</Page>
+</MapPage>
 
 <style>
 	.container {

@@ -11,6 +11,18 @@ import topLevelAwait from "vite-plugin-top-level-await"
 // https://astro.build/config
 export default defineConfig({
   vite: {
+      server: {
+        proxy:{
+            '/db': {
+                target: 'http://localhost:8080',
+                secure: false,
+            },
+            '/fonts': {
+              target: 'http://localhost:8080',
+              secure: false,
+            } 
+        }
+    },
     plugins: [
       topLevelAwait()
     ]

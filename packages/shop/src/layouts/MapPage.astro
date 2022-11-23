@@ -8,13 +8,12 @@
 import "../styles/global.css"
 import "../styles/nav.css"
 import "./MapNav.astro"
-import MapNav from "./MapNav.astro";
-
+import { Map } from "../map"
 // this layout will use floating user interface components
 // we need to pull back nav so we can only client load the cart.
 
 
-const { back = true, cart = false } = Astro.props;
+
 ---
 
 <!DOCTYPE html>
@@ -30,10 +29,8 @@ const { back = true, cart = false } = Astro.props;
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   </head>
   <body class="dark:bg-black dark:text-white">
-    <MapNav cart={cart} back={back} client:load />
-    <div>
+      <Map client:only/>
       <slot />
-    </div>
     <!-- {{.Content}}f
   {{.Loader}}
   <script src='/cart.js'></script> -->
