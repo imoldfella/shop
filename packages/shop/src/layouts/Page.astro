@@ -5,9 +5,9 @@
 //     cart: boolean | undefined
 // }
 
-import "../styles/global.css"
-import "../styles/nav.css"
-import Nav  from "./Nav.astro"
+import "../styles/global.css";
+import "../styles/nav.css";
+import Nav from "./Nav.astro";
 
 const { back = true, cart = false } = Astro.props;
 ---
@@ -25,7 +25,7 @@ const { back = true, cart = false } = Astro.props;
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   </head>
   <body class="dark:bg-black dark:text-white">
-    <Nav cart={cart} back={back} client:load />
+    <Nav cart={cart} back={back} />
     <div>
       <slot />
     </div>
