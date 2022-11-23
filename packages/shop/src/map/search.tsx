@@ -1,44 +1,20 @@
 
+import { bars_3 , magnifyingGlass} from 'solid-heroicons/solid'
+import { Icon } from 'solid-heroicons'
 
-export function Card(props: { children?: ReactNode }) {
-    return (<div class='rounded border-gray-400'>
-        {props.children}
-    </div>)
-}
+export function Search() {
+    return <div class='fixed p-4 w-96 flex top-4 left-4 rounded bg-white text-black'>
+        <Icon class='w-6 h-6' path={bars_3} />
+        <input autofocus class='px-2 focus:outline-none flex-1' placeholder='Search for provider'>
 
-
-export interface SearchOptions {
-    buttons: [string, string, string][]
-}
-export function MapSearch(props: {
-    options?: SearchOptions
-    found: ReactNode[]
-    suggest: string[]
-    setSearch: (x: string)=>void
-    near?: [number, number] //  by default will use current location
-}) {
-    const [search, setSearch] = useState("")
-
-    const b: ReactNode[] = props.options?.buttons.map(e => {
-        let [search, icon, text] = e
-        return (<button onClick={() => setSearch(search)}>
-            <Localized id={icon}>
-                <svg /></Localized>
-            <Localized id={text}>
-                <span /></Localized></button>)
-    }) ?? []
-
-    return (
-        <div>
-            <Mapgl />
-            <div className='z-10 fixed p-4'>
-                <Card><input placeholder='search'
-                    value={search}
-                    onChange={(e) => { setSearch(e.target.value) }} />
-                </Card>
-                {b}
-
-            </div>
+        </input>
+        <Icon class='w-6 h-6' path={magnifyingGlass} />
         </div>
-    )
+    
+}
+
+// we need a drawer, we need a translucent closer.
+export function Drawer() {
+
+
 }

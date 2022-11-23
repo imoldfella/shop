@@ -8,7 +8,7 @@
 import "../styles/global.css"
 import "../styles/nav.css"
 import "./MapNav.astro"
-import { Map } from "../map"
+import { Map, Search } from "../map"
 // this layout will use floating user interface components
 // we need to pull back nav so we can only client load the cart.
 
@@ -29,7 +29,8 @@ import { Map } from "../map"
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   </head>
   <body class="dark:bg-black dark:text-white">
-      <Map client:only/>
+      <!-- <Map client:only/> -->
+      <Search client:only/>
       <slot />
     <!-- {{.Content}}f
   {{.Loader}}
