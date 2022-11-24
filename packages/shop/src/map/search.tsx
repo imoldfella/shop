@@ -1,5 +1,5 @@
 
-import { bars_3 , magnifyingGlass} from 'solid-heroicons/solid'
+import { bars_3, magnifyingGlass } from 'solid-heroicons/solid'
 import { Icon } from 'solid-heroicons'
 
 export function Search() {
@@ -9,12 +9,12 @@ export function Search() {
 
         </input>
         <Icon class='w-6 h-6' path={magnifyingGlass} />
-        </div>
-    
+    </div>
+
 }
 
 // we need a drawer, we need a translucent closer.
 export function Drawer() {
-
+    return <div></div>
 
 }

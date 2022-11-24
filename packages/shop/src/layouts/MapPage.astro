@@ -5,15 +5,12 @@
 //     cart: boolean | undefined
 // }
 
-import "../styles/global.css"
-import "../styles/nav.css"
-import "./MapNav.astro"
-import { Map, Search } from "../map"
+import "../styles/global.css";
+import "../styles/nav.css";
+import "./MapNav.astro";
+import { Map, Search } from "../map";
 // this layout will use floating user interface components
 // we need to pull back nav so we can only client load the cart.
-
-
-
 ---
 
 <!DOCTYPE html>
@@ -29,11 +26,28 @@ import { Map, Search } from "../map"
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   </head>
   <body class="dark:bg-black dark:text-white">
-      <!-- <Map client:only/> -->
-      <Search client:only/>
+    <!-- <Map client:only/> -->
+    <Search client:only />
+    <div class="drawer">
+      <input id="my-drawer" type="checkbox" class="drawer-toggle" />
+      <div class="drawer-content">
+        <!-- Page content here -->
+        <label for="my-drawer" class="btn btn-primary drawer-button"
+          >Open drawer</label
+        >
+      </div>
+      <div class="drawer-side">
+        <label for="my-drawer" class="drawer-overlay"></label>
+        <ul class="menu p-4 w-80 bg-base-100 text-base-content">
+          <!-- Sidebar content here -->
+          <li><a>Sidebar Item 1</a></li>
+          <li><a>Sidebar Item 2</a></li>
+        </ul>
+      </div>
       <slot />
-    <!-- {{.Content}}f
+      <!-- {{.Content}}f
   {{.Loader}}
   <script src='/cart.js'></script> -->
+    </div>
   </body>
 </html>
