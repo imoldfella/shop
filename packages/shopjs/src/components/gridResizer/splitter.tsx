@@ -8,7 +8,7 @@ export const clampPercentage = (percentage: number, lowerBound: number, upperBou
 export const Splitter = ({ children }: { children: JSX.Element[] }) => {
     let resizer!: HTMLDivElement
     let grid!: HTMLDivElement
-    const [left, setLeft] = createSignal(1.25);
+    const [left, setLeft] = createSignal(.5);
     const changeLeft = (clientX: number, clientY: number) => {
         const rect = grid.getBoundingClientRect();
         let position = clientX - rect.left - resizer.offsetWidth / 2;

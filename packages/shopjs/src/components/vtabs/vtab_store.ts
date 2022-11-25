@@ -14,6 +14,8 @@ export class VtabStore {
 }
 
 export const [vtabPin, setVtabPin] = createSignal(false)
+export const [menuOpen, setMenuOpen] = createSignal(true)
+
 //export const [vtabOpen, setOpen] = createSignal(true)
 export const [vtabs, setVtabs] = createStore<VtabStore>(new VtabStore);
 
