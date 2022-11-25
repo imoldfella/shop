@@ -1,6 +1,7 @@
 import { Icon } from "solid-heroicons"
 import { chevronRight, sun, moon, cog_6Tooth as gear} from "solid-heroicons/solid"
 import { createSignal, Show } from "solid-js";
+import LanguageSelect from "../i18n";
 
 const [isDark, setIsDark] = createSignal(true)
 
@@ -26,8 +27,10 @@ export const DarkButton = ()=> {
     </button>)
 }
 
+// language selector
+
 export const SitePreference = () => {
-    const [collapsed, setCollapsed] = createSignal(false);
+    const [collapsed, setCollapsed] = createSignal(true);
   
     return (
       <div class="border border-solid-lightitem bg-solid-light dark:bg-solid-dark dark:border-solid-darkitem rounded-lg">
@@ -51,7 +54,9 @@ export const SitePreference = () => {
         </button>
         <Show when={!collapsed()}>
           <div aria-label="preferences" class="p-4 border-t border-solid-lightitem dark:border-solid-darkitem">
-            <DarkButton></DarkButton>
+            
+            <div class='flex'><div class='flex-1'>Color Theme</div><div class='flex-none'><DarkButton/></div></div>
+            <div class='flex'><div class='flex-1'>Language</div><div class='flex-none'><LanguageSelect/></div></div>
           </div>
         </Show>
       </div>

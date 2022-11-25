@@ -1,7 +1,8 @@
 import { Component, For, JSX } from "solid-js"
-import { GuidesNav } from "./nav"
+import { SectionNav } from "./nav"
 import { SitePreference } from "./preference"
 import { SiteSearch } from "./search"
+import { site } from "./site_store"
 import { SiteTabs } from "./tabs"
 
 // everything can scroll off; maximum use of space. easy to find top anyway.
@@ -11,6 +12,19 @@ export const SiteMenu: Component<{}> = () => {
         <div class='w-full h-full overflow-y-scroll'><SiteTabs />
             <SiteSearch />
             <SitePreference />
-            <div class='mt-4'><GuidesNav /></div>
+            <div class='mt-4'>
+                <SectionNav sections={ site.section[0] }/>
+            </div>
         </div></div>)
 }
+
+/*
+export function ReferenceNav() {
+  return <SectionNav sections={REFERENCE_SECTIONS} />;
+}
+
+export function GuidesNav() {
+  return <SectionNav sections={GUIDES_SECTIONS} />;
+}
+
+*/

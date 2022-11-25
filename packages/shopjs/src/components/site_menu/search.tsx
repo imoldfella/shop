@@ -7,32 +7,29 @@ import { JSX, Show } from 'solid-js'
 
 // toolbar with close
 export function ModalNav(props: { title: string, setClose: () => void }) {
-    return (<nav class="navbar" role="navigation" aria-label="main navigation">
-        <button class="navbar-tool" onClick={props.setClose}>
-            <Icon path={xMark} />
-        </button>
-        <div class="text-sm align-middle flex flex-col justify-center">
-            {props.title}
-        </div>
-    </nav>)
+  return (<nav class="navbar" role="navigation" aria-label="main navigation">
+    <button class="navbar-tool" onClick={props.setClose}>
+      <Icon path={xMark} />
+    </button>
+    <div class="text-sm align-middle flex flex-col justify-center">
+      {props.title}
+    </div>
+  </nav>)
 }
 
 
 // search as nav
 export function SiteSearch() {
-    return (
-        <div class=' flex mt-2 mb-2 p-2 w-full text-white bg-solid-dark border-solid-darkitem border rounded-md'>
-        <label class="relative block box-border">
-        </label>
-            <input autofocus
-                class=" flex-1 bg-solid-dark focus:outline-none"
-                placeholder="Search" type="search" />
-
-        <Icon class="h-5 w-5 flex-none text-neutral-500" path={magnifyingGlass} />
-
-          </div>
-
-        )
+  return (
+    <div class=' flex mt-2 mb-2 p-2 w-full border-solid-lightitem dark:border-solid-darkitem border rounded-md dark:bg-solid-dark'>
+      <label class="relative block box-border">
+      </label>
+      <input autofocus
+        class=" flex-1 focus:outline-none dark:bg-solid-dark"
+        placeholder="Search" type="search" />
+      <Icon class="h-5 w-5 flex-none text-neutral-500" path={magnifyingGlass} />
+    </div>
+  )
 }
 
 /*

@@ -64,8 +64,7 @@ export const GridResizer: Component<{
       class="w-0.5 m-2  hover:bg-neutral-500  group flex items-center justify-center flex-col cursor-col-resize  "
       classList={{
         'bg-neutral-500': isDragging(),
-        //'outline-2 bg-white border-black dark:outline-white dark:bg-black ': !isDragging(),
-      }}
+       }}
     >
       <div
         class='cursor-col-resize'

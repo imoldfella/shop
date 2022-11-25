@@ -10,7 +10,7 @@ export const Content: Component<{}> = () => {
             MAP!
         </Match>
         <Match when={true}>
-            <iframe class=' w-full h-full' src='https://www.datagrove.com'></iframe>
+            
         </Match>
     </Switch></div>)
 }
