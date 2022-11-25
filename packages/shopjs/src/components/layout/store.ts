@@ -87,10 +87,7 @@ export class Cursor<T> {
 // streams | words | muted | history 
 // sticky is orderable
 export class LayoutStore {
-    mobile = false
-    pin = true
     open = false
-    
     app: string = ""
     closed: boolean = false
     width: number = 300
@@ -112,12 +109,6 @@ export interface Scrollable {
 
 }
 
-export const [layout, setLayout] = createStore<LayoutStore>(new LayoutStore);
-
-
-export async function search(data: string) {
-
-}
 
 export class FolderLens {
     item: RailItem[] = []
@@ -125,9 +116,9 @@ export class FolderLens {
 
     }
 }
-
-
-
 export async function update(u: Partial<LayoutStore>) {
 
 }
+
+
+export const [layout, setLayout] = createStore<LayoutStore>(new LayoutStore);

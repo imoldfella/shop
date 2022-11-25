@@ -1,6 +1,17 @@
 import { Component, createSignal, createEffect, onCleanup } from 'solid-js';
 import { throttle } from '@solid-primitives/scheduled';
-import { Dot } from './dot';
+
+export const Dot: Component<{ isDragging: boolean }> = (props) => {
+  return (
+    <span
+      class=" m-1 h-1 w-1 rounded-full bg-slate-300 dark:bg-white dark:group-hover:bg-slate-200"
+      classList={{
+        'bg-slate-200': props.isDragging,
+        'dark:bg-slate-200': props.isDragging,
+      }}
+    />
+  );
+};
 
 type SolidRef = (el: HTMLDivElement) => void;
 export const GridResizer: Component<{
@@ -50,10 +61,10 @@ export const GridResizer: Component<{
   return (
     <div
       ref={setRef}
-      class="hover:bg-blue-400 dark:hover:bg-blue-400 group flex items-center justify-center flex-col cursor-col-resize dark:border-neutral-800 bg-black"
+      class="hover:bg-white  group flex items-center justify-center flex-col cursor-col-resize dark:border-neutral-800 bg-black"
       classList={{
-        'bg-blue-400 dark:bg-blue-400': isDragging(),
-        'bg-black ': !isDragging(),
+        'bg-black dark:white': isDragging(),
+        'bg-white dark:bg-black ': !isDragging(),
       }}
     >
       <div
@@ -69,3 +80,7 @@ export const GridResizer: Component<{
     </div>
   );
 };
+
+
+// 
+

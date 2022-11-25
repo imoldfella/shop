@@ -1,3 +1,4 @@
+import { createSignal } from "solid-js";
 import { createStore } from "solid-js/store";
 
 export interface Vtab {
@@ -9,9 +10,10 @@ export interface Vtab {
 }
 
 export class VtabStore {
-    pin = true
     root?: Vtab
 }
 
+export const [vtabPin, setVtabPin] = createSignal(false)
+//export const [vtabOpen, setOpen] = createSignal(true)
 export const [vtabs, setVtabs] = createStore<VtabStore>(new VtabStore);
 

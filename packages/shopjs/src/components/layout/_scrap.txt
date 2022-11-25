@@ -10,3 +10,18 @@ export const Aside = ({ children }: { children: JSX.Element[] }) => {
         </div>
     </aside>
 }
+
+
+// we might have 0, 1, or 2 splitters.
+// when we have 0 tabs we might have a rail or no rail
+// when we 
+export const Slideout: Component<{ open: boolean, children: JSX.Element[] }> = (props) => {
+    return (<Switch>
+        <Match when={props.open}>
+            {props.children[0]}
+        </Match>
+        <Match when={!open}>
+            {props.children[1]}
+        </Match>
+    </Switch>)
+}

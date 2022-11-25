@@ -20,7 +20,7 @@ export const Splitter = ({ children }: { children: JSX.Element[] }) => {
 
     return <div
         ref={grid}
-        class="wrapper dark:bg-black grid h-full min-h-0 font-sans text-black dark:text-white"
+        class="wrapper w-full dark:bg-black grid h-full min-h-0 font-sans text-black dark:text-white"
         style={{
             '--left': `${left()}fr`,
             '--right': `${2 - left()}fr`,
