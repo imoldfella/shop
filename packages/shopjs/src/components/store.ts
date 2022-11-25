@@ -1,6 +1,14 @@
 
 
 import { createSignal, For } from "solid-js";
+import { createStore } from 'solid-js/store'
+
+// is there an advantage to one store vs many signals?
+// when should files be read only?
+// menu could potentially be openWith + file(name, type)
+
+type AppType = "file" | "edit" | "cart" | "ticket"
+type FileType = "word" | "present" | "workbook" | "map"
 
 // Folder Tree; mute, sum counts. 
 // Flat searches: recent, etc
@@ -13,14 +21,14 @@ export interface RailItem {
     iframe: string
 }
 
-export interface FolderLike<F,I> extends RailItem {
+export interface FolderLike<F, I> extends RailItem {
     open?: boolean
     muted?: boolean
     folder: AppFolder[]
     app: UserAppshot[]
 }
 
-export interface AppFolder extends FolderLike<AppFolder,Appshot>  {
+export interface AppFolder extends FolderLike<AppFolder, Appshot> {
 
 }
 
@@ -35,7 +43,7 @@ export interface UserAppshot {
 // app shots are named owner-appshot.
 // streams are named stream.datagrove.com/owner/stream
 // 
-export interface Appshot extends RailItem{
+export interface Appshot extends RailItem {
     owner: string
     version: number
     stream: Stream
@@ -44,7 +52,7 @@ export interface Appshot extends RailItem{
 
 }
 // deep links inside the application, views & lenses
-export interface AppTree extends FolderLike<AppTree,AppLink> {
+export interface AppTree extends FolderLike<AppTree, AppLink> {
 }
 
 export interface AppLink {
@@ -54,7 +62,7 @@ export interface AppLink {
 
 
 // a server can have multiple translations?
-export interface Stream{
+export interface Stream {
     url: string    // owner-
     count: number
     runner: Appshot
@@ -64,12 +72,12 @@ export interface Stream{
 }
 
 export class Query<T> {
-    length: number
+    length: number = 0
 }
 export class Cursor<T> {
-    query: Query<T>
-    anchor: number
-    runway: T[]
+    query: Query<T> = new Query<T>()
+    anchor: number = 0
+    runway: T[] = []
 }
 
 
@@ -78,14 +86,19 @@ export class Cursor<T> {
 
 // streams | words | muted | history 
 // sticky is orderable
-export interface RailData {
-    folder: AppFolder
+export class Store {
+    app: string = ""
+    closed: boolean = false
+    width: number = 300
+    width2: number = 300
+    closed2: boolean = false
+    folder?: AppFolder
     found?: Cursor<SearchResult>
-    recentSearch: string[]
-    crumb: string[]
+    recentSearch: string[] = []
+    crumb: string[] = []
 }
 export class RichText {
-    html: string // sanitized
+    html: string = ""// sanitized
 }
 export interface SearchResult {
     summary: RichText
@@ -95,22 +108,22 @@ export interface Scrollable {
 
 }
 
-export const [store, setStore] = createSignal<RailData>();
+export const [store, setStore] = createStore<Store>(new Store);
 
 
-export async  function search(data: string) {
+export async function search(data: string) {
 
 }
 
 export class FolderLens {
-    item: RailItem[]
-    reorder(item: RailItem[]){
-        
+    item: RailItem[] = []
+    reorder(item: RailItem[]) {
+
     }
 }
 
 
 
-export async function update(u: Partial<RailData>){
+export async function update(u: Partial<Store>) {
 
 }

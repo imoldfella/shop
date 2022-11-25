@@ -1,10 +1,12 @@
-import { RailData, RailItem, setStore } from "./store";
-import {faker} from "@faker-js/faker"
+import { Store, RailItem, setStore } from "./store";
+import { faker } from "@faker-js/faker"
 
 // maybe there should one folder "sticky"?
 
 
-const testRail : RailData = {
+const testRail: Store = {
+    ...new Store(),
+    app: "map",
     folder: {
         label: "root",
         iframe: "",
@@ -12,15 +14,10 @@ const testRail : RailData = {
 
         ],
         folder: [
-    
+
         ],
         count: 3
     },
-    recentSearch: [
-
-    ],
-    // we need the scroll state of search and folders
-    crumb: []
 }
 
 export function beginTest() {
@@ -28,13 +25,15 @@ export function beginTest() {
 }
 
 
-export function railItems() : RailItem[] {
-    return [1,2,3].map((e) => {
-        return {
+export function railItems(): RailItem[] {
+    let r = []
+    for (let i = 0; i < 100; i++) {
+        r.push({
             label: faker.internet.domainName(),
             icon: faker.image.avatar(),
             count: 2,
             iframe: 'espn.com'
-        }
-    })
+        })
+    }
+    return r
 }

@@ -8,7 +8,9 @@
   },
   "typesVersions": {
     "*": {
-      "*": ["dist/src/*"]
+      "*": [
+        "dist/src/*"
+      ]
     }
   },
   "type": "module",
@@ -31,7 +33,6 @@
   },
   "homepage": "https://github.com/imoldfella/shop#readme",
   "dependencies": {
-    "@datagrove/dgpm": "^1.10.1",
     "jsdom": "^20.0.2",
     "ncp": "^2.0.0",
     "prosemirror-markdown": "^1.10.1",

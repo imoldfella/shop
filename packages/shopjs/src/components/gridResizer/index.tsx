@@ -50,10 +50,10 @@ export const GridResizer: Component<{
   return (
     <div
       ref={setRef}
-      class="hover:bg-blue-400 dark:hover:bg-blue-400 group flex items-center justify-center flex-col cursor-col-resize dark:border-neutral-800"
+      class="hover:bg-blue-400 dark:hover:bg-blue-400 group flex items-center justify-center flex-col cursor-col-resize dark:border-neutral-800 bg-black"
       classList={{
         'bg-blue-400 dark:bg-blue-400': isDragging(),
-        'bg-gray-900 ': !isDragging(),
+        'bg-black ': !isDragging(),
       }}
     >
       <div
