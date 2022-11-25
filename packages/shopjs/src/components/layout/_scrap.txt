@@ -1,0 +1,12 @@
+
+export const Aside = ({ children }: { children: JSX.Element[] }) => {
+    return <aside class='w-full h-full flex-1 bg-slate-800'>
+        <div class=' p-4 w-full flex top-4 left-4 rounded bg-white text-black'>
+            <Icon class='w-6 h-6' path={bars_3} />
+            <input autofocus class='px-2 focus:outline-none flex-1' placeholder='Search'>
+
+            </input>
+            <Icon class='w-6 h-6' path={magnifyingGlass} />
+        </div>
+    </aside>
+}

@@ -8,6 +8,8 @@ import { useI18n } from '@solid-primitives/i18n';
 import { useRouteReadyState } from '../utils/routeReadyState';
 import { useAppContext } from '../AppContext';
 
+// based on solidjs example page.
+
 const Examples: Component = () => {
     const data = useRouteData<ExamplesDataRoute>();
     const context = useAppContext();

@@ -86,7 +86,11 @@ export class Cursor<T> {
 
 // streams | words | muted | history 
 // sticky is orderable
-export class Store {
+export class LayoutStore {
+    mobile = false
+    pin = true
+    open = false
+    
     app: string = ""
     closed: boolean = false
     width: number = 300
@@ -108,7 +112,7 @@ export interface Scrollable {
 
 }
 
-export const [store, setStore] = createStore<Store>(new Store);
+export const [layout, setLayout] = createStore<LayoutStore>(new LayoutStore);
 
 
 export async function search(data: string) {
@@ -124,6 +128,6 @@ export class FolderLens {
 
 
 
-export async function update(u: Partial<Store>) {
+export async function update(u: Partial<LayoutStore>) {
 
 }
