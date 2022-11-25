@@ -24,24 +24,26 @@ export const Layout: Component<{}> = () => {
                 <Content></Content>
             </div>
         </Match>
-        <Match when={true}>
+        <Match when={vtabPin()}>
             <Splitter>
-                <Switch>
-                    <Match when={vtabPin()}>
-                        <Splitter>
-                            <Vtabs />
-                            <SiteMenu />
-                        </Splitter>
-                    </Match>
-                    <Match when={true}>
-                        <div class='fixed left-0 top-0 h-screen'>
-                            <Vtabs />
-                        </div>
-                        <SiteMenu />
-                    </Match>
-                </Switch>
-                <Content />
+                <Vtabs />
+                <Splitter> 
+                
+                <SiteMenu />
+                <Content/>
+                </Splitter>
             </Splitter>
+        </Match>
+        <Match when={!vtabPin()}>
+            <div class='fixed z-50 left-0 top-0 h-screen'>
+                <Vtabs />
+            </div>
+            <div class='ml-20 w-full'>
+                <Splitter>
+                <SiteMenu />
+                <Content/>
+                </Splitter>
+            </div>
         </Match>
     </Switch>)
 }

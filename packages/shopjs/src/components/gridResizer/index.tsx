@@ -4,7 +4,7 @@ import { throttle } from '@solid-primitives/scheduled';
 export const Dot: Component<{ isDragging: boolean }> = (props) => {
   return (
     <span
-      class=" m-1 h-1 w-1 rounded-full bg-slate-300 dark:bg-white dark:group-hover:bg-slate-200"
+      class=" hidden m-1 h-1 w-1 rounded-full bg-slate-300 dark:bg-white dark:group-hover:bg-slate-200"
       classList={{
         'bg-slate-200': props.isDragging,
         'dark:bg-slate-200': props.isDragging,
@@ -61,10 +61,10 @@ export const GridResizer: Component<{
   return (
     <div
       ref={setRef}
-      class="hover:bg-white  group flex items-center justify-center flex-col cursor-col-resize dark:border-neutral-800 bg-black"
+      class="w-0.5 m-2  hover:bg-neutral-500  group flex items-center justify-center flex-col cursor-col-resize  "
       classList={{
-        'bg-black dark:white': isDragging(),
-        'bg-white dark:bg-black ': !isDragging(),
+        'bg-neutral-500': isDragging(),
+        //'outline-2 bg-white border-black dark:outline-white dark:bg-black ': !isDragging(),
       }}
     >
       <div

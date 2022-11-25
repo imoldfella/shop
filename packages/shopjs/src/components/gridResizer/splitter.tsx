@@ -26,7 +26,7 @@ export const Splitter = ({ children }: { children: JSX.Element[] }) => {
             '--right': `${2 - left()}fr`,
         }}
     >
-        <div class=' h-full w-full flex  bg-color-black'>
+        <div class=' relative h-full w-full overflow-y-auto  flex  bg-color-black'>
             {children[0]!}
 
         </div>
