@@ -1,0 +1,13 @@
+.is-active {
+	font-weight: 700;
+	color: #bb2205;
+}
+
+.tocmain {
+	margin: 0 auto;
+	display: grid;
+	padding: 10px;
+	grid-template-columns: auto 400px;
+	grid-gap: 30px;
+	align-items: flex-start;
+}

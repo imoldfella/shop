@@ -16,6 +16,7 @@
   },
   "include": [
     "src/**/*.ts",
-    "src/**/*.tsx"
+    "src/**/*.tsx",
+    "src/components/toc/toc2.js"
   ]
 }
