@@ -1,4 +1,5 @@
 const colors = require('tailwindcss/colors')
+const defaultTheme = require('tailwindcss/defaultTheme')
 
 // this seems odd, but solid uses colors like border-solid-lightborder
 const colorScheme = colors.neutral
@@ -8,6 +9,17 @@ module.exports = {
   darkMode: 'class', // or 'media' or 'class'
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['Inter var', ...defaultTheme.fontFamily.sans],
+        mono: [
+          "Inconsolata",
+          "Source Code Pro",
+          "ui-monospace",
+          "SFMono-Regular",
+          "Menlo",
+          ...defaultTheme.fontFamily.sans
+        ],
+      },
       colors: {
         solid: {
           dark: colorScheme["900"],
@@ -18,8 +30,8 @@ module.exports = {
           lightbg: colorScheme["100"],
           lightitem: colorScheme["200"],
           lightaction: colorScheme["400"],
-          accent: "#2c4f7c",
-          accentlight: "#85C4FF",
+          accent: "#1D4ED8",
+          accentlight: "#1D4ED8",
         }
       }
     }

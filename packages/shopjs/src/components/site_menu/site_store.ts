@@ -47,4 +47,3 @@ export class SiteLink {
 
 export const [site, setSite] = createStore<SiteStore>(new SiteStore);
 
-

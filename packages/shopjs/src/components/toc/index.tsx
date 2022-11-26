@@ -1,143 +1,137 @@
-// converted from astro
+import { Icon } from "solid-heroicons"
+import { chevronRight } from "solid-heroicons/solid"
+import { createEffect, createSignal, For, Show } from "solid-js"
+import { testMarkdown } from "../content"
+import { usePageState } from "../content/prevnext"
+import './toc2.css'
 
-import { unescape } from 'html-escaper';
-import { Component, createEffect, createSignal, JSX, ParentComponent } from 'solid-js';
-import './theme.css'
-import './TableOfContents.css';
-
-interface Props {
-    headings: { depth: number; slug: string; text: string }[];
-    labels?: {
-        onThisPage: string;
-        overview: string;
-    };
-    isMobile?: boolean;
+// https://codepen.io/lisilinhart/pen/NWrrNpV
+interface Head {
+    title: string
+    depth: number
+    id: string
+}
+export function generateLinkMarkup($headings: HTMLElement[]) {
+    const parsedHeadings = $headings.map(heading => {
+        return {
+            title: heading.innerText,
+            depth: parseInt(heading.nodeName.replace(/\D/g, '')),
+            id: heading.getAttribute('id')
+        }
+    })
+    // use jsx here for better typing?
+    const htmlMarkup = parsedHeadings.map(h => `
+      <li class="dark:hover:text-white hover:underline header-link ${h.depth > 1 ? 'pl-4' : 'pl-2'}">
+          <a class="" href="#${h.id}">${h.title}</a>
+      </li>
+      `)
+    const finalMarkup = `
+          <ul class=' leading-6'>${htmlMarkup.join('')}</ul>
+      `
+    return finalMarkup
 }
 
-// allready called with headings? 
-export const TableOfContents: Component<Props> = ({ headings, labels = {
-    onThisPage: "On this page",
-    overview: "Overview"
-}, isMobile = true }) => {
+function updateLinks(visibleId: string, $links: HTMLElement[]) {
+    $links.map(link => {
+        let href = link.getAttribute('href')
+        link.classList.remove('is-active')
+        if (href === visibleId) link.classList.add('is-active')
+    })
+}
 
-    headings = [{ depth: 2, slug: 'overview', text: labels.overview }, ...headings].filter(
-        ({ depth }) => depth > 1 && depth < 4
-    );
+function handleObserver(entries: any[], observer: any, $links: HTMLElement[]) {
+    entries.forEach((entry: any) => {
+        const { target, isIntersecting, intersectionRatio } = entry
+        if (isIntersecting && intersectionRatio >= 1) {
+            const visibleId = `#${target.getAttribute('id')}`
+            updateLinks(visibleId, $links)
+        }
+    })
+}
 
-    const [toc, setToc] = createSignal(null as HTMLUListElement | null);
+function createObserver($links: HTMLElement[]) {
+    const options = {
+        rootMargin: "0px 0px -200px 0px",
+        threshold: 1
+    }
+    const callback: IntersectionObserverCallback = (e, o: IntersectionObserverInit) => handleObserver(e, o, $links)
+    return new IntersectionObserver(callback, options)
+}
 
-    const [currentID, setCurrentID] = createSignal('overview');
-    const [open, setOpen] = createSignal(!isMobile);
-    const onThisPageID = 'on-this-page-heading';
+export function buildToc(contentDiv: HTMLElement, $aside: HTMLElement) {
+    const $headings: Element[] = [...contentDiv.querySelectorAll('h1, h2')];
+    const linkHtml = generateLinkMarkup($headings as HTMLElement[]);
+    $aside.innerHTML = linkHtml
 
-    const Container = ({ children }: { children: JSX.Element }) => {
-        return isMobile ? (
-            <details open={open()} onToggle={(e) => setOpen(e.target as any["open"])} class="toc-mobile-container">
-                {children}
-            </details>
-        ) : (
-            children
-        );
-    };
+    const $links = [...$aside.querySelectorAll('a')]
+    const observer = createObserver($links)
+    $headings.map(heading => observer.observe(heading))
+}
 
-    const HeadingContainer = ({ children }: { children: JSX.Element }) => {
-        const currentHeading = headings.find(({ slug }) => slug === currentID());
-        return isMobile ? (
-            <summary class="toc-mobile-header">
-                <div class="toc-mobile-header-content">
-                    <div class="toc-toggle">
-                        {children}
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 1 16 16"
-                            width="16"
-                            height="16"
-                            aria-hidden="true"
-                        >
-                            <path
-                                fill-rule="evenodd"
-                                d="M6.22 3.22a.75.75 0 011.06 0l4.25 4.25a.75.75 0 010 1.06l-4.25 4.25a.75.75 0 01-1.06-1.06L9.94 8 6.22 4.28a.75.75 0 010-1.06z"
-                            ></path>
-                        </svg>
-                    </div>
-                    {!open && currentHeading?.slug !== 'overview' && (
-                        <span class="toc-current-heading">{unescape(currentHeading?.text || '')}</span>
-                    )}
-                </div>
-            </summary>
-        ) : (
-            children
-        );
-    };
-
-    createEffect(() => {
-        const setCurrent: IntersectionObserverCallback = (entries) => {
-            for (const entry of entries) {
-                if (entry.isIntersecting) {
-                    const { id } = entry.target;
-                    if (id === onThisPageID) continue;
-                    setCurrentID(entry.target.id);
-                    break;
-                }
-            }
-        };
-
-        const observerOptions: IntersectionObserverInit = {
-            // Negative top margin accounts for `scroll-margin`.
-            // Negative bottom margin means heading needs to be towards top of viewport to trigger intersection.
-            rootMargin: '-100px 0% -66%',
-            threshold: 1,
-        };
-
-        const headingsObserver = new IntersectionObserver(setCurrent, observerOptions);
-
-        // Observe all the headings in the main page content.
-        document.querySelectorAll('article :is(h1,h2,h3)').forEach((h) => headingsObserver.observe(h));
-
-        // Stop observing when the component is unmounted.
-        return () => headingsObserver.disconnect();
-    });
-
-    const onLinkClick = (e: any) => {
-        if (!isMobile) return;
-        setOpen(false);
-        setCurrentID(e.target.getAttribute('href').replace('#', ''));
-    };
+// Summary can be at the top of the page, collapsed, or at the side if screen is wide enough
+export  function Summary(props: {collapsed?: boolean}) {
+    const { sections } = usePageState()!;
+    const [collapsed, setCollapsed] = createSignal(props.collapsed || false);
 
     return (
-        <Container>
-            <HeadingContainer>
-                <h2 class="heading" id={onThisPageID}>
-                    {labels.onThisPage}
-                </h2>
-            </HeadingContainer>
-            <ul ref={setToc}>
-                {headings.map(({ depth, slug, text }) => (
-                    <li
-                        class={`header-link depth-${depth} ${currentID() === slug ? 'current-header-link' : ''
-                            }`.trim()}
-                    >
-                        <a href={`#${slug}`} onClick={onLinkClick}>
-                            {unescape(text)}
+        <div class="py-2 px-4 border border-solidlightitem rounded-md md:(p-4 border-none bg-transparent) bg-solid-light z-50 dark:(bg-solid-dark md:bg-transparent border-solid-darkitem)">
+            <button
+                onClick={() => setCollapsed((prev) => !prev)}
+                aria-controls="preferences"
+                type="button"
+                class="w-full md:text-2xl font-bold flex items-center justify-between md:pointer-events-none"
+            >
+                Summary
+                <Icon path={chevronRight}
+                    class={`md:hidden w-6 h-6 text-solid-lightaction dark:text-solid-darkaction transform transition ${
+                    !collapsed() ? "rotate-90" : ""
+                    }`}
+                />
+            </button>
+            <Show when={!collapsed()}>
+                <ol class="mt-2 list-none space-y-1">
+                <For each={sections()}>
+                    {(item, index) => (
+                    <li class="text-base py-2 flex items-center gap-2 rounded hover:bg-solid-light hover:dark:bg-solid-darkbg px-2">
+                        
+                        <a class="font-semibold" href={"#" + item.href}>
+                        {item.title}
                         </a>
                     </li>
-                ))}
-            </ul>
-        </Container>
-    );
-};
+                    )}
+                </For>
+                </ol>
+            </Show>
+        </div>
+    )
+}
 
-/*
-<nav aria-label={t('rightSidebar.a11yTitle')}>
-    {
-        headings && (
-            <TableOfContents
-                //client:media="(min-width: 50em)"
-                headings={headings}
-                labels={{ onThisPage: t('rightSidebar.onThisPage'), overview: t('rightSidebar.overview') }}
-                isMobile={false}
-            />
-        )
-    }
-</nav>
-*/
+
+// not really just the toc, this renders the markdown with a toc
+// builds the toc from the html generated.
+export function Toc() {
+    const [aside, setAside] = createSignal(null as HTMLElement | null)
+    const [content, setContent] = createSignal(null as HTMLElement | null)
+
+    createEffect(() => {
+        
+        testMarkdown().then((e) => {
+            console.log("wtf", content(), aside(), e)
+            content()!.innerHTML = e
+            buildToc(content()!, aside()!)
+        })
+    })
+
+    // toc main sets up the grid
+    return (<main class="tocmain">
+        <article>
+        <Summary/>
+        <div class='pb-8 max-h-screen prose prose-neutral dark:prose-invert overflow-y-scroll' ref={setContent} />
+        </article>
+       
+        <aside class="not-prose sticky text-sm top-0 ml-8 pt-16 dark:text-neutral-400">
+        <p class='text-white mb-2 pl-2'>On this page</p>
+        <div id="aside" class=" " ref={setAside} />
+        </aside>
+    </main>)
+}
