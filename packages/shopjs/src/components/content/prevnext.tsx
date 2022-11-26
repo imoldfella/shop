@@ -7,7 +7,7 @@ import { createStore } from "solid-js/store";
 import { Icon } from "solid-heroicons";
 import { chevronRight } from "solid-heroicons/solid";
 
-export  function Dot(props: { number: number }) {
+export function Dot(props: { number: number }) {
   return (
     <div class="rounded-full pt-1 w-6 h-6 border border-solid-lightitem dark:border-solid-darkitem grid place-content-center bg-solid-light dark:bg-white text-solid-accent font-bold">
       {props.number}
@@ -26,6 +26,7 @@ type PageStateData = {
 };
 // by using a page state provider, maybe its easier to make this data available to mdx plugins
 export const PageStateContext = createContext<PageStateData>();
+export const usePageState = () => useContext(PageStateContext);
 
 export const PageStateProvider = (props: ParentProps) => {
   const [store, setStore] = createStore<{ sections: Section[]; path: string }>({
@@ -57,9 +58,6 @@ export const PageStateProvider = (props: ParentProps) => {
   );
 };
 
-export function usePageState() {
-  return useContext(PageStateContext);
-}
 
 
 interface IPrevNextSectionProps {
@@ -73,31 +71,31 @@ interface IPrevNextSectionBaseProps extends IPrevNextSectionProps {
 
 const PrevNextSectionBase = (props: IPrevNextSectionBaseProps) => {
   return <NavLink
-  class="flex items-center border dark:border-solid-darkitem hover:dark:border-solid-darkaction transition rounded-lg p-4 justify-between group flex-1"
-  href={props.href}
->
-  <Show
-    when={props.type === "prev"}
+    class="flex items-center border dark:border-solid-darkitem hover:dark:border-solid-darkaction transition rounded-lg p-4 justify-between group flex-1"
+    href={props.href}
   >
-    <Icon path={chevronRight} class="w-6 h-6 text-solid-lightaction dark:text-solid-darkaction transform transition group-hover:-translate-x-2 rotate-180"/>
-  </Show>
+    <Show
+      when={props.type === "prev"}
+    >
+      <Icon path={chevronRight} class="w-6 h-6 text-solid-lightaction dark:text-solid-darkaction transform transition group-hover:-translate-x-2 rotate-180" />
+    </Show>
 
-  <div class="flex flex-col">
-    <span class="uppercase dark:text-neutral-500 text-xs font-semibold">{props.type === "prev" ? "Previous" : "Next"}</span>
-    {props.title}
-  </div>
-  <Show
-    when={props.type === "next"}
-  >
-    <Icon path={chevronRight} class="w-6 h-6 text-solid-lightaction dark:text-solid-darkaction transform transition group-hover:translate-x-2"/>
-  </Show>
-</NavLink>
+    <div class="flex flex-col">
+      <span class="uppercase dark:text-neutral-500 text-xs font-semibold">{props.type === "prev" ? "Previous" : "Next"}</span>
+      {props.title}
+    </div>
+    <Show
+      when={props.type === "next"}
+    >
+      <Icon path={chevronRight} class="w-6 h-6 text-solid-lightaction dark:text-solid-darkaction transform transition group-hover:translate-x-2" />
+    </Show>
+  </NavLink>
 }
 
-export const NextSection = (props: IPrevNextSectionProps) => <PrevNextSectionBase type="next" title={props.title} href={props.href}/>
-export const PrevSection = (props: IPrevNextSectionProps) => <PrevNextSectionBase type="prev" title={props.title} href={props.href}/>
+export const NextSection = (props: IPrevNextSectionProps) => <PrevNextSectionBase type="next" title={props.title} href={props.href} />
+export const PrevSection = (props: IPrevNextSectionProps) => <PrevNextSectionBase type="prev" title={props.title} href={props.href} />
 
-export const PrevNextSection = (props: {children: JSXElement}) => (
+export const PrevNextSection = (props: { children: JSXElement }) => (
   <div class="mt-10 flex flex-col md:flex-row gap-4">
     {props.children}
   </div>
