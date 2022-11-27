@@ -3,6 +3,10 @@
 import { createSignal, For } from "solid-js";
 import { createStore } from 'solid-js/store'
 
+
+export const [sitemap, setSitemap]  = createSignal(true)
+export const [pagemap, setPagemap]  = createSignal(true)
+
 // is there an advantage to one store vs many signals?
 // when should files be read only?
 // menu could potentially be openWith + file(name, type)
@@ -122,3 +126,4 @@ export async function update(u: Partial<LayoutStore>) {
 
 
 export const [layout, setLayout] = createStore<LayoutStore>(new LayoutStore);
+

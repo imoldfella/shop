@@ -10,7 +10,7 @@ import { SiteTabs } from "./tabs"
 export const SiteMenu: Component<{}> = () => {
     return (<div class='w-full h-screen overflow-hidden'>
         <div class='w-full h-full overflow-y-scroll'><SiteTabs />
-            <SiteSearch />
+        
             <SitePreference />
             <div class='mt-4'>
                 <SectionNav sections={ site.section[0] }/>

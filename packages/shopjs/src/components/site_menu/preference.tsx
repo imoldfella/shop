@@ -33,12 +33,12 @@ export const SitePreference = () => {
     const [collapsed, setCollapsed] = createSignal(true);
   
     return (
-      <div class="border border-solid-lightitem bg-solid-light dark:bg-solid-dark dark:border-solid-darkitem rounded-lg">
+      <div class="mt-2 border border-solid-lightitem bg-solid-light dark:bg-solid-dark dark:border-solid-darkitem rounded-lg">
         <button
           onClick={() => setCollapsed((prev) => !prev)}
           aria-controls="preferences"
           type="button"
-          class="flex items-center justify-between p-4 w-full cursor-pointer"
+          class="flex items-center justify-between p-2 w-full cursor-pointer"
         >
           <div class="flex items-center gap-2 font-semibold">
             <div class="bg-solid-lightitem dark:bg-solid-darkitem rounded-lg p-1">
@@ -55,8 +55,8 @@ export const SitePreference = () => {
         <Show when={!collapsed()}>
           <div aria-label="preferences" class="p-4 border-t border-solid-lightitem dark:border-solid-darkitem">
             
-            <div class='flex'><div class='flex-1'>Color Theme</div><div class='flex-none'><DarkButton/></div></div>
-            <div class='flex'><div class='flex-1'>Language</div><div class='flex-none'><LanguageSelect/></div></div>
+            <div class='flex'><div class='flex-1'><LanguageSelect/></div><div class='flex-none'><DarkButton/></div></div>
+            <div class='flex'><div class='flex-1'></div></div>
           </div>
         </Show>
       </div>
