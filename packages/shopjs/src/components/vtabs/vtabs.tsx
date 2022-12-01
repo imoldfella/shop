@@ -47,11 +47,11 @@ export const Vtabs = () => {
     const sitemap = () => {
         setMenuOpen(!menuOpen())
     }
-    return (<div class=" cursor-pointer bg-white dark:bg-neutral-900 overflow-hidden" classList={{
+    return (<div class=" absolute h-screen cursor-pointer bg-white dark:bg-neutral-900 overflow-hidden" classList={{
         "w-16  hover:w-64 group": !vtabPin(),
         "w-full": vtabPin()
     }}>
-        <div class=' items-center relative flex top-0 w-full left-0'>
+        <div class='absolute z-20 items-center  dark:bg-neutral-900  flex top-0 w-full '>
             <Icon2 path={datagrove} class='w-12 h-12 flex-none text-blue-700 hover:text-blue-500 m-2' onclick={sitemap} />
             <div class='flex-1'> </div>
             <Show when={vtabPin()} >
@@ -62,7 +62,7 @@ export const Vtabs = () => {
                     onclick={shrink} /></Show>
         </div>
         <nav
-            class='  h-full w-full li-none flex-row overflow-y-auto'
+            class='pt-16  h-full w-full li-none flex-row overflow-y-auto'
             ref={el => new Sortable(el, {
                 animation: 150,
                 ghostClass: 'bg-neutral-500'

@@ -37,7 +37,7 @@ export function Mdx() {
     // toc main sets up the grid
     return (<main class="w-full ">
         <article>
-            <div class='w-full pl-4 pt-4 mb-16' >
+            <div class='w-full pl-4 pt-4 pb-16' >
                 <div class='prose dark:prose-invert prose-neutral' ref={setContent} />
             </div>
         </article>
@@ -78,54 +78,54 @@ export const Content: Component<{}> = () => {
     // exposing this signal forces us into an iframe because we need a splitter for the frame too. maybe we can pass these functions to the splitter?
     const [leftContent, setLeftContent] = createSignal(300);
     // when sitemap is shown, it might be fixed if mobile
-    const mobileSitemap = ()=>true
+    const mobileSitemap = () => true
 
     // what I really want is not 100% 
     // the left of search should be tied to the splitter
-    const leftSearch = ()=>{
-        const r = sitemap()==ShowSitemap.none?8:leftContent()+8
+    const leftSearch = () => {
+        const r = sitemap() == ShowSitemap.none ? 8 : leftContent() + 8
         console.log("left", r)
         return r
     }
-    const width = ()=> {
-        const r= sitemap()==ShowSitemap.none?"calc(100% - 40px)": `calc(100% - ${leftContent()}px - 40px)`
+    const width = () => {
+        const r = sitemap() == ShowSitemap.none ? "calc(100% - 40px)" : `calc(100% - ${leftContent()}px - 40px)`
         console.log('width', sitemap(), leftContent())
         return r
     }
 
     const toggleSitemap = () => {
         console.log("no sitemap")
-        setSitemap( sitemap()==ShowSitemap.none ? ShowSitemap.split : ShowSitemap.none)
+        setSitemap(sitemap() == ShowSitemap.none ? ShowSitemap.split : ShowSitemap.none)
     }
-    const togglePagemap = () =>{
-        setPagemap(pagemap()==ShowPagemap.none?ShowPagemap.split:ShowPagemap.none)
+    const togglePagemap = () => {
+        setPagemap(pagemap() == ShowPagemap.none ? ShowPagemap.split : ShowPagemap.none)
     }
     return (<div class=' h-full w-full overflow-hidden'>
         <Switch>
-        <Match when={sitemap()==ShowSitemap.full}>
-        <div class='absolute right-0 w-full h-screen overflow-hidden'>
-                <div class='w-full h-full px-2 overflow-y-scroll'>
-                <SiteMenuContent />
-                </div></div>            
-        </Match>
-        <Match when={sitemap()==ShowSitemap.split}>
-            <Splitter left={leftContent} setLeft={setLeftContent} >
-                <div class='w-full h-screen overflow-hidden dark:bg-gradient-to-r dark:from-neutral-900 dark:to-neutral-800'>
-                <div class='w-full h-full px-2 overflow-y-scroll'>
-                <SiteMenuContent />
-                </div></div>
-                <div class='w-full h-full px-2 overflow-y-scroll'>
-                    <InnerContent />
-                </div>
-            </Splitter>
-        </Match>
-        <Match when={sitemap()==ShowSitemap.none}>
-            <InnerContent />
-        </Match>
+            <Match when={sitemap() == ShowSitemap.full}>
+                <div class='absolute right-0 w-full h-screen overflow-hidden'>
+                    <div class='w-full h-full px-2 overflow-y-scroll'>
+                        <SiteMenuContent />
+                    </div></div>
+            </Match>
+            <Match when={sitemap() == ShowSitemap.split}>
+                <Splitter left={leftContent} setLeft={setLeftContent} >
+                    <div class='w-full h-screen overflow-hidden dark:bg-gradient-to-r dark:from-neutral-900 dark:to-neutral-800'>
+                        <div class='w-full h-full px-2 overflow-y-scroll'>
+                            <SiteMenuContent />
+                        </div></div>
+                    <div class='w-full h-full px-2 overflow-y-scroll'>
+                        <InnerContent />
+                    </div>
+                </Splitter>
+            </Match>
+            <Match when={sitemap() == ShowSitemap.none}>
+                <InnerContent />
+            </Match>
         </Switch>
-       
-        <Icon class='absolute h-6 y-6 hover:text-blue-500 right-8 top-8 z-10 text-blue-700' path={pencilSquare}/>
-    
+
+        <Icon class='absolute h-6 y-6 hover:text-blue-500 right-8 top-8 z-10 text-blue-700' path={pencilSquare} />
+
         <div class='absolute mr-16  bottom-0 z-10 dark:bg-solid-dark   rounded-md flex items-center'
             style={{
                 left: `${leftSearch()}px`,
@@ -153,7 +153,12 @@ export const Layout: Component<{}> = () => {
                 <Match when={vtabPin()}>
                     <Splitter left={left} setLeft={setLeft}>
                         <Vtabs />
-                        <Content />
+                        <div class='fixed h-screen  overflow-hidden' style={{
+                            left: `${left() + 12}px`,
+                            width: `calc(100% - ${left()}px)`
+                        }}>
+                            <Content />
+                        </div>
                     </Splitter>
                 </Match>
                 <Match when={!vtabPin()}>
