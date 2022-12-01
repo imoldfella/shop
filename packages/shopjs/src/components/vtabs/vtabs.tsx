@@ -47,7 +47,7 @@ export const Vtabs = () => {
     const sitemap = () => {
         setMenuOpen(!menuOpen())
     }
-    return (<div class=" cursor-pointer bg-white dark:bg-black overflow-hidden" classList={{
+    return (<div class=" cursor-pointer bg-white dark:bg-neutral-900 overflow-hidden" classList={{
         "w-16  hover:w-64 group": !vtabPin(),
         "w-full": vtabPin()
     }}>
@@ -70,10 +70,10 @@ export const Vtabs = () => {
 
 
             <For each={vtabs.root!.children}>{(e) =>
-                <div class='w-full  overflow-hidden  flex items-center'><img class="flex-none rounded-md h-12 w-12 shadow m-2" src={e.icon} />
-
-                    < div class=' flex-1 cursor-pointer' > {e.label}</div >
-                    <Icon class='flex-none h-5 w-5 m-2 text-blue-700 hover:text-blue-500' path={ellipsisHorizontal} />
+                <div class='w-full  overflow-hidden  flex items-center'>
+                    <img class="flex-none rounded-md h-12 w-12 shadow m-2" src={e.icon} />
+                    < div class=' flex-1 overflow-hidden cursor-pointer' > {e.label}</div >
+                    <Icon class='flex-none  h-5 w-5 m-2 text-blue-700 hover:text-blue-500' path={ellipsisHorizontal} />
                 </div >
             }</For ></nav ></div >)
 

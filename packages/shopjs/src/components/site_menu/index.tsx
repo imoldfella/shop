@@ -14,7 +14,7 @@ export const SiteMenuContent: Component<{}> = () => {
     return (<>
           <div class='flex items-center'>
             <div class='flex-1 '><SiteTabs /></div>
-            <Icon path={xCircle} class='flex-none m-4  h-6 w-6 text-blue-700 hover:text-blue-500' onclick={ ()=>setSitemap(ShowSitemap.none) }/></div>
+            </div>
             <SitePreference />
             <div class='mt-4'>
                 <SectionNav sections={ site.section[0] }/>
@@ -22,6 +22,11 @@ export const SiteMenuContent: Component<{}> = () => {
 }
 
 /*
+
+// close button
+            <Icon path={xCircle} class='flex-none m-4  h-6 w-6 text-blue-700 hover:text-blue-500' onclick={ ()=>setSitemap(ShowSitemap.none) }/>
+
+
 export function ReferenceNav() {
   return <SectionNav sections={REFERENCE_SECTIONS} />;
 }

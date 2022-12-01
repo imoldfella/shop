@@ -6,11 +6,17 @@ import { createStore } from 'solid-js/store'
 export enum ShowSitemap {
     none,
     full,
+    split, // split is same as adaptive?
+}
+// what are the transitions?
+// none -> adaptive | overlay depending on sitemap and 
+export enum ShowPagemap {
+    none,
+    full,
     split,
-    adaptive
 }
 export const [sitemap, setSitemap]  = createSignal(ShowSitemap.split)
-export const [pagemap, setPagemap]  = createSignal(true)
+export const [pagemap, setPagemap]  = createSignal(ShowPagemap.split)
 
 // is there an advantage to one store vs many signals?
 // when should files be read only?
