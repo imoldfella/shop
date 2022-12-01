@@ -1,7 +1,7 @@
 
 // we need to 
 
-import { layout, pagemap as pageToc, setPagemap, ShowSitemap } from "./store"
+import { layout, pagemap, pagemap as pageToc, setPagemap, ShowPagemap, ShowSitemap } from "./store"
 import { createEffect, createSignal, Match, Show, Switch } from "solid-js"
 import type { JSX, Component } from 'solid-js'
 
@@ -10,7 +10,7 @@ import { Splitter } from "../gridResizer/splitter"
 import { SiteMenuContent } from "../site_menu"
 
 import { isMobile } from "../platform"
-import { bars_3, listBullet, xCircle } from "solid-heroicons/solid"
+import { bars_3, listBullet, pencil, pencilSquare, xCircle } from "solid-heroicons/solid"
 import { Icon } from "solid-heroicons"
 import { sitemap, setSitemap } from "./store"
 import { buildToc, testMarkdown } from "../md"
@@ -29,7 +29,6 @@ export function Mdx() {
 
     createEffect(() => {
         testMarkdown().then((e) => {
-            console.log("wtf", content(), aside(), e)
             content()!.innerHTML = e
             buildToc(content()!, aside()!)
         })
@@ -38,19 +37,18 @@ export function Mdx() {
     // toc main sets up the grid
     return (<main class="w-full ">
         <article>
-            <div class='pl-4 pt-4 mb-16' >
+            <div class='w-full pl-4 pt-4 mb-16' >
                 <div class='prose dark:prose-invert prose-neutral' ref={setContent} />
             </div>
         </article>
 
-        <aside class="fixed right-0 z-10 not-prose bg-black text-sm top-0 ml-8 mt-12 mr-8 dark:text-neutral-400"
+        <aside class="absolute right-0 z-10 not-prose dark:bg-gradient-to-r dark:from-neutral-900 dark:to-neutral-800 p-4 rounded-md from- text-sm bottom-16 ml-8 mt-12 mr-8 dark:text-neutral-400"
             classList={{
                 "hidden": !pageToc()
             }}
         >
             <div class='text-white mb-2 pl-2 flex'>
                 <div class='flex-1'>On this page</div>
-
             </div>
             <div id="aside" class=" " ref={setAside} />
         </aside>
@@ -74,19 +72,35 @@ export const InnerContent: Component<{}> = () => {
 
 
 // this could be an iframe.
-// for mobile we need to have
+// the command is absolute, so its positioned against its first position ancestor
+// which is not 
 export const Content: Component<{}> = () => {
+    // exposing this signal forces us into an iframe because we need a splitter for the frame too. maybe we can pass these functions to the splitter?
+    const [leftContent, setLeftContent] = createSignal(300);
     // when sitemap is shown, it might be fixed if mobile
     const mobileSitemap = ()=>true
 
+    // what I really want is not 100% 
     // the left of search should be tied to the splitter
-    const leftSearch = ()=>4
-    const width = ()=> "calc(100% - 24px)"
+    const leftSearch = ()=>{
+        const r = sitemap()==ShowSitemap.none?8:leftContent()+8
+        console.log("left", r)
+        return r
+    }
+    const width = ()=> {
+        const r= sitemap()==ShowSitemap.none?"calc(100% - 40px)": `calc(100% - ${leftContent()}px - 40px)`
+        console.log('width', sitemap(), leftContent())
+        return r
+    }
 
     const toggleSitemap = () => {
-        setSitemap(sitemap()==ShowSitemap.none?  ShowSitemap.full : ShowSitemap.none )
+        console.log("no sitemap")
+        setSitemap( sitemap()==ShowSitemap.none ? ShowSitemap.split : ShowSitemap.none)
     }
-    return (<div>
+    const togglePagemap = () =>{
+        setPagemap(pagemap()==ShowPagemap.none?ShowPagemap.split:ShowPagemap.none)
+    }
+    return (<div class=' h-full w-full overflow-hidden'>
         <Switch>
         <Match when={sitemap()==ShowSitemap.full}>
         <div class='absolute right-0 w-full h-screen overflow-hidden'>
@@ -95,35 +109,41 @@ export const Content: Component<{}> = () => {
                 </div></div>            
         </Match>
         <Match when={sitemap()==ShowSitemap.split}>
-            <Splitter>
-                <div class='absolute right-0 w-full h-screen overflow-hidden'>
+            <Splitter left={leftContent} setLeft={setLeftContent} >
+                <div class='w-full h-screen overflow-hidden dark:bg-gradient-to-r dark:from-neutral-900 dark:to-neutral-800'>
                 <div class='w-full h-full px-2 overflow-y-scroll'>
                 <SiteMenuContent />
                 </div></div>
-                <InnerContent />
+                <div class='w-full h-full px-2 overflow-y-scroll'>
+                    <InnerContent />
+                </div>
             </Splitter>
         </Match>
         <Match when={sitemap()==ShowSitemap.none}>
             <InnerContent />
         </Match>
         </Switch>
-        <div class='fixed mr-16  bottom-1 z-10 dark:bg-solid-dark   rounded-md flex items-center'
+       
+        <Icon class='absolute h-6 y-6 hover:text-blue-500 right-8 top-8 z-10 text-blue-700' path={pencilSquare}/>
+    
+        <div class='absolute mr-16  bottom-0 z-10 dark:bg-solid-dark   rounded-md flex items-center'
             style={{
                 left: `${leftSearch()}px`,
                 width: width()
             }}>
-            <Icon path={bars_3} class='h-6 w-6 m-2 flex-none text-blue-700 hover:text-blue-500' onclick={() => toggleSitemap} />
+            <Icon path={bars_3} class='h-6 w-6 m-2 flex-none text-blue-700 hover:text-blue-500' onclick={() => toggleSitemap()} />
             <textarea class='align-middle focus:outline-none rounded-md flex-1 dark:bg-solid-dark ' placeholder="Search or command"></textarea>
-            <Icon path={listBullet} class='h-6 w-6 m-2 flex-none text-blue-700 hover:text-blue-500' onclick={() => setPagemap(!pageToc())} />
+            <Icon path={listBullet} class='h-6 w-6 m-2 flex-none text-blue-700 hover:text-blue-500' onclick={() => togglePagemap()} />
         </div>
     </div>)
 }
 
 // try a floating command bar always at the top.
 export const Layout: Component<{}> = () => {
+    const [left, setLeft] = createSignal(200);
     // if mobile, then no splitter at all.
     // if not mobile then splitter is set by a flag in the layout store.
-    const noServers = true; //isMobile();
+    const noServers = false; //isMobile();
     return (
         <div>
             <Switch>
@@ -131,7 +151,7 @@ export const Layout: Component<{}> = () => {
                     <Content />
                 </Match>
                 <Match when={vtabPin()}>
-                    <Splitter>
+                    <Splitter left={left} setLeft={setLeft}>
                         <Vtabs />
                         <Content />
                     </Splitter>
@@ -140,15 +160,14 @@ export const Layout: Component<{}> = () => {
                     <div class='fixed z-50 left-0 top-0 h-screen'>
                         <Vtabs />
                     </div>
-                    <div class='ml-16 w-full'>
-                        <div>
-                            <Content />
-                        </div>
+                    <div class='fixed left-16 right-0 h-screen'>
+                        <Content />
                     </div>
                 </Match>
             </Switch>
         </div>)
 }
 
+// absolute is not respecting
 
 
