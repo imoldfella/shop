@@ -1,23 +1,55 @@
 
 
+import { createWindowSize } from "@solid-primitives/resize-observer";
 import { createSignal, For } from "solid-js";
 import { createStore } from 'solid-js/store'
 
+
+// display needs to be full screen if the screen is small enough.
 export enum ShowSitemap {
-    none,
+    adaptive,
+    none,  // greater than 800 this is split
     full,
     split, // split is same as adaptive?
 }
+
 // what are the transitions?
 // none -> adaptive | overlay depending on sitemap and 
-export enum ShowPagemap {
-    none,
-    full,
-    split,
-}
-export const [sitemap, setSitemap]  = createSignal(ShowSitemap.split)
-export const [pagemap, setPagemap]  = createSignal(ShowPagemap.split)
 
+export enum ShowPagemap {
+    adaptive,  // adaptive -> click = toggle. so once its closed or open it can no longer be adaptive.
+    none,
+    display,
+}
+export const [sitemap, setSitemap]  = createSignal(ShowSitemap.adaptive)
+export const [pagemap, setPagemap]  = createSignal(ShowPagemap.adaptive)
+
+export const windowSize = createWindowSize();
+export const mobile = ()=> windowSize.width < 650
+
+// does it matter where the splitter is? we also need to derive that.
+export const showSitemap = () : ShowSitemap => {
+    if (sitemap()==ShowSitemap.adaptive) {
+        return mobile()? ShowSitemap.full : ShowSitemap.split
+    }
+    // we need to check if there's room for the  sitemap
+    // also need to allow the sitemap to shrink if window isn't wide enough.
+    return sitemap()
+}
+export const showToc = () : boolean => {
+    if (pagemap()==ShowPagemap.adaptive){
+        return mobile()? false :true
+    }
+    return pagemap()==ShowPagemap.display
+}
+export const toggleSitemap = () => {
+    console.log("no sitemap")
+    setSitemap(sitemap() == ShowSitemap.none ? ShowSitemap.split : ShowSitemap.none)
+}
+export const togglePagemap = () => {
+    // once flipped, it can't be adaptive again. Is there a a better approach?
+    setPagemap(showToc() ? ShowPagemap.none : ShowPagemap.display)
+}
 // is there an advantage to one store vs many signals?
 // when should files be read only?
 // menu could potentially be openWith + file(name, type)

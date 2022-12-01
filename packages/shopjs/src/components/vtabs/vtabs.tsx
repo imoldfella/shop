@@ -47,7 +47,7 @@ export const Vtabs = () => {
     const sitemap = () => {
         setMenuOpen(!menuOpen())
     }
-    return (<div class=" absolute h-screen cursor-pointer bg-white dark:bg-neutral-900 overflow-hidden" classList={{
+    return (<div class=" h-screen cursor-pointer bg-white dark:bg-neutral-900 overflow-hidden" classList={{
         "w-16  hover:w-64 group": !vtabPin(),
         "w-full": vtabPin()
     }}>

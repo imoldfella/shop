@@ -1,7 +1,7 @@
 
 // we need to 
 
-import { layout, pagemap, pagemap as pageToc, setPagemap, ShowPagemap, ShowSitemap } from "./store"
+import { layout, mobile, pagemap, pagemap as pageToc, setPagemap, ShowPagemap, ShowSitemap, showToc, togglePagemap, toggleSitemap } from "./store"
 import { createEffect, createSignal, Match, Show, Switch } from "solid-js"
 import type { JSX, Component } from 'solid-js'
 
@@ -44,7 +44,7 @@ export function Mdx() {
 
         <aside class="absolute right-0 z-10 not-prose dark:bg-gradient-to-r dark:from-neutral-900 dark:to-neutral-800 p-4 rounded-md from- text-sm bottom-16 ml-8 mt-12 mr-8 dark:text-neutral-400"
             classList={{
-                "hidden": !pageToc()
+                "hidden": !showToc()
             }}
         >
             <div class='text-white mb-2 pl-2 flex'>
@@ -57,15 +57,16 @@ export function Mdx() {
 
 export const InnerContent: Component<{}> = () => {
     return (<div class='h-screen h-max-screen  w-full'><Switch>
+        <Match when={true}>
+            <Mdx />
+        </Match>    
         <Match when={layout.app == "iframe"}>
             <iframe class=' w-full h-full overflow-y-auto' src='https://www.datagrove.com'></iframe>
         </Match>
         <Match when={layout.app == "map"}>
             MAP!
         </Match>
-        <Match when={true}>
-            <Mdx />
-        </Match>
+
     </Switch></div>)
 }
 
@@ -77,32 +78,28 @@ export const InnerContent: Component<{}> = () => {
 export const Content: Component<{}> = () => {
     // exposing this signal forces us into an iframe because we need a splitter for the frame too. maybe we can pass these functions to the splitter?
     const [leftContent, setLeftContent] = createSignal(300);
-    // when sitemap is shown, it might be fixed if mobile
-    const mobileSitemap = () => true
 
-    // what I really want is not 100% 
-    // the left of search should be tied to the splitter
     const leftSearch = () => {
-        const r = sitemap() == ShowSitemap.none ? 8 : leftContent() + 8
+        const r = sitemap() == ShowSitemap.split ? leftContent() + 8 : 8 
         console.log("left", r)
         return r
     }
     const width = () => {
-        const r = sitemap() == ShowSitemap.none ? "calc(100% - 40px)" : `calc(100% - ${leftContent()}px - 40px)`
+        const r = sitemap() == ShowSitemap.split ? `calc(100% - ${leftContent()}px - 40px)` : "calc(100% - 40px)"
         console.log('width', sitemap(), leftContent())
         return r
     }
 
-    const toggleSitemap = () => {
-        console.log("no sitemap")
-        setSitemap(sitemap() == ShowSitemap.none ? ShowSitemap.split : ShowSitemap.none)
-    }
-    const togglePagemap = () => {
-        setPagemap(pagemap() == ShowPagemap.none ? ShowPagemap.split : ShowPagemap.none)
-    }
+
     return (<div class=' h-full w-full overflow-hidden'>
         <Switch>
-            <Match when={sitemap() == ShowSitemap.full}>
+            <Match when={mobile()}>
+                <InnerContent />
+            </Match>            
+            <Match when={sitemap() == ShowSitemap.none}>
+                <InnerContent />
+            </Match>     
+           <Match when={sitemap() == ShowSitemap.full}>
                 <div class='absolute right-0 w-full h-screen overflow-hidden'>
                     <div class='w-full h-full px-2 overflow-y-scroll'>
                         <SiteMenuContent />
@@ -119,21 +116,18 @@ export const Content: Component<{}> = () => {
                     </div>
                 </Splitter>
             </Match>
-            <Match when={sitemap() == ShowSitemap.none}>
-                <InnerContent />
-            </Match>
+
         </Switch>
 
-        <Icon class='absolute h-6 y-6 hover:text-blue-500 right-8 top-8 z-10 text-blue-700' path={pencilSquare} />
-
-        <div class='absolute mr-16  bottom-0 z-10 dark:bg-solid-dark   rounded-md flex items-center'
+        <div class='absolute mr-16  bottom-0 z-10 dark:bg-solid-dark   rounded-md flex items-start'
             style={{
                 left: `${leftSearch()}px`,
                 width: width()
             }}>
             <Icon path={bars_3} class='h-6 w-6 m-2 flex-none text-blue-700 hover:text-blue-500' onclick={() => toggleSitemap()} />
-            <textarea class='align-middle focus:outline-none rounded-md flex-1 dark:bg-solid-dark ' placeholder="Search or command"></textarea>
+            <p  contenteditable class='pt-2 align-middle focus:outline-none rounded-md flex-1 dark:bg-solid-dark '></p>
             <Icon path={listBullet} class='h-6 w-6 m-2 flex-none text-blue-700 hover:text-blue-500' onclick={() => togglePagemap()} />
+            <Icon class=' h-6 y-6 m-2 hover:text-blue-500 right-8 top-8 z-10 text-blue-700' path={pencilSquare} />
         </div>
     </div>)
 }
@@ -143,16 +137,16 @@ export const Layout: Component<{}> = () => {
     const [left, setLeft] = createSignal(200);
     // if mobile, then no splitter at all.
     // if not mobile then splitter is set by a flag in the layout store.
-    const noServers = false; //isMobile();
+
     return (
         <div>
             <Switch>
-                <Match when={noServers}>
+                <Match when={mobile()}>
                     <Content />
                 </Match>
                 <Match when={vtabPin()}>
                     <Splitter left={left} setLeft={setLeft}>
-                        <Vtabs />
+                       <div><Vtabs/></div>
                         <div class='fixed h-screen  overflow-hidden' style={{
                             left: `${left() + 12}px`,
                             width: `calc(100% - ${left()}px)`

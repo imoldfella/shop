@@ -50,7 +50,7 @@ function ActiveLink(props: {children: JSX.Element, href: string, isActive: (l: S
   }
 
 export const SiteTabs = ()=>{
-    // maybe we should limit this to four some how.
+    // maybe we should limit this to four some how? maybe we should adaptively change the representation (chips?) if we have too many.
     return  (<div           class="w-full mt-2 flex border border-solid-lightborder dark:border-solid-darkitem rounded-md"
 >    <For each={site.root.children}>{(e,index)=>(
       <ActiveLink
@@ -59,7 +59,7 @@ export const SiteTabs = ()=>{
           !loc.pathname.includes(e.href)*/
         }
         activeClass="bg-solid-light dark:bg-solid-dark font-semibold"
-        class="flex-1 inline-flex w-full p-2 items-center justify-center whitespace-nowrap first:rounded-l-md border-r border-solid-lightborder dark:border-solid-darkitem last:(rounded-r-md border-0)"
+        class="flex-1 inline-flex w-full p-2 items-center justify-center whitespace-nowrap first:rounded-l-md border-r border-solid-lightborder dark:border-solid-darkitem hover:text-blue-500 hover:underline last:(rounded-r-md border-0)"
         href={e.href}
       >
         {e.title}
