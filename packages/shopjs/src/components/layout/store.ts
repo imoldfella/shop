@@ -3,8 +3,13 @@
 import { createSignal, For } from "solid-js";
 import { createStore } from 'solid-js/store'
 
-
-export const [sitemap, setSitemap]  = createSignal(true)
+export enum ShowSitemap {
+    none,
+    full,
+    split,
+    adaptive
+}
+export const [sitemap, setSitemap]  = createSignal(ShowSitemap.split)
 export const [pagemap, setPagemap]  = createSignal(true)
 
 // is there an advantage to one store vs many signals?

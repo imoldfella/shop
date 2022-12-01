@@ -7,7 +7,8 @@ import { PageStateProvider } from './components/md/prevnext';
 const App: Component = () => {
   testLayout()
   return (
-    <Router><PageStateProvider><Layout />
+    <Router><PageStateProvider>
+      <Layout />
       </PageStateProvider></Router>)
 };
 
