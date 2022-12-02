@@ -21,30 +21,37 @@ export enum ShowPagemap {
     none,
     display,
 }
-export const [sitemap, setSitemap]  = createSignal(ShowSitemap.adaptive)
-export const [pagemap, setPagemap]  = createSignal(ShowPagemap.adaptive)
+const [sitemap, setSitemap] = createSignal(ShowSitemap.adaptive)
+export const [pagemap, setPagemap] = createSignal(ShowPagemap.adaptive)
 
 export const windowSize = createWindowSize();
-export const mobile = ()=> windowSize.width < 650
+export const mobile = () => {
+    const r = windowSize.width < 650
+    console.log("windowWidth", windowSize.width)
+    return r
+}
 
 // does it matter where the splitter is? we also need to derive that.
-export const showSitemap = () : ShowSitemap => {
-    if (sitemap()==ShowSitemap.adaptive) {
-        return mobile()? ShowSitemap.full : ShowSitemap.split
+export const showSitemap = (): ShowSitemap => {
+    if (mobile()) {
+        return sitemap() == ShowSitemap.none ? ShowSitemap.none : ShowSitemap.full
+    }
+    if (sitemap() == ShowSitemap.adaptive) {
+        return windowSize.width > 850 ? ShowSitemap.split : ShowSitemap.none
     }
     // we need to check if there's room for the  sitemap
     // also need to allow the sitemap to shrink if window isn't wide enough.
     return sitemap()
 }
-export const showToc = () : boolean => {
-    if (pagemap()==ShowPagemap.adaptive){
-        return mobile()? false :true
+export const showToc = (): boolean => {
+    if (pagemap() == ShowPagemap.adaptive) {
+        return mobile() ? false : true
     }
-    return pagemap()==ShowPagemap.display
+    return pagemap() == ShowPagemap.display
 }
 export const toggleSitemap = () => {
     console.log("no sitemap")
-    setSitemap(sitemap() == ShowSitemap.none ? ShowSitemap.split : ShowSitemap.none)
+    setSitemap(showSitemap() == ShowSitemap.none ? ShowSitemap.split : ShowSitemap.none)
 }
 export const togglePagemap = () => {
     // once flipped, it can't be adaptive again. Is there a a better approach?

@@ -10,9 +10,9 @@ import { Splitter } from "../gridResizer/splitter"
 import { SiteMenuContent } from "../site_menu"
 
 import { isMobile } from "../platform"
-import { bars_3, listBullet, pencil, pencilSquare, xCircle } from "solid-heroicons/solid"
+import { bars_3, chevronLeft, listBullet, pencil, pencilSquare, xCircle } from "solid-heroicons/solid"
 import { Icon } from "solid-heroicons"
-import { sitemap, setSitemap } from "./store"
+import { showSitemap } from "./store"
 import { buildToc, testMarkdown } from "../md"
 
 // the content can be a custom app url, or could be some standard app that this program already knows how to read. each concierge site has a menu that picks.
@@ -59,7 +59,7 @@ export const InnerContent: Component<{}> = () => {
     return (<div class='h-screen h-max-screen  w-full'><Switch>
         <Match when={true}>
             <Mdx />
-        </Match>    
+        </Match>
         <Match when={layout.app == "iframe"}>
             <iframe class=' w-full h-full overflow-y-auto' src='https://www.datagrove.com'></iframe>
         </Match>
@@ -80,32 +80,32 @@ export const Content: Component<{}> = () => {
     const [leftContent, setLeftContent] = createSignal(300);
 
     const leftSearch = () => {
-        const r = sitemap() == ShowSitemap.split ? leftContent() + 8 : 8 
+        const r = showSitemap() == ShowSitemap.split ? leftContent() : 0
         console.log("left", r)
         return r
     }
     const width = () => {
-        const r = sitemap() == ShowSitemap.split ? `calc(100% - ${leftContent()}px - 40px)` : "calc(100% - 40px)"
-        console.log('width', sitemap(), leftContent())
+        const r = showSitemap() == ShowSitemap.split ? `calc(100% - ${leftContent()}px )` : "calc(100%)"
+        console.log('width', showSitemap(), leftContent())
         return r
     }
 
-
     return (<div class=' h-full w-full overflow-hidden'>
         <Switch>
-            <Match when={mobile()}>
-                <InnerContent />
-            </Match>            
-            <Match when={sitemap() == ShowSitemap.none}>
-                <InnerContent />
-            </Match>     
-           <Match when={sitemap() == ShowSitemap.full}>
+            <Match when={showSitemap() == ShowSitemap.full}>
                 <div class='absolute right-0 w-full h-screen overflow-hidden'>
                     <div class='w-full h-full px-2 overflow-y-scroll'>
                         <SiteMenuContent />
                     </div></div>
             </Match>
-            <Match when={sitemap() == ShowSitemap.split}>
+            <Match when={mobile()}>
+                <InnerContent />
+            </Match>
+            <Match when={showSitemap() == ShowSitemap.none}>
+                <InnerContent />
+            </Match>
+
+            <Match when={showSitemap() == ShowSitemap.split}>
                 <Splitter left={leftContent} setLeft={setLeftContent} >
                     <div class='w-full h-screen overflow-hidden dark:bg-gradient-to-r dark:from-neutral-900 dark:to-neutral-800'>
                         <div class='w-full h-full px-2 overflow-y-scroll'>
@@ -119,13 +119,13 @@ export const Content: Component<{}> = () => {
 
         </Switch>
 
-        <div class='absolute mr-16  bottom-0 z-10 dark:bg-solid-dark   rounded-md flex items-start'
+        <div class='absolute   bottom-0 z-10 dark:bg-gradient-to-r dark:from-neutral-800 dark:to-neutral-900   flex items-start'
             style={{
                 left: `${leftSearch()}px`,
                 width: width()
             }}>
-            <Icon path={bars_3} class='h-6 w-6 m-2 flex-none text-blue-700 hover:text-blue-500' onclick={() => toggleSitemap()} />
-            <p  contenteditable class='pt-2 align-middle focus:outline-none rounded-md flex-1 dark:bg-solid-dark '></p>
+            <Icon path={showSitemap() == ShowSitemap.full ? chevronLeft : bars_3} class='h-6 w-6 m-2 flex-none text-blue-700 hover:text-blue-500' onclick={() => toggleSitemap()} />
+            <p contenteditable class='pt-2 align-middle focus:outline-none rounded-md flex-1'></p>
             <Icon path={listBullet} class='h-6 w-6 m-2 flex-none text-blue-700 hover:text-blue-500' onclick={() => togglePagemap()} />
             <Icon class=' h-6 y-6 m-2 hover:text-blue-500 right-8 top-8 z-10 text-blue-700' path={pencilSquare} />
         </div>
@@ -141,12 +141,18 @@ export const Layout: Component<{}> = () => {
     return (
         <div>
             <Switch>
+                <Match when={mobile() && showSitemap() == ShowSitemap.full}>
+                    <div class='fixed z-10 left-0 top-0 h-screen'><Vtabs /></div>
+                    <div class='fixed z-50 left-16 right-0 h-screen'>
+                        <Content />
+                    </div>
+                </Match>
                 <Match when={mobile()}>
                     <Content />
                 </Match>
                 <Match when={vtabPin()}>
                     <Splitter left={left} setLeft={setLeft}>
-                       <div><Vtabs/></div>
+                        <div><Vtabs /></div>
                         <div class='fixed h-screen  overflow-hidden' style={{
                             left: `${left() + 12}px`,
                             width: `calc(100% - ${left()}px)`

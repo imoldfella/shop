@@ -1,11 +1,12 @@
-import { VtabStore, Vtab, setVtabs } from "./vtab_store";
+import { VtabStore, Vtab, setVtabs, vtabs } from "./vtab_store";
 import { faker } from "@faker-js/faker"
 
 // maybe there should one folder "sticky"?
 
-
+// I need tab groups.
 export function testVtabs() {
-    let r :Vtab[] = []
+    if (vtabs?.root?.children.length) return;
+    let r: Vtab[] = []
     for (let i = 0; i < 100; i++) {
         r.push({
             label: faker.internet.domainName(),
