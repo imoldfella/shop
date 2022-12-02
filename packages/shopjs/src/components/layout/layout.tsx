@@ -2,18 +2,18 @@
 // we need to 
 
 import { layout, mobile, pagemap, pagemap as pageToc, setPagemap, ShowPagemap, ShowSitemap, showToc, togglePagemap, toggleSitemap } from "./store"
-import { createEffect, createSignal, Match, Show, Switch } from "solid-js"
+import { createSignal, Match, Show, Switch } from "solid-js"
 import type { JSX, Component } from 'solid-js'
 
 import { vtabPin, Vtabs, vtabs } from "../vtabs"
 import { Splitter } from "../gridResizer/splitter"
 import { SiteMenuContent } from "../site_menu"
 
-import { isMobile } from "../platform"
-import { bars_3, chevronLeft, listBullet, pencil, pencilSquare, xCircle } from "solid-heroicons/solid"
+import { bars_3, chevronLeft, chevronRight, listBullet, pencil, pencilSquare, xCircle } from "solid-heroicons/solid"
 import { Icon } from "solid-heroicons"
 import { showSitemap } from "./store"
-import { buildToc, testMarkdown } from "../md"
+import { Mdx } from "./mdx"
+import { pageDescription } from "../site_menu/site_store"
 
 // the content can be a custom app url, or could be some standard app that this program already knows how to read. each concierge site has a menu that picks.
 // the content of Layout must all live in an iframe, unless it is the internal content (settings).
@@ -21,39 +21,6 @@ import { buildToc, testMarkdown } from "../md"
 // sort building that here though.
 // not really just the toc, this renders the markdown with a toc
 // builds the toc from the html generated.
-
-
-export function Mdx() {
-    const [aside, setAside] = createSignal(null as HTMLElement | null)
-    const [content, setContent] = createSignal(null as HTMLElement | null)
-
-    createEffect(() => {
-        testMarkdown().then((e) => {
-            content()!.innerHTML = e
-            buildToc(content()!, aside()!)
-        })
-    })
-
-    // toc main sets up the grid
-    return (<main class="w-full ">
-        <article>
-            <div class='w-full pl-4 pt-4 pb-16' >
-                <div class='prose dark:prose-invert prose-neutral' ref={setContent} />
-            </div>
-        </article>
-
-        <aside class="absolute right-0 z-10 not-prose dark:bg-gradient-to-r dark:from-neutral-900 dark:to-neutral-800 p-4 rounded-md from- text-sm bottom-16 ml-8 mt-12 mr-8 dark:text-neutral-400"
-            classList={{
-                "hidden": !showToc()
-            }}
-        >
-            <div class='text-white mb-2 pl-2 flex'>
-                <div class='flex-1'>On this page</div>
-            </div>
-            <div id="aside" class=" " ref={setAside} />
-        </aside>
-    </main>)
-}
 
 export const InnerContent: Component<{}> = () => {
     return (<div class='h-screen h-max-screen  w-full'><Switch>
@@ -69,7 +36,6 @@ export const InnerContent: Component<{}> = () => {
 
     </Switch></div>)
 }
-
 
 
 // this could be an iframe.
@@ -90,12 +56,14 @@ export const Content: Component<{}> = () => {
         return r
     }
 
+    const pd = pageDescription()
+
     return (<div class=' h-full w-full overflow-hidden'>
         <Switch>
             <Match when={showSitemap() == ShowSitemap.full}>
                 <div class='absolute right-0 w-full h-screen overflow-hidden'>
                     <div class='w-full h-full px-2 overflow-y-scroll'>
-                        <SiteMenuContent />
+                        <SiteMenuContent page={pd} />
                     </div></div>
             </Match>
             <Match when={mobile()}>
@@ -109,7 +77,7 @@ export const Content: Component<{}> = () => {
                 <Splitter left={leftContent} setLeft={setLeftContent} >
                     <div class='w-full h-screen overflow-hidden dark:bg-gradient-to-r dark:from-neutral-900 dark:to-neutral-800'>
                         <div class='w-full h-full px-2 overflow-y-scroll'>
-                            <SiteMenuContent />
+                            <SiteMenuContent page={pd} />
                         </div></div>
                     <div class='w-full h-full px-2 overflow-y-scroll'>
                         <InnerContent />

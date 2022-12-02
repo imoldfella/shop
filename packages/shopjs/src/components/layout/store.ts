@@ -27,7 +27,7 @@ export const [pagemap, setPagemap] = createSignal(ShowPagemap.adaptive)
 export const windowSize = createWindowSize();
 export const mobile = () => {
     const r = windowSize.width < 650
-    console.log("windowWidth", windowSize.width)
+    //console.log("windowWidth", windowSize.width)
     return r
 }
 
@@ -54,6 +54,7 @@ export const toggleSitemap = () => {
     setSitemap(showSitemap() == ShowSitemap.none ? ShowSitemap.split : ShowSitemap.none)
 }
 export const togglePagemap = () => {
+    console.log("no pagemap")
     // once flipped, it can't be adaptive again. Is there a a better approach?
     setPagemap(showToc() ? ShowPagemap.none : ShowPagemap.display)
 }

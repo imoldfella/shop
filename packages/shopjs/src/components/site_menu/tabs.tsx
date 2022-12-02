@@ -1,6 +1,6 @@
 import { For, JSX, ParentComponent, Show } from 'solid-js'
 import {useLocation, Location as SolidLocation} from '@solidjs/router'
-import { site } from './site_store';
+import { Page, PageDescription, site } from './site_store';
 
 // app.datagrove.com/section1/section2/section3/xxx.page
 
@@ -49,20 +49,26 @@ function ActiveLink(props: {children: JSX.Element, href: string, isActive: (l: S
     );
   }
 
-export const SiteTabs = ()=>{
+  
+export const SiteTabs = (props: {page: PageDescription})=>{
+    const href = () => "";
+    // the first piece of the 
+    const location = useLocation();
+    const sections = () => site.root.children
+    const path = (e: Page) => props.page.lang + "/" + e.path??""
     // maybe we should limit this to four some how? maybe we should adaptively change the representation (chips?) if we have too many.
     return  (<div           class="w-full mt-2 flex border border-solid-lightborder dark:border-solid-darkitem rounded-md"
->    <For each={site.root.children}>{(e,index)=>(
+>    <For each={sections()}>{(e,index)=>(
       <ActiveLink
         isActive={(loc: SolidLocation) =>
-          index()==0 /*||loc.pathname.startsWith(e.href) &&
+          index()==props.page.selected /*||loc.pathname.startsWith(e.href) &&
           !loc.pathname.includes(e.href)*/
         }
         activeClass="bg-solid-light dark:bg-solid-dark font-semibold"
         class="flex-1 inline-flex w-full p-2 items-center justify-center whitespace-nowrap first:rounded-l-md border-r border-solid-lightborder dark:border-solid-darkitem hover:text-blue-500 hover:underline last:(rounded-r-md border-0)"
-        href={e.href}
+        href={path(e)}
       >
-        {e.title}
+        {e.name}
       </ActiveLink>)
     }</For></div>)
 }

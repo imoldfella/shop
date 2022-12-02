@@ -16,17 +16,17 @@ textarea {
 }
 
 .server-link-active {
-  border-inline-start: 1px solid rgb(29 78 216) !important
+  border-inline-start: 2px solid rgb(29 78 216) !important
 }
 
 .server-link-active:hover {
-  border-inline-start: 1px solid rgb(59 130 246) !important
+  border-inline-start: 2px solid rgb(59 130 246) !important
 }
 
 .server-link {
-  border-inline-start: 1px solid transparent
+  border-inline-start: 2px solid transparent
 }
 
 .server-link:hover {
-  border-inline-start: 1px solid #FFFFFF
+  border-inline-start: 2px solid #FFFFFF
 }

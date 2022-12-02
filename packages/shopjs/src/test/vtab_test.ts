@@ -1,4 +1,4 @@
-import { VtabStore, Vtab, setVtabs, vtabs } from "./vtab_store";
+import { VtabStore, Vtab, setVtabs, vtabs } from "../components/vtabs/vtab_store";
 import { faker } from "@faker-js/faker"
 
 // maybe there should one folder "sticky"?

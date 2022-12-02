@@ -1,7 +1,7 @@
-import { LayoutStore, RailItem, setLayout } from "./store";
+import { LayoutStore, RailItem, setLayout } from "../components/layout/store";
 import { faker } from "@faker-js/faker"
-import { testVtabs } from "../vtabs/vtab_test";
-import { testSite } from "../site_menu/test";
+import { testVtabs } from "./vtab_test";
+import { testSite } from "./testMenu";
 
 export function testLayout() {
     testVtabs()

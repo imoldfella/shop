@@ -1,51 +1,46 @@
 import { useLocation } from "@solidjs/router";
 import { Collapsible, NavItem } from "./section";
 import { For, Show } from "solid-js";
-import { SECTIONS, SECTION_LEAF_PAGE, SECTION_PAGE } from "./site_store";
+import { Page, PageDescription } from "./site_store";
 
-
+// recursively build the sidbar menu
 export function SectionsNavIterate(props: {
-  pages: Array<SECTION_PAGE | SECTION_LEAF_PAGE>;
+  pages: Array<Page>;
 }) {
   const location = useLocation();
-
-  // createEffect(() => {
-  //   console.log(location.pathname);
-  // });
-
-  function isLeafPage(
-    page: SECTION_PAGE | SECTION_LEAF_PAGE
-  ): page is SECTION_LEAF_PAGE {
-    return "link" in page;
+  function isLeafPage( page: Page ): boolean{
+    return page.children==null
   }
 
-  //Wouldn't work if we actually went recursive (where the next level would have the possibility of not having any links)
-  const isCollapsed = (pages: Array<SECTION_PAGE | SECTION_LEAF_PAGE>) => {
-    return !pages.some((page) => {
-      return isLeafPage(page) && location.pathname == page?.link;
-    });
+  // pure accordian style collapses everything not a parent of the url
+  // it might be friendlier to allow things to be left open
+  const isCollapsed = (pages: Page) => {
+    // return !pages.some((page) => {
+    //   return isLeafPage(page) && location.pathname == page?.link;
+    // });
+    return false
   };
 
   return (
     <For each={props.pages}>
-      {(subsection: SECTION_LEAF_PAGE | SECTION_PAGE) => (
+      {(subsection: Page) => (
         <>
           <Show when={isLeafPage(subsection)}>
             <NavItem
-              href={(subsection as SECTION_LEAF_PAGE).link}
+              href={subsection.path??""}
               title={subsection.name}
             >
               {subsection.name}
             </NavItem>
           </Show>
-          <Show when={(subsection as SECTION_PAGE).pages}>
+          <Show when={subsection.children}>
             <ul>
               <Collapsible
                 header={subsection.name}
-                startCollapsed={isCollapsed((subsection as SECTION_PAGE).pages)}
+                startCollapsed={isCollapsed(subsection)}
               >
                 <SectionsNavIterate
-                  pages={(subsection as SECTION_PAGE).pages}
+                  pages={subsection.children??[]}
                 />
               </Collapsible>
             </ul>
@@ -56,25 +51,20 @@ export function SectionsNavIterate(props: {
   );
 }
 
-export function SectionNav(props: { sections: SECTIONS }) {
-  const sectionNames = Object.keys(props.sections);
 
+export function SectionNav(props: {page: PageDescription }) {
+  // this needs be recursive, starting from the 
   return (
     <ul class="flex flex-col gap-4">
-      <For each={sectionNames}>
-        {(name, i) => (
+      <For each={props.page.root.children??[]}>
+        {(page, i) => (
           <>
             <li>
               <h2 class="pl-2 text-solid-dark dark:text-white font-bold text-xl">
-                {props.sections[name].name}
+                {page.name}
               </h2>
-              <SectionsNavIterate pages={props.sections[name].pages} />
+              <SectionsNavIterate pages={page.children??[]} />
             </li>
-            <Show when={i() !== sectionNames.length - 1}>
-              <li>
-                <hr class="w-full mb-2" />
-              </li>
-            </Show>
           </>
         )}
       </For>
@@ -82,3 +72,10 @@ export function SectionNav(props: { sections: SECTIONS }) {
   );
 }
 
+/*
+            <Show when={i() !== page>
+              <li>
+                <hr class="w-full mb-2" />
+              </li>
+            </Show>
+*/
