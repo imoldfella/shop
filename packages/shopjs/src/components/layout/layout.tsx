@@ -105,40 +105,7 @@ export const Layout: Component<{}> = () => {
     const [left, setLeft] = createSignal(200);
     // if mobile, then no splitter at all.
     // if not mobile then splitter is set by a flag in the layout store.
-
-    return (
-        <div>
-            <Switch>
-                <Match when={mobile() && showSitemap() == ShowSitemap.full}>
-                    <div class='fixed z-10 left-0 top-0 h-screen'><Vtabs /></div>
-                    <div class='fixed z-50 left-16 right-0 h-screen'>
-                        <Content />
-                    </div>
-                </Match>
-                <Match when={mobile()}>
-                    <Content />
-                </Match>
-                <Match when={vtabPin()}>
-                    <Splitter left={left} setLeft={setLeft}>
-                        <div><Vtabs /></div>
-                        <div class='fixed h-screen  overflow-hidden' style={{
-                            left: `${left() + 12}px`,
-                            width: `calc(100% - ${left()}px)`
-                        }}>
-                            <Content />
-                        </div>
-                    </Splitter>
-                </Match>
-                <Match when={!vtabPin()}>
-                    <div class='fixed z-50 left-0 top-0 h-screen'>
-                        <Vtabs />
-                    </div>
-                    <div class='fixed left-16 right-0 h-screen'>
-                        <Content />
-                    </div>
-                </Match>
-            </Switch>
-        </div>)
+    return <Content/>
 }
 
 // absolute is not respecting

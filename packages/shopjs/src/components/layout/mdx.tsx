@@ -43,7 +43,6 @@ export function Mdx() {
     // toc main sets up the grid
     return (<main class="w-full ">
         <article>
-            <div>{JSON.stringify(useLocation())}</div>
             <div class='w-full pl-4 pt-4 pb-16 prose dark:prose-invert prose-neutral' >
                 <div class='' ref={setContent} />
                 <div class='flex pt-4'>

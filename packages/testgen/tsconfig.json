@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    "target": "es2020",
+    "lib": [
+      "es2020", "DOM"
+    ],
+    "module": "NodeNext", // (A)
+    "moduleResolution": "NodeNext", // (B)
+    "strict": true,
+    "sourceMap": true,
+    // Needed for CommonJS modules
+    "allowSyntheticDefaultImports": true, // (C)
+    //
+    "declaration": true
+  },
+  "include": ["./src/**/*"]
+}

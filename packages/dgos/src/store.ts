@@ -1,19 +1,57 @@
 
 
 import { createWindowSize } from "@solid-primitives/resize-observer";
-import { createSignal, For } from "solid-js";
+import { createEffect, createSignal, For } from "solid-js";
 import { createStore } from 'solid-js/store'
+import { usePrefersDark } from "@solid-primitives/media"
+import { openDB } from 'idb';
 
-
-export function dgos(method: string, params: any){
-    window?.top?.postMessage({method: method, params: params}, '*')
+export async function initStore() {
+    const r = await (await fetch('test.json')).json()
+    console.log("r", r)
+    setVtabs({
+        ...new VtabStore(),
+        root: {
+            children: r
+        }
+      })
 }
-// message from dgos - what?
-window.onmessage = function(e) {
-    if (e.data == 'hello') {
-        alert('It works!');
+
+// one one level deep.
+export interface Vtab {
+    open?: boolean
+    color?: string
+    label?: string
+    icon?: string
+    count?: number
+    // groups always
+    children: Vtab[]
+}
+
+// we need to load this on startup
+export class VtabStore {
+    root?: Vtab
+    selected = 0
+}
+
+export const [vtabPin, setVtabPin] = createSignal(false)
+export const [menuOpen, setMenuOpen] = createSignal(true)
+
+//export const [vtabOpen, setOpen] = createSignal(true)
+export const [vtabs, setVtabs] = createStore<VtabStore>(new VtabStore);
+export async function doDatabaseStuff() {
+  const db = await openDB('dg');
+}
+
+window.onmessage = (e)=>{
+    console.log("Message from iframe", e)
+    const rpc = e.data
+    switch(rpc.method) {
+    case 'dark':
+        setDark(rpc.params)
     }
-};
+}
+
 // display needs to be full screen if the screen is small enough.
 export enum ShowSitemap {
     adaptive,
@@ -32,6 +70,19 @@ export enum ShowPagemap {
 }
 const [sitemap, setSitemap] = createSignal(ShowSitemap.adaptive)
 export const [pagemap, setPagemap] = createSignal(ShowPagemap.adaptive)
+
+function setDark(x: boolean) {
+if (x) {
+    document.documentElement.classList.add('dark')
+   } else {
+    document.documentElement.classList.remove('dark')
+    } // => boolean
+}
+
+const prefersDark = usePrefersDark();
+createEffect(() => {
+    setDark(prefersDark())
+});
 
 export const windowSize = createWindowSize();
 export const mobile = () => {

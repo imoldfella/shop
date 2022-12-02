@@ -2,6 +2,7 @@ import { Icon } from "solid-heroicons"
 import { chevronRight, sun, moon, cog_6Tooth as gear} from "solid-heroicons/solid"
 import { createSignal, Show } from "solid-js";
 import LanguageSelect from "../i18n";
+import { dgos } from "../layout/store";
 
 const [isDark, setIsDark] = createSignal(true)
 
@@ -15,7 +16,7 @@ export const DarkButton = ()=> {
         isDark()
         ? html.classList.add("dark")
         : html.classList.remove("dark");
-
+        dgos('dark',isDark())
      } }>
 
     <Show
