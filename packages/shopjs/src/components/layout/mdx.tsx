@@ -1,18 +1,9 @@
 
-import { layout, mobile, pagemap, pagemap as pageToc, setPagemap, ShowPagemap, ShowSitemap, showToc, togglePagemap, toggleSitemap } from "./store"
-import { createEffect, createSignal, Match, Show, Switch } from "solid-js"
-import type { JSX, Component } from 'solid-js'
-
-import { vtabPin, Vtabs, vtabs } from "../vtabs"
-import { Splitter } from "../gridResizer/splitter"
-import { SiteMenuContent } from "../site_menu"
-
-import { isMobile } from "../platform"
-import { bars_3, chevronLeft, chevronRight, listBullet, pencil, pencilSquare, xCircle } from "solid-heroicons/solid"
+import { showToc } from "./store"
+import { createEffect, createSignal, Show } from "solid-js"
+import { chevronLeft, chevronRight } from "solid-heroicons/solid"
 import { Icon } from "solid-heroicons"
-import { showSitemap } from "./store"
 import { buildToc, testMarkdown } from "../md"
-import { useLocation } from "@solidjs/router"
 
 // the content can be a custom app url, or could be some standard app that this program already knows how to read. each concierge site has a menu that picks.
 // the content of Layout must all live in an iframe, unless it is the internal content (settings).
@@ -20,8 +11,6 @@ import { useLocation } from "@solidjs/router"
 // sort building that here though.
 // not really just the toc, this renders the markdown with a toc
 // builds the toc from the html generated.
-
-
 export function Mdx() {
     const [aside, setAside] = createSignal(null as HTMLElement | null)
     const [content, setContent] = createSignal(null as HTMLElement | null)

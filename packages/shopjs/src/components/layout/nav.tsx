@@ -1,7 +1,7 @@
 import { useLocation } from "@solidjs/router";
 import { Collapsible, NavItem } from "./section";
 import { For, Show } from "solid-js";
-import { Page, PageDescription } from "./site_store";
+import { Page, PageDescription } from "./store";
 
 // recursively build the sidbar menu
 export function SectionsNavIterate(props: {
@@ -56,7 +56,7 @@ export function SectionNav(props: {page: PageDescription }) {
   // this needs be recursive, starting from the 
   return (
     <ul class="flex flex-col gap-4">
-      <For each={props.page.root.children??[]}>
+      <For each={props.page.topTab.children??[]}>
         {(page, i) => (
           <>
             <li>

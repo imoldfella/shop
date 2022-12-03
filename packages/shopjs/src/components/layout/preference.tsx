@@ -1,8 +1,8 @@
 import { Icon } from "solid-heroicons"
-import { chevronRight, sun, moon, cog_6Tooth as gear} from "solid-heroicons/solid"
-import { createSignal, Show } from "solid-js";
-import LanguageSelect from "../i18n";
-import { dgos } from "../layout/store";
+import { chevronRight, sun, moon, cog_6Tooth as gear, language} from "solid-heroicons/solid"
+import { createSignal, ParentComponent, Show } from "solid-js";
+import { Select } from "../core/select";
+import { dgos, PageDescription, site } from "../layout/store";
 
 const [isDark, setIsDark] = createSignal(true)
 
@@ -30,7 +30,14 @@ export const DarkButton = ()=> {
 
 // language selector
 
-export const SitePreference = () => {
+const LanguageSelect: ParentComponent<{page:PageDescription}> = (props) =>{
+  // change the language has to change the route. It doesn't change the store
+  const update = (e: string) => {
+  }
+  return (<Select entries={site.language} value={props.page.lang} onchange={update}>
+    {props.children}</Select>)
+}
+export const SitePreference = (props: {page:PageDescription}) => {
     const [collapsed, setCollapsed] = createSignal(true);
   
     return (
@@ -56,7 +63,9 @@ export const SitePreference = () => {
         <Show when={!collapsed()}>
           <div aria-label="preferences" class="p-4 border-t border-solid-lightitem dark:border-solid-darkitem">
             
-            <div class='flex'><div class='flex-1'><LanguageSelect/></div><div class='flex-none'><DarkButton/></div></div>
+            <div class='flex items-center'><div class='flex-1'><LanguageSelect page={props.page}>
+              <Icon class='h-5 w-5' path={language} />
+              </LanguageSelect></div><div class='flex-none'><DarkButton/></div></div>
             <div class='flex'><div class='flex-1'></div></div>
           </div>
         </Show>

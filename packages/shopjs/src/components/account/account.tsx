@@ -1,5 +1,5 @@
 import { RailApp, useWorld} from '../core'
-import {Avatar } from '../form'
+import {Avatar } from '../core/form'
 import { ServerSearch } from '../lib/layout'
 import { SettingsApp } from './settings'
 import React, { useState } from 'react'

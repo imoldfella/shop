@@ -2,7 +2,7 @@
 import React, { useState } from 'react'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid'
 import { Combobox } from '@headlessui/react'
-import { LabeledId } from '../lib'
+import { LabeledId } from '../../lib'
 
 
 

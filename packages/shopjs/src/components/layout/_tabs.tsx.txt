@@ -33,6 +33,8 @@ export const TabList: ParentComponent = (props) => {
 // this lets us deep link into the tab of the menu.
 // maybe tailwind className helper ?
 // but it ties to the router.
+
+// 
 function ActiveLink(props: {children: JSX.Element, href: string, isActive: (l: SolidLocation)=>boolean, class: string, activeClass: string, }) {
     const location = useLocation();
     return (
@@ -55,6 +57,7 @@ export const SiteTabs = (props: {page: PageDescription})=>{
     // the first piece of the 
     const location = useLocation();
     const sections = () => site.root.children
+    // this should always give us a lang?
     const path = (e: Page) => props.page.lang + "/" + e.path??""
     // maybe we should limit this to four some how? maybe we should adaptively change the representation (chips?) if we have too many.
     return  (<div           class="w-full mt-2 flex border border-solid-lightborder dark:border-solid-darkitem rounded-md"

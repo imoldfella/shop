@@ -2,6 +2,8 @@ import { NavLink } from "@solidjs/router";
 import { Icon } from "solid-heroicons";
 import { chevronRight } from "solid-heroicons/solid";
 
+// collapsible is too aggressive initially. we want to stop at 3 levels
+// solid docs use an hr, but general design principal is to avoid this if not needed? e.g. how to make a perfect table
 
 import { Show, createSignal, ParentProps, createUniqueId, JSX } from "solid-js";
 

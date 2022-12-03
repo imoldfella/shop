@@ -188,3 +188,34 @@ function ReferenceNav() {
 function GuidesNav() {
   return <SectionNav sections={GUIDES_SECTIONS} />;
 }
+
+
+export const SiteTabs = (props: {page: PageDescription})=>{
+    const href = () => "";
+    // the first piece of the 
+
+    const sections = () => site.root.children
+    // this should always give us a lang?
+    const path = (e: Page) => props.page.lang + "/" + e.path??""
+    // maybe we should limit this to four some how? maybe we should adaptively change the representation (chips?) if we have too many.
+
+    const active ="bg-solid-light dark:bg-solid-dark font-semibold"
+
+    const base="flex-1 inline-flex w-full p-2 items-center justify-center whitespace-nowrap first:rounded-l-md border-r border-solid-lightborder dark:border-solid-darkitem hover:text-blue-500 hover:underline last:(rounded-r-md border-0)"
+
+    const selected = 1
+
+    return  (
+    <div           class="w-full mt-2 flex border border-solid-lightborder dark:border-solid-darkitem rounded-md"
+>    <For each={sections()}>{(e,index)=>(
+        <a
+        classList={{
+          [props.class]: true,
+          [props.activeClass]: props.isActive(location),
+          //[props.inactiveClass]: !props.isActive(location),
+        }}
+      >
+        {e.name}
+        </a>)
+    }</For></div>)
+}

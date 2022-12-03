@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { negotiateLanguages } from "@fluent/langneg";
 import { FluentBundle, FluentResource } from "@fluent/bundle";
 import { ReactLocalization, LocalizationProvider, useLocalization } from "@fluent/react";
-import { Avatar } from '../form/avatar'
+import { Avatar } from './form/avatar'
 import { useIsMobile } from './hooks'
 
 

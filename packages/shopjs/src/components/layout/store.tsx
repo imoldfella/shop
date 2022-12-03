@@ -3,7 +3,148 @@
 import { createWindowSize } from "@solid-primitives/resize-observer";
 import { createSignal, For } from "solid-js";
 import { createStore } from 'solid-js/store'
+import { useLocation } from "@solidjs/router";
 
+export const [searchMode,setSearchMode] = createSignal(false)
+// Section[1-6] / page
+
+// the top tabs are special because they define a navigation state.
+// we could remember this state even going to another site and back.
+
+// note that the link here is only informally related to the path?
+// is that how we should do it? what if we went the other way?
+// the path of the file we are displaying is unique, we could use that for the route
+// and look up the location in the menu.
+// we could also invent a new id altogether, which would have the advantage of 
+// being stable? astro uses the reverse lookup approach; the organization of the files
+// decides the url.
+
+// all the bits of info we can get from the route
+
+export class PageDescription {
+  lang = 'en'
+  topTab: Page
+  constructor(public page: Page, public topSection: number){
+    this.topTab = site.root.children![topSection]
+  }
+}
+
+export type Page = {
+  name: string
+
+  path?: string
+  children?: Page[]
+  parent?: Page
+};
+
+
+export class Language {
+  loaded = false
+}
+// we can keep cache of languages.
+export class SiteStore {
+  title = () => (<div class='flex justify-center items-center'><code>Datagrove</code></div>)
+  href: string = "https://www.datagrove.com"
+  root: Page = {  name: "/", path: "/", children:[]}
+  // this could build the entire path in one go.
+  // the location will be /en/path#subtitle
+  path: Map<string, Page> = new Map()
+  home?: Page 
+  // should be picked by router? how?
+  //selected: number = 0
+  language: {
+    [key: string]: string
+  } = {}
+  user = new SiteUser()
+}
+
+export interface SearchResult {
+  title: string
+  href: string
+  favorite?: boolean
+}
+export class SiteUser {
+   favorites : SearchResult[] = [
+    {title: "fav1", href: "xx" }
+   ]
+   recent : SearchResult[] = [
+    {title: "recent1", href: "xx" }
+   ]
+}
+
+export class BrowseState {
+  // for each tab we need a most recent url visited
+  recent: string[] = []
+}
+
+export const rtlLanguages = new Set(['ar']);
+
+
+// export class SiteLink {
+//   title = ""
+//   subtitle = ""
+//   href = ""
+//   children: SiteLink[] = []
+// }
+
+export const [site, setSite2] = createStore<SiteStore>(new SiteStore);
+
+// we get this in layout and just pass it down. Not very fine grained?
+// is this where we want to set the translation? how do we memoize things?
+
+// there are special locationd {lang}/{toptab} that mean to restore the state to whatever was most recently viewed in that tab. if there is no prior state then pick the first page on that tab. 
+
+// a derivative of a location change.
+export const pageDescription = () : PageDescription => {
+  const loc = useLocation();
+  const root = site.root
+  const topTab = root.children??[];
+  const l = loc.pathname.split('/')
+  l.shift() // just an empty string
+  let lang = l.length>0?l[0]:'en'
+  let top = l.length>1?parseInt(l[1]):0
+  if (top >=topTab.length) top = 0
+
+  let p  = site.home
+  // case 0 or 1 is just default to home page anyway? here we also try to restore a state.
+  if (l.length<=2){
+    // here we are just changing tab states, we need to remember our place.
+  }  
+  if (l.length > 2) {
+    // here we are jumping directly to a new place in the tab, establishing a new state for that tab.
+    lang = l[1]
+    const rest =  loc.pathname.substring(lang.length+1)
+    p = site.path.get(rest)
+  }
+
+  const r=  new PageDescription(p??site.home!, top)
+  console.log('page', r)
+  return r
+}
+export function setSite(s: SiteStore){
+
+  const firstLeaf = (p: Page) : Page =>{
+    if (p.children) {
+      return firstLeaf(p.children[0])
+    }
+    return p
+  }
+  // compile all the paths (not counting language) to a section or leaf.
+  // note that we 
+  const indexPaths = (o: Page) => {
+    if (o.path) s.path.set(o.path, o)
+    for (let ch of o.children??[]){
+      // is this a problem? it's not clear how we would do it otherwise
+      // note that flutter for deep links often builds a stack of widgets, but web doesn't. we are only using this to get a reasonable configuration of the menu expansions
+      ch.parent = ch.parent??o
+      indexPaths(ch)
+    }
+  }
+  s.home = s.home??firstLeaf(s.root);
+  indexPaths(s.root)
+  setSite2(s)
+  console.log(s)
+}
 
 export function dgos(method: string, params: any){
     window?.top?.postMessage({method: method, params: params}, '*')
@@ -165,9 +306,7 @@ export class LayoutStore {
 export class RichText {
     html: string = ""// sanitized
 }
-export interface SearchResult {
-    summary: RichText
-}
+
 export interface Scrollable {
     index: number,
 

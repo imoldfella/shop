@@ -1,4 +1,4 @@
-import { Switch, Avatar, Combo } from '../form'
+import { Switch, Avatar, Combo } from '../core/form'
 import { } from '../lib/layout'
 import { RailApp, useWorld,  LabeledId} from '../core'
 

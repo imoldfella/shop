@@ -1,19 +1,19 @@
 
 // we need to 
 
-import { layout, mobile, pagemap, pagemap as pageToc, setPagemap, ShowPagemap, ShowSitemap, showToc, togglePagemap, toggleSitemap } from "./store"
-import { createSignal, Match, Show, Switch } from "solid-js"
+import { layout, mobile, pagemap, pagemap as pageToc, searchMode, setPagemap, setSearchMode, ShowPagemap, ShowSitemap, showToc, togglePagemap, toggleSitemap } from "./store"
+import { createSignal, Match, ParentComponent, Show, Switch } from "solid-js"
 import type { JSX, Component } from 'solid-js'
 
 import { vtabPin, Vtabs, vtabs } from "../vtabs"
-import { Splitter } from "../gridResizer/splitter"
-import { SiteMenuContent } from "../site_menu"
+import { Splitter } from "./splitter"
+import { SiteMenuContent } from "./site_menu"
 
 import { bars_3, chevronLeft, chevronRight, listBullet, pencil, pencilSquare, xCircle } from "solid-heroicons/solid"
 import { Icon } from "solid-heroicons"
-import { showSitemap } from "./store"
+import { showSitemap,pageDescription } from "./store"
 import { Mdx } from "./mdx"
-import { pageDescription } from "../site_menu/site_store"
+
 
 // the content can be a custom app url, or could be some standard app that this program already knows how to read. each concierge site has a menu that picks.
 // the content of Layout must all live in an iframe, unless it is the internal content (settings).
@@ -22,8 +22,10 @@ import { pageDescription } from "../site_menu/site_store"
 // not really just the toc, this renders the markdown with a toc
 // builds the toc from the html generated.
 
-export const InnerContent: Component<{}> = () => {
-    return (<div class='h-screen h-max-screen  w-full'><Switch>
+export const InnerContent2: Component<{}> = () => {
+
+    return (
+        <div class='h-screen h-max-screen  w-full'><Switch>
         <Match when={true}>
             <Mdx />
         </Match>
@@ -35,6 +37,24 @@ export const InnerContent: Component<{}> = () => {
         </Match>
 
     </Switch></div>)
+}
+
+export const Disable: ParentComponent<{}> = (props) =>{
+    return (<div class='relative h-full w-full z-50 opacity-50' onclick={()=>{
+        setSearchMode(false)
+    }}>{props.children}</div>)
+}
+
+export const InnerContent: Component<{}> = ()=>{
+    return (<Switch>
+        <Match when={searchMode()}>
+           <Disable><InnerContent2/></Disable>
+        </Match>
+        <Match when={true}>
+            <InnerContent2/>
+        </Match>
+    </Switch> )
+  
 }
 
 
@@ -62,7 +82,7 @@ export const Content: Component<{}> = () => {
         <Switch>
             <Match when={showSitemap() == ShowSitemap.full}>
                 <div class='absolute right-0 w-full h-screen overflow-hidden'>
-                    <div class='w-full h-full px-2 overflow-y-scroll'>
+                    <div class='w-full h-full  overflow-y-scroll'>
                         <SiteMenuContent page={pd} />
                     </div></div>
             </Match>
@@ -76,7 +96,7 @@ export const Content: Component<{}> = () => {
             <Match when={showSitemap() == ShowSitemap.split}>
                 <Splitter left={leftContent} setLeft={setLeftContent} >
                     <div class='w-full h-screen overflow-hidden dark:bg-gradient-to-r dark:from-neutral-900 dark:to-neutral-800'>
-                        <div class='w-full h-full px-2 overflow-y-scroll'>
+                        <div class='w-full h-full overflow-y-scroll'>
                             <SiteMenuContent page={pd} />
                         </div></div>
                     <div class='w-full h-full px-2 overflow-y-scroll'>
@@ -87,6 +107,7 @@ export const Content: Component<{}> = () => {
 
         </Switch>
 
+        <Show when={!searchMode()}>
         <div class='absolute   bottom-0 z-10 dark:bg-gradient-to-r dark:from-neutral-800 dark:to-neutral-900   flex items-start'
             style={{
                 left: `${leftSearch()}px`,
@@ -97,6 +118,7 @@ export const Content: Component<{}> = () => {
             <Icon path={listBullet} class='h-6 w-6 m-2 flex-none text-blue-700 hover:text-blue-500' onclick={() => togglePagemap()} />
             <Icon class=' h-6 y-6 m-2 hover:text-blue-500 right-8 top-8 z-10 text-blue-700' path={pencilSquare} />
         </div>
+        </Show>
     </div>)
 }
 
