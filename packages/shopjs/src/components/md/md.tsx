@@ -6,9 +6,8 @@ import rehypeStringify from 'rehype-stringify'
 import rehypeSlug from 'rehype-slug'
 
 
-const md = document.getElementById('editor')?.innerText
-
-export async function testMarkdown(): Promise<string> {
+// convert markdown to html
+export async function md2html(md: string): Promise<string> {
     const file = await unified()
         .use(remarkParse)
         .use(remarkRehype)

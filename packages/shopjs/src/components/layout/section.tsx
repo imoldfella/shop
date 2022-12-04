@@ -43,7 +43,7 @@ export function SectionHeader(
     panelId: string;
     onClick: () => void;
   }>
-) {
+) : JSX.Element {
   return (
     <h3>
       <button

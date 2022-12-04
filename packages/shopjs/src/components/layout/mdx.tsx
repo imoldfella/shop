@@ -3,7 +3,7 @@ import { showToc } from "./store"
 import { createEffect, createSignal, Show } from "solid-js"
 import { chevronLeft, chevronRight } from "solid-heroicons/solid"
 import { Icon } from "solid-heroicons"
-import { buildToc, testMarkdown } from "../md"
+import { buildToc, md2html } from "../md"
 
 // the content can be a custom app url, or could be some standard app that this program already knows how to read. each concierge site has a menu that picks.
 // the content of Layout must all live in an iframe, unless it is the internal content (settings).
@@ -11,7 +11,7 @@ import { buildToc, testMarkdown } from "../md"
 // sort building that here though.
 // not really just the toc, this renders the markdown with a toc
 // builds the toc from the html generated.
-export function Mdx() {
+export function Mdx(props: {md: string}) {
     const [aside, setAside] = createSignal(null as HTMLElement | null)
     const [content, setContent] = createSignal(null as HTMLElement | null)
 
@@ -21,7 +21,7 @@ export function Mdx() {
     // this code could live in a service worker or even a ssr 
     // the data for the page will live in a database.
    createEffect(() => {
-        testMarkdown().then((e) => {
+        md2html(props.md).then((e) => {
             content()!.innerHTML = e
             buildToc(content()!, aside()!)
         })

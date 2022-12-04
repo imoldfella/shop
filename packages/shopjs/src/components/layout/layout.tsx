@@ -13,6 +13,7 @@ import { bars_3, chevronLeft, chevronRight, listBullet, pencil, pencilSquare, xC
 import { Icon } from "solid-heroicons"
 import { showSitemap,pageDescription } from "./store"
 import { Mdx } from "./mdx"
+import { InnerContent} from "../db"
 
 
 // the content can be a custom app url, or could be some standard app that this program already knows how to read. each concierge site has a menu that picks.
@@ -22,41 +23,41 @@ import { Mdx } from "./mdx"
 // not really just the toc, this renders the markdown with a toc
 // builds the toc from the html generated.
 
-export const InnerContent2: Component<{}> = () => {
-
-    return (
-        <div class='h-screen h-max-screen  w-full'><Switch>
-        <Match when={true}>
-            <Mdx />
-        </Match>
-        <Match when={layout.app == "iframe"}>
-            <iframe class=' w-full h-full overflow-y-auto' src='https://www.datagrove.com'></iframe>
-        </Match>
-        <Match when={layout.app == "map"}>
-            MAP!
-        </Match>
-
-    </Switch></div>)
-}
-
+/*
 export const Disable: ParentComponent<{}> = (props) =>{
+    // relative should take us out of the flow, so doesn't have to wrap?
     return (<div class='relative h-full w-full z-50 opacity-50' onclick={()=>{
         setSearchMode(false)
     }}>{props.children}</div>)
 }
 
+// is this going to be fine grained? or rerender
 export const InnerContent: Component<{}> = ()=>{
     return (<Switch>
         <Match when={searchMode()}>
-           <Disable><InnerContent2/></Disable>
+           <Disable><InnerContent2 path={""}/></Disable>
         </Match>
         <Match when={true}>
-            <InnerContent2/>
+            <InnerContent2 path={""}/>
         </Match>
     </Switch> )
   
 }
+*/
 
+export const Disable: ParentComponent<{when: boolean}> = (props) =>{
+    // relative should take us out of the flow, so doesn't have to wrap?
+    return (<div  class='h-full w-full'>
+    <div class='relative h-full w-full z-50 opacity-50' onclick={()=>{
+        setSearchMode(false)
+    }}
+        style={{
+            "display": props.when?"block":"none"
+        }}
+    ></div>
+    {props.children}
+    </div>)
+}
 
 // this could be an iframe.
 // the command is absolute, so its positioned against its first position ancestor
@@ -78,6 +79,9 @@ export const Content: Component<{}> = () => {
 
     const pd = pageDescription()
 
+    // maybe a derived signal to get the language path?
+    // or pass the entire description?
+
     return (<div class=' h-full w-full overflow-hidden'>
         <Switch>
             <Match when={showSitemap() == ShowSitemap.full}>
@@ -87,10 +91,10 @@ export const Content: Component<{}> = () => {
                     </div></div>
             </Match>
             <Match when={mobile()}>
-                <InnerContent />
+                <InnerContent path={pd} />
             </Match>
             <Match when={showSitemap() == ShowSitemap.none}>
-                <InnerContent />
+                <InnerContent path={pd}  />
             </Match>
 
             <Match when={showSitemap() == ShowSitemap.split}>
@@ -100,7 +104,7 @@ export const Content: Component<{}> = () => {
                             <SiteMenuContent page={pd} />
                         </div></div>
                     <div class='w-full h-full px-2 overflow-y-scroll'>
-                        <InnerContent />
+                        <InnerContent path={pd} />
                     </div>
                 </Splitter>
             </Match>
