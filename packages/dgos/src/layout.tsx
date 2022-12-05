@@ -4,12 +4,12 @@ import { Component, For, Show } from "solid-js"
 //import Sortable from 'sortablejs'
 import { chevronLeft, ellipsisHorizontal, mapPin } from "solid-heroicons/solid"
 import { Icon } from "solid-heroicons"
-import { menuOpen, setMenuOpen, setVtabPin, vtabPin, vtabs } from "./store";
+import { menuOpen, setMenuOpen, setVtabPin, Vtab, vtabPin, vtabs } from "./store";
 import { mobile, ShowSitemap, showSitemap } from "./store";
 import { datagrove } from "./dglogo";
 import { Icon2 } from "./icon";
 import  Sortable  from 'sortablejs'
-import ContextMenuWrap from "./menu"
+//import ContextMenuWrap from "./menu"
 
 // this needs a hover flyout and a pin.
 // we need to allow collapsing.
@@ -22,6 +22,7 @@ import ContextMenuWrap from "./menu"
 
 // https://tabler-icons.io/
 
+// create a set of iframes, caching them.
 
 // the rail is the .sticky folder in the root.
 export const Vtabs = () => {
@@ -39,7 +40,7 @@ export const Vtabs = () => {
     const sitemap = () => {
         setMenuOpen(!menuOpen())
     }
-    return (<ContextMenuWrap><div class=" h-screen cursor-pointer bg-white dark:bg-neutral-900 overflow-hidden" classList={{
+    return (<div class=" h-screen cursor-pointer bg-white dark:bg-neutral-900 overflow-hidden" classList={{
         "w-16  hover:w-64 group": !vtabPin(),
         "w-full": vtabPin()
     }}>
@@ -69,7 +70,7 @@ export const Vtabs = () => {
                         <Icon class='flex-none  h-5 w-5 m-2 text-blue-700 hover:text-blue-500' path={ellipsisHorizontal} />
                     </Show>
                 </div >
-            }</For ></nav ></div ></ContextMenuWrap>)
+            }</For ></nav ></div >)
 
 }
 
@@ -81,9 +82,26 @@ export const Vtabs = () => {
 // builds the toc from the html generated.
 
 // myIframe.contentWindow.postMessage('hello', '*');
-export function Content() {
-    return <iframe class='w-full h-full' src='http://localhost:3001'>
-    </iframe>
+
+// create 100 empty iframes, display one.
+// use injection to update empty ones when a new server is activated.
+// solid guarantees this is only ever run once.
+// if we forced an iframe for every server, then when we add a server it will rerun
+// does it disrupt existing servers though?
+
+// can we 
+
+// this is generating vtabs, how do we generate the corresponding iframe? make a flat list?
+
+
+
+ const  Content : Component<{}> = (props) => {
+    return <div>
+        <For each={Object.entries(vtabs.iframe)} >{(e,index) => 
+            <iframe sandbox='' class='w-full h-full' srcdoc='<div style="background-color:  white">hello, world<div>'>
+
+            </iframe>}</For>
+    </div>
 }
 
 // try a floating command bar always at the top.
