@@ -3,6 +3,8 @@ let controller = new AbortController();
 let signal = controller.signal;
 
 export interface DbTable {
+    // root, root+root_length is range in file to read the root block
+    // blocks are uvariant key[n], start[n+1] 
     root: number
     root_length: number
     height: number
@@ -136,6 +138,7 @@ export class Db {
         }
     }
 
+    // start by reading some json meta data describing the database.
     static async open(path: string): Promise<Db> {
         const o = await (await fetch(path + "/index.json")).json()
         return new Db(path, o as DbJson)
@@ -167,10 +170,16 @@ export class Db {
     }
 
     async readIndex(pos: number, size: number): Promise<DbIndex> {
-        const o = this.index.get(pos)
-        if (o) {
-            return o
+        let o = this.index.get(pos)
+        if (!o) {
+            o = await this.readIndex2(pos,size);
+            this.index.set(pos, o)
         }
+        return o
+    }
+
+    async readIndex2(pos: number, size: number): Promise<DbIndex> {
+
 
         const b = await this.readBytes(pos, size)
         const rdr = new BytesReader(b)
@@ -184,9 +193,7 @@ export class Db {
         for (let i = 0; i < ln + 1; i++) {
             offset[i] = rdr.readUvarint()
         }
-        const idx = new DbIndex(key, offset)
-        this.index.set(pos, idx)
-        return idx
+        return new DbIndex(key, offset)
     }
 
 }

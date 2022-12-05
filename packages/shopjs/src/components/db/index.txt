@@ -1,4 +1,4 @@
-import { Component, Match, Switch } from "solid-js";
+import { Component, lazy, Match, Switch } from "solid-js";
 import { Mdx } from "../layout/mdx";
 import { PageDescription } from "../layout/store";
 
@@ -21,20 +21,20 @@ export const targetDb = new Db()
 // do we do data loading here? or leave that to the client?
 const md = document.getElementById('editor')?.innerText
 
-export function getPage(url: string ) : {html:string, hydrate:()=>void}{
-    switch(url) {
-    case "/references/concepts/reactivity":
-        return {
-            html: '',
-            hydrate: ()=>{}
-        }
-        // return some kind of map
-        break;
+export async function getPage(url: string): Promise<{ html: string, hydrate: () => void }> {
+    switch (url) {
+        case "/references/concepts/reactivity":
+            return {
+                html: '',
+                hydrate: () => { }
+            }
+            // return some kind of map
+            break;
         default:
-        return {
-            html: '',
-            hydrate: ()=>{}
-        }
+            return {
+                html: '',
+                hydrate: () => { }
+            }
     }
 
     // what point is this in this case? slightly faster screen pop?
@@ -44,17 +44,19 @@ export function getPage(url: string ) : {html:string, hydrate:()=>void}{
 
 
 // somehow we hydrate the innter content?
-export const InnerContent: Component<{path: PageDescription}> = () => {
-
-    return (
-        <div class='h-screen h-max-screen  w-full'><Switch>
-        <Match when={true}>
-            <Mdx md={md??""}/>
-        </Match>
-    </Switch></div>)
+export const InnerContent: Component<{ path: PageDescription }> = () => {
+    let x = ""
+    const Greeting = lazy(() => import(x));
+    return (<Greeting />)
 }
 
 /*
+   what if when the route change we started async, then change the page on completion?
+
+   createEffect( ){
+    loadPage( );
+   }
+
         <Match when={layout.app == "iframe"}>
             <iframe class=' w-full h-full overflow-y-auto' src='https://www.datagrove.com'></iframe>
         </Match>

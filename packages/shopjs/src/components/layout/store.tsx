@@ -1,10 +1,12 @@
 
 
 import { createWindowSize } from "@solid-primitives/resize-observer";
-import { createSignal, For } from "solid-js";
+import { createEffect, createSignal, For } from "solid-js";
 import { createStore, produce } from 'solid-js/store'
-import { useLocation } from "@solidjs/router";
+import { useLocation, Location } from "@solidjs/router";
 import { negotiateLanguages } from "@fluent/langneg";
+import { Mdx } from "./mdx";
+
 
 
 export const [searchMode, setSearchMode] = createSignal(false)
@@ -26,9 +28,7 @@ export const [searchMode, setSearchMode] = createSignal(false)
 export class PageDescription {
   lang = 'en'
 
-  constructor(public page: Page, public topSection: number) {
-
-  }
+  constructor(public page: Page, public topSection: number, public loc: Location<any>) { }
   get topTab() { return site.root.children![this.topSection] }
 }
 
@@ -155,10 +155,16 @@ export const pageDescription = (): PageDescription => {
     p = site.path.get(rest)
   }
 
-  const r = new PageDescription(p ?? site.home!, top)
+  const r = new PageDescription(p ?? site.home!, top, loc)
   console.log('page', r)
   return r
 }
+
+
+
+export const [innerContent, setInnerContent] = createSignal(<div />)
+
+
 // don't we need to set the site and the language together?
 // we are compiling and translating the site at this point
 // maybe we should do more AOT?
