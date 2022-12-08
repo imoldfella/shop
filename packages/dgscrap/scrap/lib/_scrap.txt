@@ -1,0 +1,86 @@
+
+// let {l10n} = useLocalization();
+// alert(l10n.getString("hello"));
+
+////////////////////
+// test setup, will delete
+// we need to load this from the database, to do that we may need to login. what will get if we don't?
+
+
+/*
+interface Drawable {
+    render: (x: any) => JSX.Element
+}
+
+export class WorldTx {
+    data: Partial<World> = {}
+    commit() {
+
+    }
+}
+
+export interface File {
+    app: string
+    path: Uint8Array // count and path
+}
+
+// we need to remember which ones are expanded
+export class BranchReader {
+    expand(f: File) {
+
+    }
+    get length(): number {
+        return 0
+    }
+    slice(from: number, to: number): File[] {
+        return []
+    }
+}
+const user = {
+    name: 'Whitney Francis',
+    email: 'whitney.francis@example.com',
+    imageUrl:
+        'https://images.unsplash.com/photo-1517365830460-955ce3ccd263?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+}
+
+export const appDiscuss: App = {
+    panning: false,
+    icon: CircleStackIcon,
+    render: renderDiscuss
+}
+const appMap: App = {
+    panning: true,
+    icon: ChevronDownIcon,
+    render: renderMap
+}
+function renderDiscuss() {
+    return (<b>discuss</b>)
+}
+function renderMap() {
+    return (<b>Map</b>)
+}
+
+function Avatar() {
+    return ()
+}
+        { name: 'DM', app: 'dm' },
+        { name: 'Archive', href: '#', icon: ArchiveBoxIcon },
+        { name: 'Customers', href: '#', icon: UserCircleIcon },
+        { name: 'Flagged', href: '#', icon: FlagIcon, },
+        { name: 'Spam', href: '#', icon: NoSymbolIcon, },
+        { name: 'Drafts', href: '#', icon: PencilSquareIcon, },
+
+         
+
+
+// const emptyWorld: World = {
+//     login: undefined,
+//     altLogin: [],
+//     rail: [],
+//     app: {},
+//     railApp: {},
+// }
+
+
+
+*/

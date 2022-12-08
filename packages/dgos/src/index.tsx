@@ -1,20 +1,23 @@
 /* @refresh reload */
 import { render } from 'solid-js/web'
 import { Component, Suspense } from 'solid-js'
+import { Router } from '@solidjs/router'
 import './index.css'
-import {Layout} from './layout'
+import { Layout } from './layout'
 import { initStore } from './store';
+import { DbcProvider, openDatabase, MediaProvider } from './dglib';
 
-// @ts-ignore
-import { hello } from '@datagrove/dglib'
 
-const App: Component = () => {
-  return (<main class='dark: text-white dark:bg-black'><Layout/></main>)
-};
-
+// to make bookmarks work we will need to push the route up through the iframe
 async function init() {
-  console.log(hello())
-  await initStore()
-  render(() => <App />, document.getElementById('app') as HTMLElement)
+  const dbc = await openDatabase()
+  render(() =>
+  (<MediaProvider><Suspense>
+    <Router>
+      <DbcProvider db={dbc}>
+        <Layout />
+      </DbcProvider>
+    </Router>
+  </Suspense ></MediaProvider>), document.getElementById('app') as HTMLElement)
 }
 init()
