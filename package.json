@@ -17,6 +17,7 @@
     "@scure/bip39": "^1.1.0",
     "@solid-primitives/media": "^2.0.4",
     "@solid-primitives/resize-observer": "^2.0.7",
+    "@solid-primitives/workers": "^0.2.2",
     "@solidjs/router": "^0.5.1",
     "bip39": "^3.0.4",
     "daisyui": "^2.42.0",

@@ -1,8 +1,7 @@
-import { createSignal, JSX, Component, createEffect, onCleanup, ParentComponent, Signal } from 'solid-js';
+import { createSignal, JSX, Component, createEffect, onCleanup } from 'solid-js';
 import { throttle } from '@solid-primitives/scheduled';
 
 type SolidRef = (el: HTMLDivElement) => void;
-
 export const GridResizer: Component<{
   ref: HTMLDivElement | SolidRef;
   onResize: (clientX: number, clientY: number) => void;
@@ -105,29 +104,49 @@ export const GridResizer: Component<{
 
 // change this from fr to px; we don't want changing the window size to automatically change the splitter position.
 
-export const Splitter: ParentComponent<{ left: Signal<number>, class: string, children: [JSX.Element, JSX.Element] }> = (props) => {
+export const Splitter = ({ children, left, setLeft }: {
+  children: JSX.Element[],
+  left: () => number,
+  setLeft: (n: number) => void
+}) => {
   let resizer!: HTMLDivElement
   let grid!: HTMLDivElement
 
+  // this gets a x,y from the mouse.
+  // we need to adjust clientX based on where left started?
+  // 
+  const changeLeft = (clientX: number, clientY: number) => {
+    console.log("changeLeft", left(), clientX)
+    setLeft(clientX);
+    // const rect = grid.getBoundingClientRect();
+    // let position = clientX - rect.left - resizer.offsetWidth / 2;
+    // let size = grid.offsetWidth - resizer.offsetWidth;
+    // const percentage = position / size;
+    // const percentageAdjusted = clampPercentage(percentage * 2, 0.5, 1.5);
+    // setLeftContent(percentageAdjusted);
+  }
 
+  // this is feeding css variables to the grid.
+  // 
   return <div
     ref={grid}
-    class={props.class}
+    class=" w-full h-full min-h-0"
     style={{
-      "grid-template-columns": `${props.left[0]()}px 12px 1fr`,
+      "grid-template-columns": `${left()}px 12px 1fr`,
       "display": "grid",
     }}
   >
-    <div class='  h-full w-full  flex '>
-      {props.children[0]}
+    <div class=' relative h-full w-full overflow-y-auto  flex  bg-color-black'>
+      {children[0]!}
+
     </div>
-    <GridResizer ref={resizer} size={props.left[0]} onResize={props.left[1]} />
-    {props.children[1]}
+    <GridResizer ref={resizer} size={left} onResize={changeLeft} />
+    {children[1]!}
+
   </div>
 }
 
 /*
-overflow-y-auto relative
 .wrapper {
   grid-template-rows: minmax(0, 1fr);
 

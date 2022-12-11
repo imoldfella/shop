@@ -57,7 +57,7 @@ export const Vtabs = () => {
                     classList={{
                         "server-link-active": index() == 3
                     }}>
-                    <img title='a' class="flex-none rounded-md h-12 w-12 shadow m-2" src={e.icon} />
+                    <img class="flex-none rounded-md h-12 w-12 shadow m-2" src={e.icon} />
                     <Show when={showSitemap() != ShowSitemap.full}>
                         < div class=' flex-1 overflow-hidden cursor-pointer' > {e.label}</div >
                         <Icon class='flex-none  h-5 w-5 m-2 text-blue-700 hover:text-blue-500' path={ellipsisHorizontal} />

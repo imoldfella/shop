@@ -4,144 +4,13 @@ import { createWindowSize } from "@solid-primitives/resize-observer";
 import { createEffect, createSignal, For, JSX } from "solid-js";
 import { createStore, produce } from 'solid-js/store'
 import { usePrefersDark } from "@solid-primitives/media"
-import { openDB } from 'idb';
+
 import { setDark } from "./dglib";
+
 
 // we need a general user configuration db where the vtab is a table
 
 
-// this is a test function 
-export async function initStore() {
-    //const r = await (await fetch('test.json')).json()
-    // console.log("r", r)
-    setVtabs(new VtabStore())
-}
-
-// two levels deep or n deep?
-// maybe we should use id's and a map?
-export class Vtab {
-    id = 0
-    open?: boolean
-    //  For groups, text is always white for light mode, black for dark mode, choose colors accordingly
-    // color is ignored for leaf links
-    color = "blake"
-    darkColor = "white"
-    label = ""
-    icon = ""
-    messageCount?= 0
-    taggedCount = 0
-    // groups always
-    children: Vtab[] = []
-
-    iframe?: JSX.Element
-
-    constructor(props?: { children?: Vtab[] }) {
-        this.children = props?.children ?? this.children
-    }
-}
-
-// we need to load this on startup
-// we can be in conversations that are not open in a tab.
-export class VtabStore {
-    root: Vtab
-    active?: Vtab
-    selected: Vtab[] = []
-
-    iframe: {
-        [key: string]: JSX.Element
-    } = {}
-
-    constructor() {
-        this.root = new Vtab({
-            children: [
-
-            ]
-        })
-    }
-}
-
-export function addToDm() {
-
-}
-// async? do we wait for the commit or just yolo?
-// what is the interface for this? Dialog box with key?
-// call from the search page.
-export function addTab(props: { group?: Vtab, siteUrl: string, invitation: Uint8Array }) {
-    const vt = new Vtab()
-
-    produce((e: VtabStore) => {
-        e.active = vt
-
-    })
-}
-
-// is this just an id? branch
-class ConversationTemplate {
-
-}
-
-// defines
-class IdentitySet {
-}
-
-// how can we borrow a group from another conversation?
-// can we link to a group in another conversation?
-
-export function activate(v: Vtab) {
-
-}
-
-// if we we close the group with active tab, we need to pick a new active
-// the datagrove tab is always available, or we could try to pick something from a history
-export function closeTab(v: Vtab) {
-
-}
-export function openTab(v: Vtab) {
-
-}
-export function linkConversation(props: {
-    invitation: string
-}) {
-
-}
-
-// 
-export function createConversation(props: {
-    template: ConversationTemplate,
-    name: string,
-
-    writers?: IdentitySet
-    readers?: IdentitySet
-    admin: IdentitySet
-}) {
-
-}
-
-// 
-export function dropConversationLink(v: Vtab) {
-
-}
-export function leaveConversation(v: Vtab) {
-
-}
-// does this make sense? we don't really have a url browse to.
-// it could open a search page, but that's what the datagrove tab is for.
-// export function topAddTab(){
-
-// }
-
-export function addToGroup() {
-
-}
-
-export const [vtabPin, setVtabPin] = createSignal(false)
-export const [menuOpen, setMenuOpen] = createSignal(true)
-
-//export const [vtabOpen, setOpen] = createSignal(true)
-export const [vtabs, setVtabs] = createStore<VtabStore>(new VtabStore);
-export async function doDatabaseStuff() {
-    const db = await openDB('dg');
-}
 
 window.onmessage = (e) => {
     console.log("Message from iframe", e)
@@ -159,7 +28,7 @@ export enum ShowSitemap {
     full,
     split, // split is same as adaptive?
 }
-
+const [sitemap, setSitemap] = createSignal(ShowSitemap.adaptive)
 // what are the transitions?
 // none -> adaptive | overlay depending on sitemap and 
 
@@ -168,7 +37,7 @@ export enum ShowPagemap {
     none,
     display,
 }
-const [sitemap, setSitemap] = createSignal(ShowSitemap.adaptive)
+
 export const [pagemap, setPagemap] = createSignal(ShowPagemap.adaptive)
 
 
