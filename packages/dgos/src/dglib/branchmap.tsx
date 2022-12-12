@@ -68,13 +68,12 @@ export const BranchMap: Component<{}> = () => {
         return <div class='bg-neutral-900 dark:text-white text-black h-full w-full overflow-y-scroll max-h-screen flex flex-col' >
             < BranchMapTitle />
             <div class='flex-1  overflow-y-auto'>
-                <For each={db.getTab().item}>{(e, i) => {
+                <For each={db.getTab()}>{(e, i) => {
                     return <ListTile
-                        onclick={() => db.select(i())}
+                        onclick={() => db.select(e)}
                         class='h-16'
                         indent={0}
-                        active={i() == sel()?.active}
-                        selected={(sel()?.selected.indexOf(i()) ?? -1) != -1}
+                        selected={e.selected}
                         title={<span>{e.name}</span>}
                         leading={<Avatar alt={e.name} src={e.avatar} count={e.count} />}
                         trailing={<Icon path={xMark} class='h-6 w-6 text-neutral-500 hover:text-blue-500' onclick={() => db.drop(i())} />}

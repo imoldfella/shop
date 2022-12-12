@@ -1,0 +1,21 @@
+    updateItems(item: Tabx[]){
+        // create a new all that keeps the same objects
+        // 
+        const all = new Map<string,Tabx>()
+        let sel = new Set<Tabx>()        
+        for (let o of item) {
+            const existing=this.all.get(o.rid)
+            if (existing) {
+                this.all.set(o.rid, existing)
+                if (existing.selected)
+                    sel.add(existing)
+            } else {
+                this.all.set(o.rid, o)
+            }
+        }
+
+        this.all = all
+        this.selected = sel
+        this.setTab(item);
+    }
+

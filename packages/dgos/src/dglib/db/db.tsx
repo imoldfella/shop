@@ -1,7 +1,7 @@
 import { faker } from "@faker-js/faker"
 import { Accessor, Context, createContext, createSignal, ParentComponent, Setter, useContext } from "solid-js"
 import { createStore } from "solid-js/store"
-import { Tab } from "./data"
+import { ListDelta, Rid, Rpc, Tab, Tabx } from "./data"
 
 class Identity {
     secret = new Uint8Array()
@@ -44,40 +44,81 @@ export class DbConfig {
 
 }
 
-export interface TabState {
-    selected: boolean
+// maintains order, but also allows set operations
+// I need some way to group a collection. This is a global operation though
+class SelectMap{
+    getTab: Accessor<Tabx[]>
+    setTab: Setter<Tabx[]>
+    all = new Map<string,Tabx>()
+    // overkill? maybe we should  scan all to get.
+    selected =  new Set<Tabx>()
+
+    constructor(){
+        [this.getTab, this.setTab] = createSignal<Tabx[]>([])
+    }
+    select(t: Tabx) {
+        if (!this.all.get(t.rid)) return
+       
+        for (let i of this.selected) {
+            i.selected=false
+        }
+        t.selected = true
+        this.selected.clear()
+        this.selected.add(t)
+    }
+    
+    // ctrl-tap on desktop to select multiple tabs
+    // on mobile this will be be a long press option
+    toggleSelection(t: Tabx) {
+        if (!this.all.get(t.rid)) return
+
+        const tab = this.getTab()
+        if (this.selected.has(t)) {
+            this.selected.delete(t)
+            this.setTab(tab)
+        } else {
+            this.selected.add(t)
+            this.setTab(tab)
+        }
+    }
+
+    applyDelta(delta: ListDelta<Tabx>){
+        // don't use a method here, they don't get passed through ports
+        const [newItems,removed] = ListDelta.apply(this.getTab(),delta)
+        // if it was removed, then we need to remove it from selected.
+        removed.forEach(e=>this.selected.delete(e))
+        this.setTab(newItems)
+    }
+    // globally change the tabs; we need to copy the selection from our existing state. Here we match on rid's so that we don't change more than we need to. maybe this should be a delta? delta lists are awkward, but probably more peformant?
+
+
 }
-
-type Tabx = Tab & TabState
-
-type Rid = string
-
 // the list of tabs is shared, but the selection state is local.
 // still we need to control the selection state here, because the selected branch may be deleted remotely
-export class Db {
-    selected: Rid[] = []
-    item: Tabx[] = []
-
+export class Db extends SelectMap {
+    // we need the selection order + we need to adjust to remote updates
     identity?: Identity
     root: Branch = new RootBranch()
     w: SharedWorker
-    getTab: Accessor<Tabx[]>
-    setTab: Setter<Tabx[]>
+
     constructor(public config: DbConfig) {
-        [this.getTab, this.setTab] = createSignal<Tabx[]>([])
+        super()
         this.w = new SharedWorker(new URL('./shared', import.meta.url), {
             type: 'module'
         })
         this.w.port.start();
         this.w.port.onmessage = (e) => {
+            
             if (e.data) {
                 // if selected[0] is deleted, we need to pick some tab
-                const item = e.data as Tabx[]
-                for (let o in item) {
-                    item[o].selected = this.selected.indexOf[o.rid)!= -1
-
+                const r = e.data as Rpc
+                switch(r.method) {
+                case 'tabs':
+                    super.applyDelta(r.result as ListDelta<Tabx>)  
+                    break;
+                default:
                 }
-                this.setTab(item);
+                
             }
         }
         this.w.port.postMessage('Message');
@@ -95,25 +136,8 @@ export class Db {
 
 
     }
-    // select doesn't need to go 
-    select(i: number) {
-        const { active, selected, item } = this.getTab()
-        this.setTab({
-            active: i,
-            selected: [],
-            item
-        })
-    }
-    toggleSelection(i: number) {
-        const { active, selected, item } = this.getTab()
-        let idx = selected.indexOf(i)
-        if (idx == -1) {
-            this.setTab({ item, active, selected: [i, ...selected] })
-        } else {
-            selected.splice(idx, 1)
-            this.setTab({ item, active, selected: selected })
-        }
-    }
+   
+    // 
     drop(i: number) {
 
     }

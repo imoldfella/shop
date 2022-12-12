@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker'
 import { openDB } from 'idb'
-import { Tab } from './data'
+import { DeltaLog, ListDelta,  Rpc,  Tabx } from './data'
 export async function doDatabaseStuff() {
     const db = await openDB('dg');
 }
@@ -18,13 +18,15 @@ export async function doDatabaseStuff() {
 // }, false);
 
 function exampleList() {
-    let r: Tab[] = []
+    let r: Tabx[] = []
     for (let i = 0; i < 100; i++) {
         r.push({
+            rid: `${i}`,
             level: 0,
             name: faker.internet.domainName(),
             avatar: faker.image.avatar(),
             count: 2,
+            selected: false
         })
     }
     return r
@@ -36,13 +38,27 @@ interface SharedWorkerGlobalScope {
 
 const _self: SharedWorkerGlobalScope = self as any;
 
+
+// the user interface can rearrange the tabs, so it should ship a delta back to the database? how can we make this robust with races? where do we rebase?
+// note that this will eventually have multiple clients, do we want to track them all separately?
+
 _self.onconnect = function (e) {
     var port = e.ports[0];
+    let tabs = exampleList()
+    let log = new DeltaLog<Tabx>(0,tabs)
 
     port.addEventListener('message', function (e) {
-        console.log('Worker Received', e.data);
-        port.postMessage(exampleList());
+        const r = e.data as Rpc
+        switch(r.method){
+            case 'tab':
+                [tabs] = ListDelta.apply<Tabx>(tabs, r.params as ListDelta<Tabx>)
+                break
+            default:
+            case 'init':
+            
+        }
+        
     });
-
+    port.postMessage({method: 'tabs', result: log.golden});
     port.start(); // Required when using addEventListener. Otherwise called implicitly by onmessage setter.
 }
