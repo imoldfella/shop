@@ -37,8 +37,6 @@ export const BranchMap: Component<{}> = () => {
     const left = createSignal(255)
     const [pin, setPin] = createSignal(false)
     const [menu, setMenu] = createSignal(false)
-    const [sel, setSel] = db.tabSelection
-    const s = db.tabSelection
 
     // computing show takes 
     const show = () => {
@@ -70,7 +68,7 @@ export const BranchMap: Component<{}> = () => {
         return <div class='bg-neutral-900 dark:text-white text-black h-full w-full overflow-y-scroll max-h-screen flex flex-col' >
             < BranchMapTitle />
             <div class='flex-1  overflow-y-auto'>
-                <For each={db.tabs()}>{(e, i) => {
+                <For each={db.getTab().item}>{(e, i) => {
                     return <ListTile
                         onclick={() => db.select(i())}
                         class='h-16'

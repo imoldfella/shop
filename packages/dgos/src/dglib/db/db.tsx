@@ -44,30 +44,41 @@ export class DbConfig {
 
 }
 
-export class TabSelection {
-    active = 0
-    selected: number[] = []
+export interface TabState {
+    selected: boolean
 }
+
+type Tabx = Tab & TabState
+
+type Rid = string
 
 // the list of tabs is shared, but the selection state is local.
 // still we need to control the selection state here, because the selected branch may be deleted remotely
 export class Db {
+    selected: Rid[] = []
+    item: Tabx[] = []
+
     identity?: Identity
     root: Branch = new RootBranch()
-    tabs: Accessor<Tab[]> = () => []
-    setTabs: Setter<Tab[]>
-    tabSelection = createSignal<TabSelection>()
     w: SharedWorker
-
+    getTab: Accessor<Tabx[]>
+    setTab: Setter<Tabx[]>
     constructor(public config: DbConfig) {
-        [this.tabs, this.setTabs] = createSignal<Tab[]>([])
+        [this.getTab, this.setTab] = createSignal<Tabx[]>([])
         this.w = new SharedWorker(new URL('./shared', import.meta.url), {
             type: 'module'
         })
         this.w.port.start();
         this.w.port.onmessage = (e) => {
-            if (e.data)
-                this.setTabs(e.data as Tab[]);
+            if (e.data) {
+                // if selected[0] is deleted, we need to pick some tab
+                const item = e.data as Tabx[]
+                for (let o in item) {
+                    item[o].selected = this.selected.indexOf[o.rid)!= -1
+
+                }
+                this.setTab(item);
+            }
         }
         this.w.port.postMessage('Message');
         this.init()
@@ -86,6 +97,22 @@ export class Db {
     }
     // select doesn't need to go 
     select(i: number) {
+        const { active, selected, item } = this.getTab()
+        this.setTab({
+            active: i,
+            selected: [],
+            item
+        })
+    }
+    toggleSelection(i: number) {
+        const { active, selected, item } = this.getTab()
+        let idx = selected.indexOf(i)
+        if (idx == -1) {
+            this.setTab({ item, active, selected: [i, ...selected] })
+        } else {
+            selected.splice(idx, 1)
+            this.setTab({ item, active, selected: selected })
+        }
     }
     drop(i: number) {
 
