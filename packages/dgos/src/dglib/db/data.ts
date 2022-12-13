@@ -7,6 +7,34 @@
 // tradeoff of whether to map a log to a partition: more concurrency = potentially bigger lock problem
 
 export type Rid = string
+export type bstr = Uint8Array
+
+// if list length is 0, then key is deleted.
+// prosemirror is kept using the count map.
+export interface TableUpdate {
+    table: string
+    key: Uint8Array
+    delta: ListDelta<any>
+}
+export interface BranchUpdate {
+    lsn: Lsn
+    update: TableUpdate[]
+}
+
+// transactions need support for Pm, which means we need to fail/rebase
+// pm transactions can be singular? It would be better to not special case.
+export type Tx = {
+    [branch: string]: BranchUpdate
+}
+
+
+export interface Scan {
+    tag: number
+    table: string
+    begin: bstr
+    end: bstr
+}
+export type ScanTx = Scan[]
 
 // animation-play-state: running | paused
 export interface ColumnSchema {
@@ -37,20 +65,7 @@ export class Table {
 
 }
 
-// if list length is 0, then key is deleted.
-// prosemirror is kept using the count map.
-export interface TableUpdate {
-    table: string
-    key: Uint8Array
-    delta: ListDelta<any>
-}
-export interface BranchUpdate {
-    lsn: Lsn
-    update: TableUpdate[]
-}
-export type Tx = {
-    [branch: string]: BranchUpdate
-}
+
 
 // https://www.jsonrpc.org/
 export interface Rpc {
@@ -77,13 +92,13 @@ export type Lsn = number
 // how should we rebase this? what do we need to keep?
 // prosemirror keeps centrally what we need to put in a log.
 export interface ListDelta<T> {
-    lsn: number,
     op: Uint8Array,
     count: number[],
     data: T[],
     // session should be committed atomically with the log state.
     session: number
 }
+
 
 
 // handle race conditions and rebasing.

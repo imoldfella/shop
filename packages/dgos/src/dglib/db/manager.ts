@@ -66,11 +66,8 @@ export class DeltaMgr<T> {
     }
 }
 
-export function listDeltaApply<T>(gold: ArraySnapshot<T>, delta: ListDelta<T>): [ArraySnapshot<T> | undefined, T[]] {
-    if (delta.lsn != gold.lsn + 1) {
-        return [undefined, []]
-    }
-    const { lsn, item } = gold
+export function listDeltaApply<T>(item: T[], delta: ListDelta<T>)
+    : [T[] | undefined, T[]] {
     const r: T[] = []
     const removed: T[] = []
     let j = 0
@@ -91,7 +88,7 @@ export function listDeltaApply<T>(gold: ArraySnapshot<T>, delta: ListDelta<T>): 
                 break
         }
     }
-    return [{ lsn: delta.lsn, item: r }, removed]
+    return [r, removed]
 }
 
 // create a delta that creates a list from an empty list

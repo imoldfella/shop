@@ -85,13 +85,15 @@ class SelectMap {
 
 
 }
+// can our sandbox safely reach the shared worker? it seems unlikely.
+
 // the list of tabs is shared, but the selection state is local.
 // still we need to control the selection state here, because the selected branch may be deleted remotely
 export class Db extends SelectMap {
     // we need the selection order + we need to adjust to remote updates
     identity?: Identity
-    root: Branch = new RootBranch()
     w: SharedWorker
+    // string here is a hexified version of the binary key for the branch.
 
     constructor(public config: DbConfig) {
         super()
@@ -116,8 +118,6 @@ export class Db extends SelectMap {
         this.w.port.postMessage('Message');
         this.init()
     }
-    // string here is a hexified version of the binary key for the branch.
-    branch = new Map<string, Branch>()
 
     begin(ts?: number): Tx {
         // create a snapshot from the 
