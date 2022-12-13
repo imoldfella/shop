@@ -12,13 +12,8 @@ export class DgTable<V> {
     data = new DgArray()
 }
 
-// animation-play-state: running | paused
-export class Snapshot {
-    // a table of tables. table, key/ordinal
-    // layered 
-    branch = new Map<number, BranchSnapshot>()
 
-}
+
 class BranchSnapshot {
     table = new Map<string, TableSnapshot>()
 }
@@ -29,10 +24,7 @@ class TableSnapshot {
 
 // we have a theory that allows transactions across connections, but it has tradoffs.
 // branch may be at any historical snapshot, or any historical snapshot + proposed changes.
-export class Branch {
-
-}
-export class RootBranch extends Branch {
+export class RootBranch {
     // the root branch needs to return the branch tabs.
     tabState = new DgTable()
 }
@@ -46,27 +38,27 @@ export class DbConfig {
 
 // maintains order, but also allows set operations
 // I need some way to group a collection. This is a global operation though
-class SelectMap{
+class SelectMap {
     getTab: Accessor<Tabx[]>
     setTab: Setter<Tabx[]>
-    all = new Map<string,Tabx>()
+    all = new Map<string, Tabx>()
     // overkill? maybe we should  scan all to get.
-    selected =  new Set<Tabx>()
+    selected = new Set<Tabx>()
 
-    constructor(){
+    constructor() {
         [this.getTab, this.setTab] = createSignal<Tabx[]>([])
     }
     select(t: Tabx) {
         if (!this.all.get(t.rid)) return
-       
+
         for (let i of this.selected) {
-            i.selected=false
+            i.selected = false
         }
         t.selected = true
         this.selected.clear()
         this.selected.add(t)
     }
-    
+
     // ctrl-tap on desktop to select multiple tabs
     // on mobile this will be be a long press option
     toggleSelection(t: Tabx) {
@@ -82,11 +74,11 @@ class SelectMap{
         }
     }
 
-    applyDelta(delta: ListDelta<Tabx>){
+    applyDelta(delta: ListDelta<Tabx>) {
         // don't use a method here, they don't get passed through ports
-        const [newItems,removed] = ListDelta.apply(this.getTab(),delta)
+        const [newItems, removed] = ListDelta.apply(this.getTab(), delta)
         // if it was removed, then we need to remove it from selected.
-        removed.forEach(e=>this.selected.delete(e))
+        removed.forEach(e => this.selected.delete(e))
         this.setTab(newItems)
     }
     // globally change the tabs; we need to copy the selection from our existing state. Here we match on rid's so that we don't change more than we need to. maybe this should be a delta? delta lists are awkward, but probably more peformant?
@@ -108,17 +100,17 @@ export class Db extends SelectMap {
         })
         this.w.port.start();
         this.w.port.onmessage = (e) => {
-            
+
             if (e.data) {
                 // if selected[0] is deleted, we need to pick some tab
                 const r = e.data as Rpc
-                switch(r.method) {
-                case 'tabs':
-                    super.applyDelta(r.result as ListDelta<Tabx>)  
-                    break;
-                default:
+                switch (r.method) {
+                    case 'tabs':
+                        super.applyDelta(r.result as ListDelta<Tabx>)
+                        break;
+                    default:
                 }
-                
+
             }
         }
         this.w.port.postMessage('Message');
@@ -136,7 +128,7 @@ export class Db extends SelectMap {
 
 
     }
-   
+
     // 
     drop(i: number) {
 
@@ -147,14 +139,7 @@ export class Db extends SelectMap {
 }
 
 
-// transactions need to be rebaseable
-export class Tx {
-    constructor(public db: Db, snapshot: Snapshot) {
 
-    }
-    async commit() {
-    }
-}
 
 export class DgArray<Value>  {
     insert(index: number, value: Value): DgArray<Value> {

@@ -1,5 +1,5 @@
 import { createStore } from 'solid-js/store'
-import { DgArray, Db, Tx, Branch } from './db'
+import { DgArray, Db } from './db'
 
 // used for a sitemap and vtabs
 // create table x (f1, f2, ) primary (f1, +)
@@ -38,13 +38,13 @@ export interface LinkEntry {
 // we could map a message stream? otoh we could have some kind of context/store that defined the entirety of the apps data
 // this will have trouble with maps though?
 // newGetter = createResource(signalgetter, async (s)=>newvalue)
-export function createBranchmap(branch: Branch) {
-    return createStore(Query<LinkEntry>)
-}
+// export function createBranchmap(branch: Branch) {
+//     return createStore(Query<LinkEntry>)
+// }
 
-export function createSitemap(branch: Branch) {
-    return createStore(Query<LinkEntry>)
-}
+// export function createSitemap(branch: Branch) {
+//     return createStore(Query<LinkEntry>)
+// }
 
 
 // key is level + ordinal
