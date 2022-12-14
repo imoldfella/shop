@@ -8,6 +8,14 @@
 
 export type Rid = string
 export type bstr = Uint8Array
+export type BranchId = string
+export type Key = Uint32Array
+
+// a Db has one root Dgc, it can find other dgc's from there.
+// the root dgc can be found from the identity.
+export interface DbConfig {
+
+}
 
 // if list length is 0, then key is deleted.
 // prosemirror is kept using the count map.
@@ -20,19 +28,20 @@ export interface BranchUpdate {
     lsn: Lsn
     update: TableUpdate[]
 }
-
+export interface Identity {
+    secret: Uint8Array
+}
 // transactions need support for Pm, which means we need to fail/rebase
 // pm transactions can be singular? It would be better to not special case.
 export type Tx = {
     [branch: string]: BranchUpdate
 }
 
-
 export interface Scan {
     tag: number
     table: string
-    begin: bstr
-    end: bstr
+    low: Key
+    high: Key
 }
 export type ScanTx = Scan[]
 
@@ -94,11 +103,20 @@ export type Lsn = number
 export interface ListDelta<T> {
     op: Uint8Array,
     count: number[],
-    data: T[],
+    item: T[],
     // session should be committed atomically with the log state.
     session: number
 }
 
+const keep = 0
+const insert = 1
+const skip = 2
+// create a delta that creates a list from an empty list
+export function listDeltaFromArray<T>(item: T[]): ListDelta<T> {
+    return {
+        op: new Uint8Array([insert]), count: [item.length], item, session: 0
+    }
+}
 
 
 // handle race conditions and rebasing.
@@ -134,3 +152,27 @@ export interface DeltaLog<T> {
 }
 
 
+export function listDeltaApply<T>(item: T[], delta: ListDelta<T>)
+    : [T[] | undefined, T[]] {
+    const r: T[] = []
+    const removed: T[] = []
+    let j = 0
+    let d = 0
+    for (let i = 0; i < delta.op.length; i++) {
+        switch (delta.op[i]) {
+            case keep:
+                r.push(...item.slice(j, j + delta.count[i]))
+                j = j + delta.count[i]
+                break
+            case insert:
+                r.push(...delta.item.slice(d, d + delta.count[i]))
+                d += delta.count[i]
+                break
+            case skip:
+                removed.push(...item.slice(j, j + delta.count[i]))
+                j = j + delta.count[i]
+                break
+        }
+    }
+    return [r, removed]
+}

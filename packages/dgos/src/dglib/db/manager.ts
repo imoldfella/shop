@@ -1,14 +1,14 @@
-import { DeltaLog, ListDelta, Lsn, ArraySnapshot } from "./data"
+import { ListDelta, Lsn, Tx } from "./data"
 
-const keep = 0
-const insert = 1
-const skip = 2
+
 
 export function getRandom(): number {
     const r = new BigUint64Array(1)
     window.crypto.getRandomValues(r)
     return Number(r[0])
 }
+
+/*
 export class DeltaMgr<T> {
     listener = new Set<() => void>
     addListener(fn: () => void) { }
@@ -65,33 +65,7 @@ export class DeltaMgr<T> {
         }
     }
 }
+*/
 
-export function listDeltaApply<T>(item: T[], delta: ListDelta<T>)
-    : [T[] | undefined, T[]] {
-    const r: T[] = []
-    const removed: T[] = []
-    let j = 0
-    let d = 0
-    for (let i = 0; i < delta.op.length; i++) {
-        switch (delta.op[i]) {
-            case keep:
-                r.push(...item.slice(j, j + delta.count[i]))
-                j = j + delta.count[i]
-                break
-            case insert:
-                r.push(...delta.data.slice(d, d + delta.count[i]))
-                d += delta.count[i]
-                break
-            case skip:
-                removed.push(...item.slice(j, j + delta.count[i]))
-                j = j + delta.count[i]
-                break
-        }
-    }
-    return [r, removed]
-}
 
-// create a delta that creates a list from an empty list
-export function listDeltaFromArray<T>(lsn: Lsn, item: T[]) {
-    return new ListDelta<T>(lsn, new Uint8Array([insert]), [item.length], item, 0)
-}
+

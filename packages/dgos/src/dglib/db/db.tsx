@@ -1,40 +1,9 @@
 import { faker } from "@faker-js/faker"
 import { Accessor, Context, createContext, createSignal, ParentComponent, Setter, useContext } from "solid-js"
 import { createStore } from "solid-js/store"
-import { ListDelta, Rid, Rpc, Tab, Tabx } from "./data"
-
-class Identity {
-    secret = new Uint8Array()
-}
-export class DgTable<V> {
-    keyOf: (v: V) => Uint8Array | undefined = () => undefined
-
-    data = new DgArray()
-}
+import { ListDelta, listDeltaApply, Rid, Rpc, Tab, Tabx, Tx, Identity, DbConfig, BranchId, Key } from "./data"
 
 
-
-class BranchSnapshot {
-    table = new Map<string, TableSnapshot>()
-}
-// our table has ordinals
-class TableSnapshot {
-
-}
-
-// we have a theory that allows transactions across connections, but it has tradoffs.
-// branch may be at any historical snapshot, or any historical snapshot + proposed changes.
-export class RootBranch {
-    // the root branch needs to return the branch tabs.
-    tabState = new DgTable()
-}
-
-
-// a Db has one root Dgc, it can find other dgc's from there.
-// the root dgc can be found from the identity.
-export class DbConfig {
-
-}
 
 // maintains order, but also allows set operations
 // I need some way to group a collection. This is a global operation though
@@ -76,10 +45,10 @@ class SelectMap {
 
     applyDelta(delta: ListDelta<Tabx>) {
         // don't use a method here, they don't get passed through ports
-        const [newItems, removed] = ListDelta.apply(this.getTab(), delta)
+        const [newItems, removed] = listDeltaApply(this.getTab(), delta)
         // if it was removed, then we need to remove it from selected.
         removed.forEach(e => this.selected.delete(e))
-        this.setTab(newItems)
+        //this.setTab(newItems)
     }
     // globally change the tabs; we need to copy the selection from our existing state. Here we match on rid's so that we don't change more than we need to. maybe this should be a delta? delta lists are awkward, but probably more peformant?
 
@@ -91,9 +60,13 @@ class SelectMap {
 // still we need to control the selection state here, because the selected branch may be deleted remotely
 export class Db extends SelectMap {
     // we need the selection order + we need to adjust to remote updates
-    identity?: Identity
+    profile: BranchId = "" // anonymous
     w: SharedWorker
     // string here is a hexified version of the binary key for the branch.
+
+    update() {
+        //super.applyDelta(r.result as ListDelta<Tabx>)
+    }
 
     constructor(public config: DbConfig) {
         super()
@@ -102,75 +75,92 @@ export class Db extends SelectMap {
         })
         this.w.port.start();
         this.w.port.onmessage = (e) => {
-
             if (e.data) {
                 // if selected[0] is deleted, we need to pick some tab
                 const r = e.data as Rpc
                 switch (r.method) {
-                    case 'tabs':
-                        super.applyDelta(r.result as ListDelta<Tabx>)
-                        break;
+                    case 'update':
+                        // some scans have changed. 
+                        break
                     default:
+                        // this should be a reply to a transaction
+                        r.id
                 }
-
             }
         }
-        this.w.port.postMessage('Message');
-        this.init()
+
+        (async () => {
+
+        })()
     }
 
-    begin(ts?: number): Tx {
+    begin(): TxMgr {
         // create a snapshot from the 
-        const sn = new Snapshot()
-        return new Tx(this, sn)
+        return new TxMgr(this)
     }
-    async init() {
-
-
+    async rpc(method: string, id: number, params: any) {
+        this.w.port.postMessage({
+            method: method,
+            id: id,
+            params: params
+        })
     }
-
     // 
-    drop(i: number) {
+
+}
+// each table has functions to delete, insert, update
+
+export function deleteTab(tx: TxMgr, i: number) {
+    // tx.branch(tx.db.profile)
+    // tx.drop(i)
+}
+export function insertTab(tx: TxMgr,) {
+
+}
+
+class Updater {
+    // assume that 
+    forward = (a: Uint8Array) => a
+    back = () => { }
+}
+// prosemirror keeps two copies: predicted and golden; it throws away predicted when new transactions come in.
+// transactions are steps that can be rebased. we need to hang on to the transaction until its resolved
+// insert doesn't need to changing, delete doesn't need changing. update = delete + f(old, delta)
+// update needs to be rebased: delta' = fRebase(old, dGold, delta)
+export class TxMgr {
+    constructor(public db: Db) { }
+
+    updater: Updater[] = []
+
+    delete(key: Key) {
+    }
+    insert(key: Key, value: Uint8Array) {
 
     }
-    newTab() {
+    update(key: Key, value: Uint8Array) {
 
+    }
+
+    async commit(): Promise<boolean> {
+        // send to shared
+        // if it fails it will be handled when the message comes back, and when we get the new commits
+        this.db.rpc()
+
+
+        // if transaction failed, rebase and try again. we do this on the ui side because a transaction failing
+        // may have ui ramifications
+        return true
     }
 }
 
-
-
-
-export class DgArray<Value>  {
-    insert(index: number, value: Value): DgArray<Value> {
-        return this
-    }
-    remove(index: number, end: number): DgArray<Value> {
-        return this
-    }
-}
-
-
-export async function tryLoad(props: {
+export async function openDb(props: {
     secret: string
 }): Promise<Db | undefined> {
     return undefined
 }
 
-
 let dbContext: Context<Db>
 export const DbProvider: ParentComponent<{}> = (props) => {
-    //   const [db, setDb] = createSignal()
-    // here we are providing a snapshot and a transaction getter.
-    // why not just a transaction getter, which needs a snapshot anyway? 
-    //const [userId, setUserId] = createSignal()
-    //   const [dbc] = createResource<string, any>({}, ()=> {return {} } )
-
-    // const dbs: Committer<Dbc, Tx> = [
-    //     db,
-    //     (tx: Tx) => setDb(commit(db(), tx))
-    // ];
-
     const db = new Db({})
     const DbContext = createContext(db)
     dbContext = DbContext
