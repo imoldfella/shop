@@ -7,7 +7,7 @@ import { createWindowSize } from "@solid-primitives/resize-observer"
 import { Splitter } from "./splitter";
 import { Content, SandboxShow } from "./sandbox";
 import { datagrove } from "./dg/dglogo";
-import { Tab, useDb } from "./db";
+import { deleteTab, insertTab, Tab, useDb } from "./db";
 
 
 // these should probably in next level up? listen to the div that we are placed in instead of window?
@@ -58,7 +58,9 @@ export const BranchMap: Component<{}> = () => {
             //return <Icon path={chevronLeft} />
 
             return <ListTile
-                onclick={() => db.newTab()}
+                onclick={() => {
+                    insertTab(db)
+                }}
                 class='h-16'
                 title="Datagrove"
                 leading={<Icon viewBox='0 0 492 492' path={datagrove} class='w-12 h-12 flex-none text-blue-700 hover:text-blue-500 m-2' />}
@@ -76,7 +78,7 @@ export const BranchMap: Component<{}> = () => {
                         selected={e.selected}
                         title={<span>{e.name}</span>}
                         leading={<Avatar alt={e.name} src={e.avatar} count={e.count} />}
-                        trailing={<Icon path={xMark} class='h-6 w-6 text-neutral-500 hover:text-blue-500' onclick={() => db.drop(i())} />}
+                        trailing={<Icon path={xMark} class='h-6 w-6 text-neutral-500 hover:text-blue-500' onclick={() => deleteTab(db,i())} />}
                     />
                 }}</For>
             </div>

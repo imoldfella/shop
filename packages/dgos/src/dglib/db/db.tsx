@@ -98,7 +98,9 @@ export class Db extends SelectMap {
         // create a snapshot from the 
         return new TxMgr(this)
     }
-    async rpc(method: string, id: number, params: any) {
+    next = 1
+    async rpc(method: string, params: any) {
+        const id = this.next++
         this.w.port.postMessage({
             method: method,
             id: id,
@@ -110,14 +112,24 @@ export class Db extends SelectMap {
 }
 // each table has functions to delete, insert, update
 
-export function deleteTab(tx: TxMgr, i: number) {
+export function deleteTabTx(tx: TxMgr, i: number) {
     // tx.branch(tx.db.profile)
     // tx.drop(i)
 }
-export function insertTab(tx: TxMgr,) {
+export function deleteTab(db: Db, i: number) {
+    const tx = db.begin()
+    deleteTabTx(tx,i)
+    tx.commit()
+}
+// return a function that can take either tx or db
+export function insertTabTx(tx: TxMgr) {
 
 }
-
+export function insertTab(db: Db) {
+    const tx = db.begin()
+    insertTabTx(tx)
+    tx.commit()
+}
 class Updater {
     // assume that 
     forward = (a: Uint8Array) => a
@@ -144,7 +156,7 @@ export class TxMgr {
     async commit(): Promise<boolean> {
         // send to shared
         // if it fails it will be handled when the message comes back, and when we get the new commits
-        this.db.rpc()
+        this.db.rpc('tx',{ })
 
 
         // if transaction failed, rebase and try again. we do this on the ui side because a transaction failing
