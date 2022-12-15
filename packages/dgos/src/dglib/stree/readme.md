@@ -1,5 +1,22 @@
 #
 
+
+// tree built to share with sharedarraybuffer
+// lsm where mem tree is a pam tree
+
+// we might want to compress before storing. we need special log stuff. we might want to be able to use chrome file access.
+// ReadableStreamBYOBReader not in safari.
+// can read blobs directly into webassembly
+// https://wicg.github.io/file-system-access/
+// file system access not in firefox.
+// https://developer.mozilla.org/en-US/docs/Web/API/File_System_Access_API
+// FileSystemWritableStream, not in safari, not in firefox
+
+// disk pointers should have two size classes: compressed and uncompressed
+// does lz4 allow decompression in place? not a big deal
+
+
+
 Each l1+ block is integer[] key, followed by integer[] pointer
 
 l0 block is integer[]start followed by blobs.

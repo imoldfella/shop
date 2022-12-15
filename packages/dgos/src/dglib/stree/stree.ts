@@ -1,11 +1,29 @@
 
 
-// tree built to share with sharedarraybuffer
-// lsm where mem tree is a pam tree
-
 export class BlockStore {
 
 }
+
+
+class Buffer {
+    b = new SharedArrayBuffer(512 * 1024)
+}
+// pages can be 64K, 128K, 256K, or entire buffer (512K to 2GB)
+class Page {
+    constructor(
+        public b: Buffer,
+        public size: number,
+        public offset: number
+    ){
+    }
+}
+class BufferPool {
+    buffer: Buffer[] = []
+
+}
+
+
+
 export class CacheTable {
     //
 }
@@ -23,6 +41,16 @@ export class Stree {
 
 }
 
-export class Page {
 
+class Tree {
+    root 
+}
+
+// tree with fixed root that points to other trees
+class TreeTree extends Tree {
+
+}
+
+export class Ustore extends TreeTree {
+    
 }
