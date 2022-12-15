@@ -43,7 +43,7 @@ export class Stree {
 
 
 class Tree {
-    root 
+     
 }
 
 // tree with fixed root that points to other trees

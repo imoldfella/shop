@@ -4,6 +4,14 @@
 // tree built to share with sharedarraybuffer
 // lsm where mem tree is a pam tree
 
+const root = await navigator.storage.getDirectory();
+// Create a new file handle.
+const fileHandle = await root.getFileHandle('Untitled.txt', { create: true });
+// Create a new directory handle.
+const dirHandle = await root.getDirectoryHandle('New Folder', { create: true });
+// Recursively remove a directory.
+await root.removeEntry('Old Stuff', { recursive: true });
+
 // we might want to compress before storing. we need special log stuff. we might want to be able to use chrome file access.
 // ReadableStreamBYOBReader not in safari.
 // can read blobs directly into webassembly
@@ -11,10 +19,19 @@
 // file system access not in firefox.
 // https://developer.mozilla.org/en-US/docs/Web/API/File_System_Access_API
 // FileSystemWritableStream, not in safari, not in firefox
-
+// relevant open issue (2017!) https://github.com/WebAssembly/design/issues/1162
+https://developer.chrome.com/blog/sync-methods-for-accesshandles/
+https://github.com/whatwg/fs/issues/7#issuecomment-1161768515
 // disk pointers should have two size classes: compressed and uncompressed
 // does lz4 allow decompression in place? not a big deal
 
+opfs, wasmfs
+no temp files in opfs https://github.com/WICG/file-system-access/issues/339
+not in service worker
+ugh: https://github.com/WICG/file-system-access/issues/260
+
+
+let clients access read only files directly. Maybe all files are readable directly, append only?
 
 
 Each l1+ block is integer[] key, followed by integer[] pointer
