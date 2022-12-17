@@ -21,6 +21,10 @@ interface FileSystemSyncAccessHandle {
   getSize(): Promise<number>
 }
 
+export async function useOpfsStore() {
+  const root = await navigator.storage.getDirectory();
+  return new OpfsStore(root)
+}
 export class OpfsStore implements Store {
   constructor(public root: FileSystemDirectoryHandle) {
 

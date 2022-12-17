@@ -1,5 +1,8 @@
-import { Store, StoreFile } from "./data";
-import { BufferPool, Page } from "./pool";
+import { useFs, StoreFile } from '../opfs'
+
+// the log runs as a shared worker because we only want one, and it can block due to opfs.
+// this likely caps its performance. we can at least write into a shared memory, then send a message to request commit.
+// 
 
 
 // we want to collect transactions into log records and flush them
@@ -51,9 +54,6 @@ export class Log {
     }
 }
 
-export function createLog(s: Store): Promise<Log> {
-    throw ""
-}
 
 
 

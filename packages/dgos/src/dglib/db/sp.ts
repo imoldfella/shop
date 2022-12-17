@@ -2,15 +2,20 @@
 import * as dp from 'idb'
 import { Branch, Rpc, Schema, Key, ArraySnapshot, Tx, Lsn, Scan, BranchId, ScanTx, Sandbox } from './data'
 import { Interval, IntervalTree } from '../stree/interval'
-import { SchemaMgr } from './schema';
-import { DbmsWorker } from './worker';
+
 
 interface SharedWorkerGlobalScope {
     onconnect: (event: MessageEvent) => void;
 }
 
 const _self: SharedWorkerGlobalScope = self as any;
-
+_self.onconnect = function (e) {
+    if (!dbms) {
+        createDbms().then(_ => dispatch(e.ports[0]))
+    } else {
+        dispatch(e.ports[0])
+    }
+}
 // should we  have tree per table or put table into the
 class ScanMgr implements Interval {
     current: any[] = []
@@ -49,70 +54,95 @@ class Table {
 // clients are tabs, but those tabs have clients as well?
 // or can the sandbox talk directly to the shared worker? I think the problem there is the context of the sandbox. So the port doesn't really matter for security (all are trusted), but the rpc has to identify the sandbox. also the rpc will 
 
+// don't terminate workers, it will leave latches in bad state.
+function onerror(a: any) {
+    console.log("worker error", a)
+}
+
+export class WorkerWaiter {
+    w: Worker
+    waiting = false
+    resolve: any
+    reject: any
+    constructor(s: string) {
+        this.w = new Worker(s)
+        this.w.onmessage = (m) => {
+            this.resolve(m)
+            this.waiting = false
+        }
+        this.w.onerror = (e) => {
+            this.reject(e)
+            this.waiting = false
+        }
+    }
+    async ask(v: { method: string, params?: any }): Promise<any> {
+        this.w.postMessage(v)
+        this.waiting = true
+        return new Promise((resolve, reject) => {
+            this.resolve = resolve
+            this.reject = reject
+        })
+    }
+    async cancel() {
+        return this.ask({ method: 'cancel' })
+    }
+
+}
 // each time we update the database, we need to consider if it changes any of the scans and then send the delta
 class Client {
-    sandbox : Sandbox = {
+    sandbox: Sandbox = {
         identity: {
             secret: new Uint8Array(0)
         }
     }
-    constructor(public port: MessagePort){
+    worker = new WorkerWaiter('clientworker')
+    constructor(public port: MessagePort) {
     }
-   
+
     query = new Map<number, ScanMgr>()
 
     reply(r: Rpc, result: any) {
-        this.port.postMessage({id: r.id, result: result})
+        this.port.postMessage({ id: r.id, result: result })
     }
 }
 
 
-class Dbms {
-    started = false
+/*
+   started = false
     writing = false
     waiting: MessagePort[] = []
     writeQ: Tx[] = []
     log: Tx[] = []
-    worker: Worker[] = []
-    //branch = new Map<string, BranchMgr>()
-    schema = new Map<string, SchemaMgr>()
+     schema = new Map<string, SchemaMgr>()
     table = new Map<string, Table>()
-    predictedLsn = new Map<BranchId, number>
-    client = new Map<MessagePort, Client>()
-    scanChanged = new Set<ScanMgr>
-    sandbox = new Map<number, Sandbox>()
-
+       predictedLsn = new Map<BranchId, number>
 
     async getBranchLsn(branch: BranchId) {
         return this.predictedLsn.get(branch) ?? 0
     }
+    scanChanged = new Set<ScanMgr>
+    sandbox = new Map<number, Sandbox>()
+*/
 
 
-    async updateClient() {
-        // update all the tabs.
-        for (let [port, cl] of this.client) {
-
-        }
-    }
+class Dbms {
+    // logworker needs its own thread so that it can block inside opfs, shared to allow each client access
+    log = new SharedWorker('logworker.js')
+    client = new Map<MessagePort, Client>()
+    catalog = new SharedWorker('store.js')
 
     // servers can update any subset of branches.
     // server transactions update the gold copy, then shared rebases any outdated transactions. finally affected clients are notified.
-    async serverSync(tx: Tx[]) {
 
-
-    }
 
     // prepared should use a hash key
-    prepared = new Map<string,Proc>()
-   
-    getWorker() {
-        return this.worker[0]
-    }
+    prepared = new Map<string, Proc>()
+
 
 
     sendWorker(client: Client, r: Rpc, proc: Proc) {
         // pick a worker at random?
-        this.getWorker().postMessage({
+        client.worker.postMessage({
             method: r.method,
             params: {
                 rpc: r,
@@ -120,17 +150,20 @@ class Dbms {
             }
         })
     }
-    prepare(client: Client, r: Rpc){
+
+    prepare(client: Client, r: Rpc) {
     }
-    exec(client: Client, r: Rpc){
+    exec(client: Client, r: Rpc) {
     }
-    cancel(client: Client, r: Rpc){
+    cancel(client: Client, r: Rpc) {
+        client.worker.terminate()
+        client.worker = new Worker('clientworker')
     }
 
 
-    subscribe(cl: Client, r:Rpc){
+    subscribe(cl: Client, r: Rpc) {
     }
-    publish(cl: Client, r: Rpc){
+    publish(cl: Client, r: Rpc) {
         let tx = r.params.tx
         this.writeQ.push(tx)
         if (this.writing) {
@@ -144,14 +177,15 @@ class Dbms {
             let valid = true
             for (let [branchid, branchUpdate] of Object.entries(tx)) {
                 // if this is a 
-               this.getBranchLsn(branchid).then((target)=>{
-                if (!target || branchUpdate.lsn != target + 1) {
-                    valid = false
-                }})
+                this.getBranchLsn(branchid).then((target) => {
+                    if (!target || branchUpdate.lsn != target + 1) {
+                        valid = false
+                    }
+                })
             }
 
             if (!valid) {
-               //this.notify(p, 'rebase', [])
+                //this.notify(p, 'rebase', [])
             } else {
                 // we need to update the branch lsn here, so that any other transactions in this batch are rejected.
 
@@ -168,24 +202,24 @@ class Dbms {
     }
     // add a branch to the client. return presumed privileges
     attach(client: Client, r: Rpc) {
-         // build a sandbox for an identity and a branch
+        // build a sandbox for an identity and a branch
         r.params.branch
         client.reply(r, {
             writable: true
         })
     }
     detach(client: Client, r: Rpc) {
-       
+
     }
     getClient(port: MessagePort) {
-        let r =  this.client.get(port)
+        let r = this.client.get(port)
         if (!r) {
             r = new Client(port)
-            this.client.set(port,r)
+            this.client.set(port, r)
         }
         return r
     }
-    closeClient(port: MessagePort){
+    closeClient(port: MessagePort) {
         const client = this.getClient(port)
         // close everything
         this.client.delete(port)
@@ -231,18 +265,18 @@ function dispatch(port: MessagePort) {
                 dbms.cancel(cl, r)
                 break
             case 'prepare':
-                dbms.prepare(cl,r)
+                dbms.prepare(cl, r)
                 break
             case 'exec':
-                dbms.exec(cl,r)
+                dbms.exec(cl, r)
                 break
             // publish is a key-value esque writer
-            case 'publish':                
-                dbms.publish(cl,r)
+            case 'publish':
+                dbms.publish(cl, r)
                 break
             // subscribe is a key-value esque reader
             case 'subscribe':
-                dbms.subscribe(cl,r)
+                dbms.subscribe(cl, r)
                 break
 
         }
@@ -250,15 +284,8 @@ function dispatch(port: MessagePort) {
     });
 }
 
-async function createDbms():Promise<Dbms> {
+async function createDbms(): Promise<Dbms> {
     dbms = new Dbms()
     return dbms
 }
 
-_self.onconnect = function (e) {
-    if (!dbms) {
-      createDbms().then(_=> dispatch(e.ports[0]))
-    } else {
-      dispatch(e.ports[0])
-    }
-}

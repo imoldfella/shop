@@ -68,7 +68,7 @@ export class Db extends SelectMap {
         //super.applyDelta(r.result as ListDelta<Tabx>)
     }
 
-    constructor(public config: DbConfig) {
+    constructor(public config?: DbConfig) {
         super()
         this.w = new SharedWorker(new URL('./shared', import.meta.url), {
             type: 'module'
@@ -118,7 +118,7 @@ export function deleteTabTx(tx: TxMgr, i: number) {
 }
 export function deleteTab(db: Db, i: number) {
     const tx = db.begin()
-    deleteTabTx(tx,i)
+    deleteTabTx(tx, i)
     tx.commit()
 }
 // return a function that can take either tx or db
@@ -156,7 +156,7 @@ export class TxMgr {
     async commit(): Promise<boolean> {
         // send to shared
         // if it fails it will be handled when the message comes back, and when we get the new commits
-        this.db.rpc('tx',{ })
+        this.db.rpc('tx', {})
 
 
         // if transaction failed, rebase and try again. we do this on the ui side because a transaction failing
