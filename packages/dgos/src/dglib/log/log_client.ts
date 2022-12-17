@@ -23,7 +23,7 @@ export async function useLogReader(): Promise<LogReader> {
 
 
 // const offer = useLogWriter(buffer)
-// const [b, commit()] = offer(10)
+// const [b, commit()] = offer(10)  // 10 words = 40 bytes.
 // b.set( [  ])
 // commit()
 
@@ -37,11 +37,16 @@ export function useLogWriter(sm: Int32Array) {
         while (true) {
             const a = lh.addTail(b)
             while (lh.sm64[LogHeader.avail] < a);
-            if (true) {
-                const begin = 0
-                return [lh.sm.slice(begin, begin + offer), () => lh.notify()]
+            const [fst,snd] = lh.slice(a,a+b)
+            if (!snd) {
+                return [fst.slice(1), () => {
+                    // set the entry as committed.
+                    fst[0] = fst[0] | 1
+                    lh.notify()
+            }]
             } else {
                 // don't bother with split buffers, just pad and try again
+                fst[0] = fst[0] | 3  // set pad and commit.
             }
         }
     }
