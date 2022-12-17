@@ -1,7 +1,7 @@
 
 import * as dp from 'idb'
 import { Branch, Rpc, Schema, Key, ArraySnapshot, Tx, Lsn, Scan, BranchId, ScanTx } from './data'
-import { Interval, IntervalTree } from './interval'
+import { Interval, IntervalTree } from '../stree/interval'
 import { SchemaMgr } from './schema';
 import { DbmsWorker } from './worker';
 

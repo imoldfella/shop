@@ -1,89 +1,111 @@
+import { Store, StoreFile } from './data'
 
-export class OpfsStore {
+//In the origin private file system, a FileSystemHandle represents either the root directory of the origin’s space, or a descendant of the root directory.
 
-    constructor(public root:FileSystemDirectoryHandle) {
+// not available in safari, maybe not chrome either any more
+interface FileSystemAccessHandle {
+  truncate(len: number): void
+  flush(): void
+  close(): void
+  write(a: ArrayBuffer, opt: { at?: number }): Promise<number>
+  read(a: ArrayBuffer, opt: { at?: number }): Promise<void>
+  getSize(): Promise<number>
+}
+
+interface FileSystemSyncAccessHandle {
+  truncate(len: number): Promise<void>
+  flush(): Promise<void>
+  close(): Promise<void>
+  write(a: ArrayBuffer, opt: { at?: number }): number
+  read(a: ArrayBuffer, opt: { at?: number }): number
+  getSize(): Promise<number>
+}
+
+export class OpfsStore implements Store {
+  constructor(public root: FileSystemDirectoryHandle) {
+
+  }  // 0 
+  open(path: string): Promise<StoreFile> {
+    throw new Error('Method not implemented.')
+  }
+  file: FileSystemSyncAccessHandle[] = []
+  logpos = 0
+
+  async remove(path: string): Promise<void> {
+    return this.root.removeEntry(path)
+  }
+  // amazingly there is no rename
+
+
+  write(fh: number, data: Uint32Array, at: number) {
+    throw new Error('Method not implemented.')
+  }
+  writeLog(target: Uint32Array, then: (d: Uint32Array, status: number) => void): void {
+    const n = this.file[0].write(target, { at: this.logpos })
+    this.file[0].flush()
+    then(target, (n == 4 * target.length) ? 0 : -1)
+  }
+  // reading the tail could be problematic? we could force log records to not cross 64k boundaries
+  // then we can read backwards one 64K page at a time
+  readTail(): Promise<Uint32Array> {
+    throw new Error('Method not implemented.')
+  }
+
+  async create(filename: string): Promise<StoreFile> {
+    const fileHandle = await this.root.getFileHandle(filename, { create: true });
+    const ah = (fileHandle as any).createSyncAccessHandle()
+    return ah
+  }
+
+  async createHandle(path: string): Promise<FileSystemSyncAccessHandle> {
+    const fs = this.root.getFileHandle(path)
+    return (fs as any).createSyncAccessHandle() as FileSystemSyncAccessHandle
+  }
+
+  readPage(d: Uint32Array, target: Uint32Array, then: (d: Uint32Array, status: number) => void): void {
+    throw new Error('Method not implemented.');
+  }
+  writePage(d: Uint32Array, target: Uint32Array, then: (d: Uint32Array, status: number) => void): void {
+    throw new Error('Method not implemented.');
+  }
+
+
+  async writeLargePage(writeBuffer: Uint8Array) {
+    const accessHandle = await this.createHandle("x");
+    const writeSize = accessHandle.write(writeBuffer, { "at": 0 });
+    await accessHandle.flush();
+    await accessHandle.close();
+  }
+  async readLargePage() {
+    const accessHandle = await this.createHandle("x")
+    const fileSize = await accessHandle.getSize();
+    // Read file content to a buffer.
+    const readBuffer = new SharedArrayBuffer(fileSize);
+    const readSize = accessHandle.read(readBuffer, { "at": 0 });
+
+  }
+}
+
+function encodeString(s: string): Uint8Array {
+  return new TextEncoder().encode(s)
+}
+
+
+
+export async function createOpfsStore(): Promise<OpfsStore> {
+  return new OpfsStore(await navigator.storage.getDirectory())
+}
+
+async function lock(lockName: string, options: LockOptions) {
+  self.navigator.locks.request(lockName, options, lock => {
+    if (lock) {
 
     }
+  });
 }
 
-export async function createOpfsStore() : Promise<OpfsStore> {
-    return new OpfsStore( await navigator.storage.getDirectory())
-}
 
-async function lock(lockName: string,options: LockOptions) {
-     self.navigator.locks.request(lockName, options, lock => {
-        if (lock) {
-       
-        }
-    });
-}
-
-// @ts-ignore
-export class OriginPrivateFileSystemVFS extends VFS.Base {
-
-
-
-  async close() {
-    for (const fileId of this.#mapIdToFile.keys()) {
-      await this.xClose(fileId);
-    }
-  }
-
-  xOpen(name, fileId, flags, pOutFlags) {
-    return this.handleAsync(async () => {
-      if (name === null) name = `null_${fileId}`;
-      log(`xOpen ${name} ${fileId} 0x${flags.toString(16)}`);
-
-      try {
-        const url = new URL(name, 'http://localhost/');
-
-        const create = (flags & VFS.SQLITE_OPEN_CREATE) ? true : false;
-        const [directoryHandle, filename] = await this.#getPathComponents(url, create);
-        const fileHandle = await directoryHandle.getFileHandle(filename, { create });
-
-        const fileEntry = {
-          filename: url.pathname,
-          flags,
-          fileHandle,
-          accessHandle: null,
-          locks: new WebLocks(url.pathname)
-        };
-        this.#mapIdToFile.set(fileId, fileEntry);
-
-        if (!(flags & VFS.SQLITE_OPEN_MAIN_DB) ||
-            url.searchParams.has('immutable') ||
-            url.searchParams.has('nolock')) {
-          // Get an access handle for files that SQLite does not lock.
-          await this.#getAccessHandle(fileEntry);
-        }
-        pOutFlags.set(0);
-        return VFS.SQLITE_OK;
-      } catch (e) {
-        console.error(e.message);
-        return VFS.SQLITE_CANTOPEN;
-      }
-    });
-  }
-
-  xClose(fileId) {
-    return this.handleAsync(async () => {
-      const fileEntry = this.#mapIdToFile.get(fileId);
-      if (fileEntry) {
-        log(`xClose ${fileEntry.filename}`);
-
-        this.#mapIdToFile.delete(fileId);
-        await fileEntry.accessHandle?.close();
-
-        if (fileEntry.flags & VFS.SQLITE_OPEN_DELETEONCLOSE) {
-          const [directoryHandle, filename] =
-            await this.#getPathComponents(fileEntry.filename, false);
-          directoryHandle.removeEntry(filename);
-        }
-      }
-      return VFS.SQLITE_OK;
-    });
-  }
-
+/*
   xRead(fileId, pData, iOffset) {
     return this.handleAsync(async () => {
       const fileEntry = this.#mapIdToFile.get(fileId);
@@ -132,7 +154,7 @@ export class OriginPrivateFileSystemVFS extends VFS.Base {
     return this.handleAsync(async () => {
       const fileEntry = this.#mapIdToFile.get(fileId);
       log(`xSync ${fileEntry.filename} ${flags}`);
-      
+
       await fileEntry.accessHandle?.flush();
       return VFS.SQLITE_OK;
     });
@@ -190,8 +212,8 @@ export class OriginPrivateFileSystemVFS extends VFS.Base {
   xDeviceCharacteristics(fileId) {
     log('xDeviceCharacteristics');
     return VFS.SQLITE_IOCAP_SAFE_APPEND |
-           VFS.SQLITE_IOCAP_SEQUENTIAL |
-           VFS.SQLITE_IOCAP_UNDELETABLE_WHEN_OPEN;
+      VFS.SQLITE_IOCAP_SEQUENTIAL |
+      VFS.SQLITE_IOCAP_UNDELETABLE_WHEN_OPEN;
   }
 
   xAccess(name, flags, pResOut) {
@@ -221,11 +243,7 @@ export class OriginPrivateFileSystemVFS extends VFS.Base {
     });
   }
 
-  /**
-   * @param {string|URL} nameOrURL
-   * @param {boolean} create
-   * @returns {Promise<[FileSystemDirectoryHandle, string]>}
-   */
+
   async #getPathComponents(nameOrURL, create) {
     const url = typeof nameOrURL === 'string' ?
       new URL(nameOrURL, 'file://localhost/') :
@@ -252,3 +270,5 @@ export class OriginPrivateFileSystemVFS extends VFS.Base {
     return fileEntry.accessHandle;
   }
 }
+
+*/
