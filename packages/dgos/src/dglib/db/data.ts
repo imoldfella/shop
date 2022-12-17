@@ -74,6 +74,9 @@ export class Table {
 
 }
 
+export interface Sandbox {
+    identity: Identity
+}
 
 
 // https://www.jsonrpc.org/
@@ -81,7 +84,8 @@ export interface Rpc {
     method: string,
     id: any,
     params: any,
-    result: any
+    result: any,
+    sandbox: number
 }
 
 export interface Tab {
