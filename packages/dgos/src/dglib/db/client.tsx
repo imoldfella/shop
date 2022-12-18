@@ -58,6 +58,7 @@ class SelectMap {
 
 // the list of tabs is shared, but the selection state is local.
 // still we need to control the selection state here, because the selected branch may be deleted remotely
+
 export class Db extends SelectMap {
     // we need the selection order + we need to adjust to remote updates
     profile: BranchId = "" // anonymous
