@@ -29,21 +29,32 @@ export async function useLogReader(): Promise<LogReader> {
 
 type LogWriter = [Int32Array, () => void]
 
-export function useLogWriter(sm: Int32Array) {
+const maxMessage = 1 * 1024 * 1024
+
+// header needs to identify the branch and the user identity.
+// log buffer can already be associated with a server?
+// the sync service is reading the log, what does it need? just the sandbox, but how do we recover/restart?
+export function useLogWriter(props: {
+    sm: Int32Array
+    sandbox: number
+}) {
     const lh = new LogHeader(sm)
-    return (offer: number): LogWriter => {
+    return (offer: Uint8Array): LogWriter => {
+        if (offer.length > maxMessage) {
+
+        }
         // atomic add offer to the tail. spin until there is enough space
-        const b = BigInt(offer)
+        const b = BigInt(offer.length)
         while (true) {
             const a = lh.addTail(b)
             while (lh.sm64[LogHeader.avail] < a);
-            const [fst,snd] = lh.slice(a,a+b)
+            const [fst, snd] = lh.slice(a, a + b)
             if (!snd) {
                 return [fst.slice(1), () => {
                     // set the entry as committed.
                     fst[0] = fst[0] | 1
                     lh.notify()
-            }]
+                }]
             } else {
                 // don't bother with split buffers, just pad and try again
                 fst[0] = fst[0] | 3  // set pad and commit.
