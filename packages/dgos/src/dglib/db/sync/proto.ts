@@ -8,7 +8,7 @@ export interface SubscribeSync {
     branchSecret: Uint8Array[]
 }
 
-// 
+// If this fails due to key rotation, the client may need to catch up on reading its grant log.
 export interface Publish {
     branchSecret: Uint8Array[]
     message: Uint8Array[]

@@ -1,7 +1,8 @@
-import { Db, TxMgr, useDb } from "../client";
-import { Tx } from "../data";
-import { SharedPubSub } from "./pubsub";
-
+import { Db, TxMgr, useDb } from "../client"
+import { Tx } from "../data"
+import { PublishSync } from "./proto"
+import { SharedPubSub } from "./pubsub"
+import * as dx from './schema'
 // probably get a paseto token for each identity to exchange?
 // noted earlier that the server could offer some locking for multibranch
 // updates. It's not clearly useful though, could be hard for performance.
@@ -32,16 +33,7 @@ export class HostServer {
 // upsert online(url, status) values (:url, :status)
 
 
-export interface UpdateOnlineTx {
-    url: string
-    status: string   
-}
-export function updateOnlineTx(tx: TxMgr, props: UpdateOnlineTx) {
 
-}
-export function updateOnline(db: Db,props: UpdateOnlineTx){
-   updateOnlineTx(db.begin(), props)
-}
 
 
 export class SyncService {
@@ -78,14 +70,14 @@ export class SyncService {
         const ws = new WebSocket(s)
         ws.onopen = () => {
             // update the server status, just write back to the database.
-            updateOnline(this.db, {
+            dx.updateOnline(this.db, {
                 url: s,
                 status: "y"
             })
         }
         ws.onclose = () => {
             // we want to retry periodically, but we can control that from ui.
-            updateOnline(this.db, {
+            dx.updateOnline(this.db, {
                 url: s,
                 status: "n"
             })
@@ -93,7 +85,6 @@ export class SyncService {
 
         ws.onmessage = (m: MessageEvent) => {
             this.syncMessage(ws, JSON.parse(m.data))
-
         }
         ws.onerror = (e) => {
             console.log("sync error ", e)
@@ -112,10 +103,14 @@ export class SyncService {
     // if a message was lost, the server will notice.
     */
    
+    // convert this directly to a local database commit
     async syncMessage(ws: WebSocket, s: PublishSync) {
         // commit this update to our database, then acknowledge
         // we might want to piggy back this on sends?
-
+        for (let i in s.slot){
+            s.slot[i]
+            s.length[i]
+        }
 
     }
     async run() {
