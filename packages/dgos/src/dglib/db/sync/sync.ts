@@ -2,16 +2,10 @@ import { Db, TxMgr, useDb } from "../client";
 import { Tx } from "../data";
 import { SharedPubSub } from "./pubsub";
 
-// 
-export interface PublishSync {
-    lsn: number    // use to ack
-    slot: number[]
-    length: number[]
-}
-export interface SubscribeSync {
-    slot: number[]
-    branchSecret: Uint8Array[]
-}
+// probably get a paseto token for each identity to exchange?
+// noted earlier that the server could offer some locking for multibranch
+// updates. It's not clearly useful though, could be hard for performance.
+
 
 
 // read/write various server/branch logs.
@@ -73,7 +67,7 @@ export class SyncService {
     async connectAll(){
         // subscribe to the database server table, when it changes try to reconnect any servers that are not already connected.
 
-        this.connect("
+       
     }
     async heartbeat(){
         this.ws.forEach((v)=>{
