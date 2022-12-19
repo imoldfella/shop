@@ -33,3 +33,22 @@ const x = createServerList( ) // get the db from the context
     }<For>
 </virtualizer>
 ```
+
+
+# stopping behavior
+browser stopping behavior is challenging
+
+> Theoretically pagehide is replacement for beforeunload in safari but practically its not. As correctly observed time to trigger pagehide event can vary because safari fetches the new page in the background and when page is available it fires pagehide.
+
+https://stackoverflow.com/questions/44655681/time-to-fire-for-beforeunload-vs-pagehide-on-ios
+
+
+pagehide is the best available signal for stopping
+
+but opfs.flush() is async and you can't await inside a pagehide.
+you could send an event to the worker in page hide, but what could would it do? you can't store anything anyway (all async)
+
+
+A mobile user visits your page.
+The user then switches to a different app.
+Later, the user closes the browser from the app manager.

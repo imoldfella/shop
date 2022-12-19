@@ -3,7 +3,12 @@ import { Accessor, Context, createContext, createSignal, ParentComponent, Setter
 import { createStore } from "solid-js/store"
 import { ListDelta, listDeltaApply, Rid, Rpc, Tab, Tabx, Tx, Identity, DbConfig, BranchId, Key } from "./data"
 
-
+    // two part construction tradeoffs
+    // pros:
+    // 1. you get a static reference to the database that is never null
+    // 2. you can see the async lifetime of construction.
+    // cons:
+    //   db is almost like a null until initialize. consider it a "late" as in dart
 
 // maintains order, but also allows set operations
 // I need some way to group a collection. This is a global operation though
@@ -64,7 +69,7 @@ export class Db extends SelectMap {
     profile: BranchId = "" // anonymous
     w: SharedWorker
     // string here is a hexified version of the binary key for the branch.
-
+    config = {}
     update() {
         //super.applyDelta(r.result as ListDelta<Tabx>)
     }
@@ -72,12 +77,14 @@ export class Db extends SelectMap {
     addListener(fn: (tx: Tx) => void) {
 
     }
-
-    constructor(public config?: DbConfig) {
+    constructor(config?: DbConfig){
         super()
-        this.w = new SharedWorker(new URL('./shared', import.meta.url), {
+       this.w = new SharedWorker(new URL('./shared', import.meta.url), {
             type: 'module'
         })
+
+        this.config = config || this.config
+ 
         this.w.port.start();
         this.w.port.onmessage = (e) => {
             if (e.data) {
@@ -92,11 +99,7 @@ export class Db extends SelectMap {
                         r.id
                 }
             }
-        }
-
-        (async () => {
-
-        })()
+        }   
     }
 
     begin(): TxMgr {
