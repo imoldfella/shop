@@ -34,20 +34,24 @@ const x = createServerList( ) // get the db from the context
 </virtualizer>
 ```
 
-
 # stopping behavior
+
 browser stopping behavior is challenging
 
 > Theoretically pagehide is replacement for beforeunload in safari but practically its not. As correctly observed time to trigger pagehide event can vary because safari fetches the new page in the background and when page is available it fires pagehide.
 
-https://stackoverflow.com/questions/44655681/time-to-fire-for-beforeunload-vs-pagehide-on-ios
+<https://stackoverflow.com/questions/44655681/time-to-fire-for-beforeunload-vs-pagehide-on-ios>
 
+pagehide is the best available signal for stopping. beforeunload offers user warning, but we have only awkward choices for a clean shutdown: always warn unless the user takes the step of stopping the database. Opfs won't run in a service worker. indexeddb should run transactionally at least.
 
-pagehide is the best available signal for stopping
+we count the number of user transactions
+
+sync transactions must fend for themselves, rollback is their only defense.
+
+background sync is not in safari.
 
 but opfs.flush() is async and you can't await inside a pagehide.
 you could send an event to the worker in page hide, but what could would it do? you can't store anything anyway (all async)
-
 
 A mobile user visits your page.
 The user then switches to a different app.
