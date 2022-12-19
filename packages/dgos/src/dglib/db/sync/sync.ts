@@ -1,9 +1,10 @@
-import { Db, TxMgr, useDb } from "../client"
+
 import { Tx } from "../data"
 import { PublishSync } from "./proto"
 import { SharedPubSub } from "../util/pubsub"
 import * as dx from './schema'
 import { QueryServer, deleteServerStatus } from "./schema"
+import { Db } from "../client/client"
 
 // probably get a paseto token for each identity to exchange?
 // noted earlier that the server could offer some locking for multibranch
@@ -86,9 +87,9 @@ function doStop() {
 
 async function start() {
         // listen to the log and return a snapshot of everything up to the log starting
-        const first = db.addListener((tx: Tx) => {
+        // const first = db.addListener((tx: Tx) => {
 
-        })        
+        // })        
 
         // read the connection information from the database
         // read the user mute settings

@@ -6,8 +6,9 @@ import { Match, Switch } from "solid-js"
 import { createWindowSize } from "@solid-primitives/resize-observer"
 import { Splitter } from "./splitter";
 import { Content, SandboxShow } from "./sandbox";
-import { datagrove } from "./dg/dglogo";
-import { deleteTab, insertTab, Tab, useDb } from "./db";
+import { datagrove } from "../dg/dglogo";
+import { deleteTab, insertTab } from "./dbproc";
+import { useDb } from "./db";
 
 
 // these should probably in next level up? listen to the div that we are placed in instead of window?
@@ -33,7 +34,7 @@ enum BranchMapShow {
 
 // try a floating command bar always at the top.
 export const BranchMap: Component<{}> = () => {
-    const db = useDb();
+    const db = useDb()
     const left = createSignal(255)
     const [pin, setPin] = createSignal(false)
     const [menu, setMenu] = createSignal(false)
@@ -59,7 +60,7 @@ export const BranchMap: Component<{}> = () => {
 
             return <ListTile
                 onclick={() => {
-                    insertTab(db)
+                    insertTab(db.db)
                 }}
                 class='h-16'
                 title="Datagrove"
@@ -70,15 +71,15 @@ export const BranchMap: Component<{}> = () => {
         return <div class='bg-neutral-900 dark:text-white text-black h-full w-full overflow-y-scroll max-h-screen flex flex-col' >
             < BranchMapTitle />
             <div class='flex-1  overflow-y-auto'>
-                <For each={db.getTab()}>{(e, i) => {
+                <For each={db.tabs.getTab()}>{(e:any, i) => {
                     return <ListTile
-                        onclick={() => db.select(e)}
+                        onclick={() => db.tabs.select(e)}
                         class='h-16'
                         indent={0}
                         selected={e.selected}
                         title={<span>{e.name}</span>}
                         leading={<Avatar alt={e.name} src={e.avatar} count={e.count} />}
-                        trailing={<Icon path={xMark} class='h-6 w-6 text-neutral-500 hover:text-blue-500' onclick={() => deleteTab(db,i())} />}
+                        trailing={<Icon path={xMark} class='h-6 w-6 text-neutral-500 hover:text-blue-500' onclick={() => deleteTab(db.db,i())} />}
                     />
                 }}</For>
             </div>

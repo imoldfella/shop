@@ -5,13 +5,9 @@ import { createEffect, createSignal, For, JSX } from "solid-js";
 import { createStore, produce } from 'solid-js/store'
 import { usePrefersDark } from "@solid-primitives/media"
 
-import { setDark } from "./dglib";
-
+import { setDark } from "./dglib/gui";
 
 // we need a general user configuration db where the vtab is a table
-
-
-
 window.onmessage = (e) => {
     console.log("Message from iframe", e)
     const rpc = e.data

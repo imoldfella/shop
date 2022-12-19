@@ -1,4 +1,4 @@
-import { Db, TxMgr } from "../client"
+import { Db, TxMgr } from "../client/client"
 import { BranchHandle } from "./util"
 
 

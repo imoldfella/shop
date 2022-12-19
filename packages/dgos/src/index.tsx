@@ -3,7 +3,7 @@ import { render } from 'solid-js/web'
 import { Suspense } from 'solid-js'
 import { Router } from '@solidjs/router'
 import './index.css'
-import { DbProvider, MediaProvider, BranchMap } from './dglib';
+import { DbProvider, MediaProvider, BranchMap } from './dglib/gui'
 
 
 // to make bookmarks work we will need to push the route up through the iframe

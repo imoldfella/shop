@@ -1,6 +1,6 @@
 
 
-type PromisePair = { resolve: (x: any)=>void, reject: (x: any)=>void }
+type PromisePair = { resolve: (x: any) => void, reject: (x: any) => void }
 
 export interface Rpc {
     method?: string
@@ -10,59 +10,56 @@ export interface Rpc {
     error?: any
 }
 
+export interface CanSend {
+    postMessage(x: any): void
+}
 
-// wrapper around worker support
-export class WorkerRpc {
-    w: Worker
-    waiting = new Map<number, PromisePair>
-    method = new Map<string, (params: any)=>Promise<any>>
+type Method = (params: any) => Promise<any> 
+
+export class RpcClient {
+    waiting = new Map<number, PromisePair>()
+    method = new Map<string, Method>()
     resolve: any
     reject: any
     next = 42
 
-    addMethod(method: string,fn: (params: any)=>Promise<any>){
-        this.method.set(method,fn)
+    constructor(public w: CanSend) { }
+    recv(r: Rpc) {
+
+        if (r.method) {
+            const fn = this.method.get(r.method)
+            if (fn) {
+                fn(r.params).then((v) => {
+                    try {
+                        this.w.postMessage({
+                            id: r.id,
+                            result: v
+                        })
+                    } catch (e) {
+                        this.w.postMessage({
+                            id: r.id,
+                            error: e
+                        })
+                    }
+                })
+            }
+        } else {
+            const p = this.waiting.get(r.id ?? 0)
+            if (!p) return
+        }
+    }
+    addMethod(method: string, fn: (params: any) => Promise<any>) {
+        this.method.set(method, fn)
     }
 
-    constructor(s: string) {
-        this.w = new Worker(s)
-        this.w.onmessage = (m) => {
-            const r = m.data as Rpc
-            if (r.method){
-                const fn = this.method.get(r.method)
-                if (fn) {
-                    fn(r.params).then((v)=>{
-                        try {
-                            this.w.postMessage({
-                                id: r.id,
-                                result: v
-                            })
-                            }catch(e){
-                                this.w.postMessage({
-                                    id: r.id,
-                                    error: e
-                                })
-                            }
-                     })
-                }
-            } else {
-                const p = this.waiting.get(m.data.id)
-                if (!p) return
-            }
-        }
-        this.w.onerror = (e) => {
-            throw e
-        }
-    }
-    // how do we retrieve the task to cancel it? when do we want to?
-    async ask(method: string, params?: any ): Promise<any> {
+    async ask(method: string, params?: any): Promise<any> {
         this.w.postMessage({
             method: method,
             tag: this.next,
             params: params
         })
-       
-        const r= new Promise((resolve, reject) => {
+
+        const r = new Promise((resolve, reject) => {
             this.waiting.set(this.next, {
                 resolve,
                 reject
@@ -71,5 +68,37 @@ export class WorkerRpc {
         })
         this.next++
         return r
+    }
+}
+
+// wrapper around worker support
+export class WorkerRpc extends RpcClient {
+    w: Worker
+    constructor(s: string) {
+        super(new Worker(s))
+        this.w = super.w as Worker
+        this.w.onmessage = (m) => {
+            super.recv(m.data as Rpc)
+        }
+    }
+}
+class SharedWorkerWrapper {
+    w
+    constructor(x: string) {
+        this.w = new SharedWorker(x)
+    }
+    postMessage(x: any){
+    }
+}
+
+export class SharedWorkerRpc extends RpcClient {
+    w: SharedWorkerWrapper
+    constructor(s: string) {
+        super(new SharedWorkerWrapper(s))
+        this.w = super.w as SharedWorkerWrapper
+        this.w.w.port.start()
+        this.w.w.port.onmessage = (m) => {
+            super.recv(m.data as Rpc)
+        }
     }
 }

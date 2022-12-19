@@ -1,14 +1,9 @@
 import { faker } from "@faker-js/faker"
 import { Accessor, Context, createContext, createSignal, ParentComponent, Setter, useContext } from "solid-js"
 import { createStore } from "solid-js/store"
-import { ListDelta, listDeltaApply, Rid, Rpc, Tab, Tabx, Tx, Identity, DbConfig, BranchId, Key } from "./data"
+import { Db, TxMgr } from "../db/client/client"
+import { ListDelta, listDeltaApply, Rid, Rpc, Tab, Tabx, Tx, Identity, DbConfig, BranchId, Key } from "../db/data"
 
-    // two part construction tradeoffs
-    // pros:
-    // 1. you get a static reference to the database that is never null
-    // 2. you can see the async lifetime of construction.
-    // cons:
-    //   db is almost like a null until initialize. consider it a "late" as in dart
 
 // maintains order, but also allows set operations
 // I need some way to group a collection. This is a global operation though
@@ -64,7 +59,9 @@ class SelectMap {
 // the list of tabs is shared, but the selection state is local.
 // still we need to control the selection state here, because the selected branch may be deleted remotely
 
-export class Db extends SelectMap {
+export class SolidDb {
+    db = new Db()
+    tabs = new SelectMap()
     // we need the selection order + we need to adjust to remote updates
     profile: BranchId = "" // anonymous
     w: SharedWorker
@@ -78,7 +75,6 @@ export class Db extends SelectMap {
 
     }
     constructor(config?: DbConfig){
-        super()
        this.w = new SharedWorker(new URL('./shared', import.meta.url), {
             type: 'module'
         })
@@ -102,10 +98,7 @@ export class Db extends SelectMap {
         }   
     }
 
-    begin(): TxMgr {
-        // create a snapshot from the 
-        return new TxMgr(this)
-    }
+
     next = 1
     async rpc(method: string, params: any) {
         const id = this.next++
@@ -118,70 +111,18 @@ export class Db extends SelectMap {
     // 
 
 }
-// each table has functions to delete, insert, update
-
-export function deleteTabTx(tx: TxMgr, i: number) {
-    // tx.branch(tx.db.profile)
-    // tx.drop(i)
-}
-export function deleteTab(db: Db, i: number) {
-    const tx = db.begin()
-    deleteTabTx(tx, i)
-    tx.commit()
-}
-// return a function that can take either tx or db
-export function insertTabTx(tx: TxMgr) {
-
-}
-export function insertTab(db: Db) {
-    const tx = db.begin()
-    insertTabTx(tx)
-    tx.commit()
-}
-class Updater {
-    // assume that 
-    forward = (a: Uint8Array) => a
-    back = () => { }
-}
-// prosemirror keeps two copies: predicted and golden; it throws away predicted when new transactions come in.
-// transactions are steps that can be rebased. we need to hang on to the transaction until its resolved
-// insert doesn't need to changing, delete doesn't need changing. update = delete + f(old, delta)
-// update needs to be rebased: delta' = fRebase(old, dGold, delta)
-export class TxMgr {
-    constructor(public db: Db) { }
-
-    updater: Updater[] = []
-
-    delete(key: Key) {
-    }
-    insert(key: Key, value: Uint8Array) {
-
-    }
-    update(key: Key, value: Uint8Array) {
-
-    }
-
-    async commit(): Promise<boolean> {
-        // send to shared
-        // if it fails it will be handled when the message comes back, and when we get the new commits
-        this.db.rpc('tx', {})
 
 
-        // if transaction failed, rebase and try again. we do this on the ui side because a transaction failing
-        // may have ui ramifications
-        return true
-    }
-}
 
 export async function openDb(props: {
     secret: string
-}): Promise<Db | undefined> {
+}): Promise<SolidDb | undefined> {
     return undefined
 }
 
-let dbContext: Context<Db>
+let dbContext: Context<SolidDb>
 export const DbProvider: ParentComponent<{}> = (props) => {
-    const db = new Db({})
+    const db = new SolidDb({})
     const DbContext = createContext(db)
     dbContext = DbContext
     return (
@@ -191,4 +132,6 @@ export const DbProvider: ParentComponent<{}> = (props) => {
 }
 
 export function useDb() { return useContext(dbContext); }
+
+export { TxMgr }
 
