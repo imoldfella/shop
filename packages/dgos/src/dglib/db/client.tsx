@@ -69,6 +69,10 @@ export class Db extends SelectMap {
         //super.applyDelta(r.result as ListDelta<Tabx>)
     }
 
+    addListener(fn: (tx: Tx) => void) {
+
+    }
+
     constructor(public config?: DbConfig) {
         super()
         this.w = new SharedWorker(new URL('./shared', import.meta.url), {
