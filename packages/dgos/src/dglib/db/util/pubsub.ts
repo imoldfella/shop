@@ -1,20 +1,6 @@
+import { Map0 } from "./map0"
 
-
-// Map with a zero value that makes a new value for misses.
-export class Map0<K,V> extends Map<K,V> {
-    constructor(public make: ()=>V){
-        super()
-    }
-    get(k: K) :V {
-        let v = super.get(k)
-        if (!v) {
-            v = this.make()
-            super.set(k,v)
-        }
-
-        return v
-    }
-}
+// not used currently; a general structure for shared workers that operate with pub sub
 
 // clients can use pagehide event to send close.
 export abstract class SharedPubSub {

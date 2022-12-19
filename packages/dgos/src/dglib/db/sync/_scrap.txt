@@ -33,3 +33,22 @@ _self.onconnect = function (e) {
     new SynService
 }
 */
+
+
+
+/*
+   started = false
+    writing = false
+    waiting: MessagePort[] = []
+    writeQ: Tx[] = []
+    log: Tx[] = []
+     schema = new Map<string, SchemaMgr>()
+    table = new Map<string, Table>()
+       predictedLsn = new Map<BranchId, number>
+
+    async getBranchLsn(branch: BranchId) {
+        return this.predictedLsn.get(branch) ?? 0
+    }
+    scanChanged = new Set<ScanMgr>
+    sandbox = new Map<number, Sandbox>()
+*/

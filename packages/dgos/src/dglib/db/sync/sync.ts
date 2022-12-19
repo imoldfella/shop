@@ -1,19 +1,16 @@
 import { Db, TxMgr, useDb } from "../client"
 import { Tx } from "../data"
 import { PublishSync } from "./proto"
-import { SharedPubSub } from "./pubsub"
+import { SharedPubSub } from "../util/pubsub"
 import * as dx from './schema'
 import { QueryServer, deleteServerStatus } from "./schema"
-
-
-
 
 // probably get a paseto token for each identity to exchange?
 // noted earlier that the server could offer some locking for multibranch
 // updates. It's not clearly useful though, could be hard for performance.
 
 // 1=start, 2 = stop
-let stop = false
+let state = 0
 // can this just be a worker? can it be started from the shared worker but connect back to the shared worker? would that exit?
 
 // read/write various server/branch logs.
@@ -127,14 +124,13 @@ async function init() {
         switch(m.data){
         case 'start':
             start().then(()=>{
-                if (state==2) stop()
                 state++
+                if (state==2) stop()
             })
             break;
         // emanates from pagehide, so only so much we can do.
         case 'stop':
             state++
-            stop = true
             if (state==2) stop()
             break;
         }

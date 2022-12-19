@@ -22,7 +22,7 @@ class Identity {
 
 }
 export class BranchHandle {
-    server?= new HostServer()
+    //server?= new HostServer()
     identity?= new Identity // used to sign. 
     publicHmacKey = new Uint8Array(0) // secret shared with server
     writerPublic?: Uint8Array//    readers have this to confirm it was 

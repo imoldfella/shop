@@ -1,4 +1,4 @@
-import { StoreFile, useFs } from "../opfs"
+import { StoreFile, useFs } from "../../opfs"
 import { LogHeader } from "./log_buffer"
 
 
@@ -38,7 +38,7 @@ export function useLogWriter(props: {
     sm: Int32Array
     sandbox: number
 }) {
-    const lh = new LogHeader(sm)
+    const lh = new LogHeader(props.sm)
     return (offer: Uint8Array): LogWriter => {
         if (offer.length > maxMessage) {
 

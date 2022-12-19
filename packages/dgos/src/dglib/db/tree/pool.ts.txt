@@ -1,4 +1,4 @@
-import { Bitset } from "./bitset"
+import { Bitset } from "../util/bitset"
 import { DiskPointer } from "./data"
 
 // a diskpointer with 53 bits and 6 bits of size class, but 16 bit min size is 

@@ -1,7 +1,7 @@
 import { Store, StoreFile } from "./data";
-import { createLog, Log } from "./log";
-import { BufferPool, pageSize } from "./pool";
-import { Tree } from "./tree";
+import { Log } from "../tree/log";
+import { BufferPool, pageSize } from "../tree/pool";
+import { Tree } from "../tree/tree";
 
 // we need a treetree root; fixed page or pointer in master record?
 export class Head {
@@ -88,4 +88,8 @@ export async function createDbb(store: Store): Promise<Dbb> {
 
     return r
 
+}
+
+function createLog(store: Store) : Log {
+    throw new Error("Function not implemented.");
 }

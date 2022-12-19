@@ -1,4 +1,4 @@
-import { useFs, StoreFile } from '../opfs'
+import { useFs, StoreFile } from '../../opfs'
 import { LogHeader } from './log_buffer'
 import { useLogReader } from './log_client'
 
@@ -62,7 +62,7 @@ async function run(e: LogState) {
     const c = 0
     const data = new Int32Array(e.buffer.buffer, e.offset, e.length)
     while (data[LogHeader.quit] == 0) {
-        Atomics.wait(data, LogHeader.signal, c)
+       // Atomics.wait(data, LogHeader.signal, c)
 
         // clear every consecutive log entry. update the 
     }

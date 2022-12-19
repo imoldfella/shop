@@ -1,22 +1,40 @@
 
 import * as dp from 'idb'
 import { Branch, Rpc, Schema, Key, ArraySnapshot, Tx, Lsn, Scan, BranchId, ScanTx, Sandbox } from './data'
-import { Interval, IntervalTree } from '../stree/interval'
+import { Interval, IntervalTree } from './util/interval'
+import { WorkerRpc } from './util/worker_rpc';
 
 
 interface SharedWorkerGlobalScope {
     onconnect: (event: MessageEvent) => void;
 }
 
+const log = new SharedWorker('logworker.js')
+const client = new Map<MessagePort, Client>()
+const catalog = new SharedWorker('store.js')
+
 const _self: SharedWorkerGlobalScope = self as any;
 _self.onconnect = function (e) {
-    if (!dbms) {
-        createDbms().then(_ => dispatch(e.ports[0]))
-    } else {
-        dispatch(e.ports[0])
+
+}
+
+class Client {
+    sandbox: Sandbox = {
+        identity: {
+            secret: new Uint8Array(0)
+        }
+    }
+    worker = new WorkerRpc('clientworker')
+    constructor(public port: MessagePort) {
+    }
+
+    query = new Map<number, ScanMgr>()
+
+    reply(r: Rpc, result: any) {
+        this.port.postMessage({ id: r.id, result: result })
     }
 }
-// should we  have tree per table or put table into the
+
 class ScanMgr implements Interval {
     current: any[] = []
     low: Uint32Array;
@@ -25,8 +43,78 @@ class ScanMgr implements Interval {
         this.low = scan.low
         this.high = scan.high
     }
-
 }
+
+function dispatch(port: MessagePort) {
+    // when we get an update from one tab, we need to trigger a change in all the tabs.
+    port.start()
+
+    let cl= client.get(port)
+    if (!cl) {
+        cl = new Client(port)
+        client.set(port, cl)
+    }
+
+    port.addEventListener('message', function (e) {
+        const r = e.data as Rpc
+        if (!cl) return
+
+        // we could await here, but that would prevent the client from canceling
+        switch (r.method) {
+            case 'connect':
+                cl.sandbox.identity = r.params
+                break
+            case 'disconnect':
+                // close everything
+                client.delete(port)
+                port.close()
+                // if this is is the last port we should unload for an attempt at
+                // a graceful shutdown.
+                break
+            case 'attach':
+                // get a sandbox id
+                r.params.branch
+                cl.reply(r, {
+                    writable: true
+                })
+                break
+            case 'detach':
+                //detach(cl, r)
+                break;
+            case 'cancel':
+                //cancel(cl, r)
+                break
+            case 'prepare':
+                //prepare(cl, r)
+                break
+            case 'exec':
+                //exec(cl, r)
+                break
+            // publish is a key-value esque writer
+            case 'publish':
+                //publish(cl, r)
+                break
+            // subscribe is a key-value esque reader
+            case 'subscribe':
+                //subscribe(cl, r)
+                break
+
+        }
+
+    });
+}
+
+
+// we might want this in a class so we can use it in different contexts?
+// but we need workers no matter what, so not sure.
+
+// logworker needs its own thread so that it can block inside opfs, shared to allow each client access
+
+
+
+/*
+// should we  have tree per table or put table into the
+
 
 // we have an interest range lock for each table
 class Table {
@@ -59,77 +147,14 @@ function onerror(a: any) {
     console.log("worker error", a)
 }
 
-export class WorkerWaiter {
-    w: Worker
-    waiting = false
-    resolve: any
-    reject: any
-    constructor(s: string) {
-        this.w = new Worker(s)
-        this.w.onmessage = (m) => {
-            this.resolve(m)
-            this.waiting = false
-        }
-        this.w.onerror = (e) => {
-            this.reject(e)
-            this.waiting = false
-        }
-    }
-    async ask(v: { method: string, params?: any }): Promise<any> {
-        this.w.postMessage(v)
-        this.waiting = true
-        return new Promise((resolve, reject) => {
-            this.resolve = resolve
-            this.reject = reject
-        })
-    }
-    async cancel() {
-        return this.ask({ method: 'cancel' })
-    }
 
-}
+
+
 // each time we update the database, we need to consider if it changes any of the scans and then send the delta
-class Client {
-    sandbox: Sandbox = {
-        identity: {
-            secret: new Uint8Array(0)
-        }
-    }
-    worker = new WorkerWaiter('clientworker')
-    constructor(public port: MessagePort) {
-    }
-
-    query = new Map<number, ScanMgr>()
-
-    reply(r: Rpc, result: any) {
-        this.port.postMessage({ id: r.id, result: result })
-    }
-}
 
 
-/*
-   started = false
-    writing = false
-    waiting: MessagePort[] = []
-    writeQ: Tx[] = []
-    log: Tx[] = []
-     schema = new Map<string, SchemaMgr>()
-    table = new Map<string, Table>()
-       predictedLsn = new Map<BranchId, number>
-
-    async getBranchLsn(branch: BranchId) {
-        return this.predictedLsn.get(branch) ?? 0
-    }
-    scanChanged = new Set<ScanMgr>
-    sandbox = new Map<number, Sandbox>()
-*/
 
 
-class Dbms {
-    // logworker needs its own thread so that it can block inside opfs, shared to allow each client access
-    log = new SharedWorker('logworker.js')
-    client = new Map<MessagePort, Client>()
-    catalog = new SharedWorker('store.js')
 
     // servers can update any subset of branches.
     // server transactions update the gold copy, then shared rebases any outdated transactions. finally affected clients are notified.
@@ -140,16 +165,6 @@ class Dbms {
 
 
 
-    sendWorker(client: Client, r: Rpc, proc: Proc) {
-        // pick a worker at random?
-        client.worker.postMessage({
-            method: r.method,
-            params: {
-                rpc: r,
-                proc: proc,
-            }
-        })
-    }
 
     prepare(client: Client, r: Rpc) {
     }
@@ -220,9 +235,7 @@ class Dbms {
         return r
     }
     closeClient(port: MessagePort) {
-        const client = this.getClient(port)
-        // close everything
-        this.client.delete(port)
+
     }
 
 }
@@ -236,56 +249,7 @@ export interface RefreshRequest {
 }
 
 let dbms: Dbms
-function dispatch(port: MessagePort) {
-    // when we get an update from one tab, we need to trigger a change in all the tabs.
-    port.start()
-    const cl = dbms.getClient(port)
-    port.addEventListener('message', function (e) {
-        const r = e.data as Rpc
 
-        // we could await here, but that would prevent the client from canceling
-        switch (r.method) {
-            case 'connect':
-                cl.sandbox.identity = r.params
-                break
-            case 'disconnect':
-                dbms.closeClient(port)
-                port.close()
-                // if this is is the last port we should unload for an attempt at
-                // a graceful shutdown.
-                break
-            case 'attach':
-                // get a sandbox id
-                dbms.attach(cl, r)
-                break
-            case 'detach':
-                dbms.detach(cl, r)
-                break;
-            case 'cancel':
-                dbms.cancel(cl, r)
-                break
-            case 'prepare':
-                dbms.prepare(cl, r)
-                break
-            case 'exec':
-                dbms.exec(cl, r)
-                break
-            // publish is a key-value esque writer
-            case 'publish':
-                dbms.publish(cl, r)
-                break
-            // subscribe is a key-value esque reader
-            case 'subscribe':
-                dbms.subscribe(cl, r)
-                break
 
-        }
 
-    });
-}
-
-async function createDbms(): Promise<Dbms> {
-    dbms = new Dbms()
-    return dbms
-}
-
+*/
