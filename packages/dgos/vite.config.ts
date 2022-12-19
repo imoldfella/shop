@@ -13,6 +13,10 @@ const crossOriginIsolation = () => ({
 
 });
 export default defineConfig({
+  worker: {
+    plugins: [
+    ]
+  },
   plugins: [
     solidPlugin(),
     crossOriginIsolation()],

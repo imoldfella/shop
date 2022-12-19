@@ -74,13 +74,13 @@ export class SolidDb {
     addListener(fn: (tx: Tx) => void) {
 
     }
-    constructor(config?: DbConfig){
-       this.w = new SharedWorker(new URL('./shared', import.meta.url), {
+    constructor(config?: DbConfig) {
+        this.w = new SharedWorker(new URL('./shared', import.meta.url), {
             type: 'module'
         })
 
         this.config = config || this.config
- 
+
         this.w.port.start();
         this.w.port.onmessage = (e) => {
             if (e.data) {
@@ -95,7 +95,7 @@ export class SolidDb {
                         r.id
                 }
             }
-        }   
+        }
     }
 
 

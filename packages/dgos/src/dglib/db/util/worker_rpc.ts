@@ -14,7 +14,7 @@ export interface CanSend {
     postMessage(x: any): void
 }
 
-type Method = (params: any) => Promise<any> 
+type Method = (params: any) => Promise<any>
 
 export class RpcClient {
     waiting = new Map<number, PromisePair>()
@@ -75,7 +75,7 @@ export class RpcClient {
 export class WorkerRpc extends RpcClient {
     w: Worker
     constructor(s: string) {
-        super(new Worker(s))
+        super(new Worker(s, { type: 'module' }))
         this.w = super.w as Worker
         this.w.onmessage = (m) => {
             super.recv(m.data as Rpc)
@@ -87,7 +87,7 @@ class SharedWorkerWrapper {
     constructor(x: string) {
         this.w = new SharedWorker(x)
     }
-    postMessage(x: any){
+    postMessage(x: any) {
     }
 }
 

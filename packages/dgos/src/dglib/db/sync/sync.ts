@@ -86,54 +86,54 @@ function doStop() {
 }
 
 async function start() {
-        // listen to the log and return a snapshot of everything up to the log starting
-        // const first = db.addListener((tx: Tx) => {
+    // listen to the log and return a snapshot of everything up to the log starting
+    // const first = db.addListener((tx: Tx) => {
 
-        // })        
+    // })        
 
-        // read the connection information from the database
-        // read the user mute settings
-        // restore the most recent sync state.
-        // subscribe to the log.
-        // connect to the server and start processing information
+    // read the connection information from the database
+    // read the user mute settings
+    // restore the most recent sync state.
+    // subscribe to the log.
+    // connect to the server and start processing information
 
-        // send a first online status report to subscribers.
-        // no counters are put in status, these are written back to the state database
-        // the clients will subscribe that table directly.
+    // send a first online status report to subscribers.
+    // no counters are put in status, these are written back to the state database
+    // the clients will subscribe that table directly.
 
 
-        dx.queryServer(db, {}, (q: QueryServer) => {
-            for (let r of q.inserted) {
-                connectServer(r.url)
-            }
-            for (let d of q.deleted) {
-                ws.get(d.url)?.ws.close()
-                ws.delete(d.url)
-                deleteServerStatus(db, { url: d.url })
-            }
+    dx.queryServer(db, {}, (q: QueryServer) => {
+        for (let r of q.inserted) {
+            connectServer(r.url)
+        }
+        for (let d of q.deleted) {
+            ws.get(d.url)?.ws.close()
+            ws.delete(d.url)
+            deleteServerStatus(db, { url: d.url })
+        }
 
-        })
+    })
 
-        self.setInterval(() => heartbeat(), 1000)
-    }
+    self.setInterval(() => heartbeat(), 1000)
+}
 
 // start (two part construction) is not completely necessary, but it allows the dbms to get a static reference while still controlling the start/stop
 async function init() {
 
     self.onmessage = (m: MessageEvent) => {
         // only message is to close
-        switch(m.data){
-        case 'start':
-            start().then(()=>{
+        switch (m.data) {
+            case 'start':
+                start().then(() => {
+                    state++
+                    if (state == 2) stop()
+                })
+                break;
+            // emanates from pagehide, so only so much we can do.
+            case 'stop':
                 state++
-                if (state==2) stop()
-            })
-            break;
-        // emanates from pagehide, so only so much we can do.
-        case 'stop':
-            state++
-            if (state==2) stop()
-            break;
+                if (state == 2) stop()
+                break;
         }
     }
 }

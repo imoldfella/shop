@@ -8,13 +8,14 @@ import { SharedWorkerRpc } from "../util/worker_rpc"
 
 // cache/proxy for the database worker
 export class Db {
-    w 
-    constructor(){
-        this.w = new SharedWorkerRpc('./db.js')
+    // w
+    constructor() {
+        // this.w = new SharedWorkerRpc('../sworker/index.mjs')
         this.init()
     }
-    async init(){
-        console.log(await this.w.ask('ping'))
+    async init() {
+        //console.log("init worker")
+        //console.log(await this.w.ask('ping'))
     }
 
     begin(): TxMgr {

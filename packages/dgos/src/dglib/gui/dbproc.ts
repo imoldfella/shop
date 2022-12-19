@@ -3,7 +3,7 @@
 // each table has functions to delete, insert, update
 
 import { SolidDb } from "./db"
-import { TxMgr,Db } from "../db/client/client"
+import { TxMgr, Db } from "../db/client/client"
 
 export function deleteTabTx(tx: TxMgr, i: number) {
     // tx.branch(tx.db.profile)

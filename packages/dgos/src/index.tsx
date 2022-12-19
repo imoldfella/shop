@@ -8,7 +8,8 @@ import { DbProvider, MediaProvider, BranchMap } from './dglib/gui'
 
 // to make bookmarks work we will need to push the route up through the iframe
 async function init() {
-
+  const w = new Worker('./src/worker')
+  w.postMessage('yo')
   render(() =>
   (<MediaProvider><Suspense>
     <Router>

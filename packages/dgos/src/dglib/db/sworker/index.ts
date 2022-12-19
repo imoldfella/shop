@@ -1,8 +1,8 @@
 
 import * as dp from 'idb'
-import { Branch, Rpc, Schema, Key, ArraySnapshot, Tx, Lsn, Scan, BranchId, ScanTx, Sandbox } from './data'
-import { Interval, IntervalTree } from './util/interval'
-import { WorkerRpc } from './util/worker_rpc';
+import { Branch, Rpc, Schema, Key, ArraySnapshot, Tx, Lsn, Scan, BranchId, ScanTx, Sandbox } from '../data'
+import { Interval, IntervalTree } from '../util/interval'
+import { WorkerRpc } from '../util/worker_rpc';
 
 
 interface SharedWorkerGlobalScope {
@@ -49,7 +49,7 @@ function dispatch(port: MessagePort) {
     // when we get an update from one tab, we need to trigger a change in all the tabs.
     port.start()
 
-    let cl= client.get(port)
+    let cl = client.get(port)
     if (!cl) {
         cl = new Client(port)
         client.set(port, cl)
