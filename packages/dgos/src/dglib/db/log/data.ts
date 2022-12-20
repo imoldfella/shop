@@ -9,14 +9,14 @@ enum Slot {
 export class MemDb {
     mem = new Mem()
     u64
-    constructor(){
+    constructor() {
         this.u64 = new BigInt64Array(this.mem.mem.buffer)
     }
 
     // we need faddx counters using atomics
-    nextTxn( ) : number{
-       const old= Atomics.add(this.u64,Slot.nextTsn,BigInt(1))
-       return Number(old)
+    nextTxn(): number {
+        const old = Atomics.add(this.u64, Slot.nextTsn, BigInt(1))
+        return Number(old)
     }
     notifyBufferFull() {
         Atomics.notify(this.u64, Slot.notifyBufferFull);
@@ -39,10 +39,11 @@ export enum Txx {
     checkpointEnd = 8
 }
 // status needs to be in shared ram?
-enum TxStatusType {
+export enum TxStatusType {
     undo = 0,
     run = 1,
     commit = 2,
+    abort = 3
 }
 export interface TxStatus {
     //xid: number
@@ -57,6 +58,7 @@ export type LogRecord = {
     txn: Txn
     prevLsn: number // backward link 
     undoNext: number // for clr, next to undo
+    page: PageId
     key: string
     value: any
     before: any
@@ -88,7 +90,7 @@ export interface PageInfo {
 
 // there is a data file for each page size. If we could we would trim pages out each logical page, but opfs can't. idb can
 export type FileSet = FileSystemSyncAccessHandle[]
-export async function fileSet(d: FileSystemDirectoryHandle, root: string, n: number ): Promise<FileSet> {
+export async function fileSet(d: FileSystemDirectoryHandle, root: string, n: number): Promise<FileSet> {
     const r: FileSet = []
     for (let i = 0; i < n; i++) {
         const f = await d.getFileHandle(root + i)
@@ -106,18 +108,20 @@ export type StartState = {
 
 
 export class BufferPool {
-    constructor(public mem: Mem, public df: FileSet){
+    constructor(public mem: Mem, public df: FileSet) {
     }
 
     // getPage is async because idb is async, performance leak
     // we should not need to evict pages here, but we can.
-    async getPage(page: number ) : Promise<Uint32Array>{
+    async getPage(page: number): Promise<Uint32Array> {
 
         return new Uint32Array(0)
     }
 }
 
 export type Checkpoint = {
-    activeTx: number[]
-    dirty: number[]
+    activeTx: Txn[]
+    newestLsn: Lsn[]
+    dirty: PageId[]
+    recLsn: Lsn[] // for each tx, we want the earliest record we need to scan.
 }

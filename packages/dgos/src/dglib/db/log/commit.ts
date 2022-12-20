@@ -19,21 +19,19 @@ export class LogWriter {
 
     // we need to switch files, store where in the log
     async checkpoint() {
-        this.active = this.active?0:1
+        this.active = this.active ? 0 : 1
         this.logpos = 0
 
         const wasActive = [...this.txStatus.keys()]
         this.addRecord(Txx.checkpointBegin)
 
-
-
         // write wasActive in the log record
-        const cp : Checkpoint = {
+        const cp: Checkpoint = {
             activeTx: [],
             dirty: []
         }
-        this.addRecord(Txx.checkpointEnd,{
-        value: cp    
+        this.addRecord(Txx.checkpointEnd, {
+            value: cp
         })
         // write a new 
     }
@@ -53,7 +51,7 @@ export class LogWriter {
         }
     }
 
-   
+
     // we don't begin a checkpoint until we know that we have completed the previous one, so this is a good time to rotate the logs. Our good checkpoint stays in its log, and since that log has a begin and end checkpoint in it, that is enough to recover from so we can trim the unused log and start again. 
 
     // how do we atomically switch?
