@@ -2,7 +2,7 @@ import { faker } from "@faker-js/faker"
 import { Accessor, Context, createContext, createSignal, ParentComponent, Setter, useContext } from "solid-js"
 import { createStore } from "solid-js/store"
 import { Db, TxMgr } from "../db/client/client"
-import { ListDelta, listDeltaApply, Rid, Rpc, Tab, Tabx, Tx, Identity, DbConfig, BranchId, Key } from "../db/data"
+import { ListDelta, listDeltaApply, Rid, Tab, Tabx, Tx, Identity, DbConfig, BranchId, Key } from "../db/data"
 
 
 // maintains order, but also allows set operations
@@ -60,59 +60,9 @@ class SelectMap {
 // still we need to control the selection state here, because the selected branch may be deleted remotely
 
 export class SolidDb {
-    db = new Db()
+    constructor(public db: Db){}
     tabs = new SelectMap()
-    // we need the selection order + we need to adjust to remote updates
-    profile: BranchId = "" // anonymous
-    w: SharedWorker
-    // string here is a hexified version of the binary key for the branch.
-    config = {}
-    update() {
-        //super.applyDelta(r.result as ListDelta<Tabx>)
-    }
-
-    addListener(fn: (tx: Tx) => void) {
-
-    }
-    constructor(config?: DbConfig) {
-        this.w = new SharedWorker(new URL('./shared', import.meta.url), {
-            type: 'module'
-        })
-
-        this.config = config || this.config
-
-        this.w.port.start();
-        this.w.port.onmessage = (e) => {
-            if (e.data) {
-                // if selected[0] is deleted, we need to pick some tab
-                const r = e.data as Rpc
-                switch (r.method) {
-                    case 'update':
-                        // some scans have changed. 
-                        break
-                    default:
-                        // this should be a reply to a transaction
-                        r.id
-                }
-            }
-        }
-    }
-
-
-    next = 1
-    async rpc(method: string, params: any) {
-        const id = this.next++
-        this.w.port.postMessage({
-            method: method,
-            id: id,
-            params: params
-        })
-    }
-    // 
-
 }
-
-
 
 export async function openDb(props: {
     secret: string
@@ -121,8 +71,8 @@ export async function openDb(props: {
 }
 
 let dbContext: Context<SolidDb>
-export const DbProvider: ParentComponent<{}> = (props) => {
-    const db = new SolidDb({})
+export const DbProvider: ParentComponent<{value: Db}> = (props) => {
+    const db = new SolidDb(props.value)
     const DbContext = createContext(db)
     dbContext = DbContext
     return (
@@ -130,8 +80,7 @@ export const DbProvider: ParentComponent<{}> = (props) => {
             {props.children}
         </DbContext.Provider>)
 }
-
 export function useDb() { return useContext(dbContext); }
 
-export { TxMgr }
+
 

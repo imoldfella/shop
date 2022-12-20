@@ -1,80 +1,41 @@
 
 import * as dp from 'idb'
-import { Branch, Rpc, Schema, Key, ArraySnapshot, Tx, Lsn, Scan, BranchId, ScanTx, Sandbox } from '../data'
+import { Branch, Schema, Key, ArraySnapshot, Tx, Lsn, Scan, BranchId, ScanTx, Sandbox } from '../data'
 import { Interval, IntervalTree } from '../util/interval'
-import { WorkerRpc } from '../util/worker_rpc';
+import { Rpc, worker } from '../util/worker_rpc';
 
-
-interface SharedWorkerGlobalScope {
-    onconnect: (event: MessageEvent) => void;
-}
-
-const log = new SharedWorker('logworker.js')
+const log = worker(new URL('./log', import.meta.url))
+const store = worker(new URL('./store', import.meta.url))
 const client = new Map<MessagePort, Client>()
-const catalog = new SharedWorker('store.js')
 
-const _self: SharedWorkerGlobalScope = self as any;
-_self.onconnect = function (e) {
-
-}
-
-class Client {
+// worker per client? makes it easy terminate, sandbox
+export class Client {
     sandbox: Sandbox = {
         identity: {
             secret: new Uint8Array(0)
         }
     }
-    worker = new WorkerRpc('clientworker')
-    constructor(public port: MessagePort) {
-    }
-
     query = new Map<number, ScanMgr>()
+    worker = worker(new URL('./clientworker', import.meta.url))
+
+    constructor(public sender: (r: Rpc)=>void) {
+    }
 
     reply(r: Rpc, result: any) {
-        this.port.postMessage({ id: r.id, result: result })
-    }
-}
-
-class ScanMgr implements Interval {
-    current: any[] = []
-    low: Uint32Array;
-    high: Uint32Array;
-    constructor(public scan: Scan) {
-        this.low = scan.low
-        this.high = scan.high
-    }
-}
-
-function dispatch(port: MessagePort) {
-    // when we get an update from one tab, we need to trigger a change in all the tabs.
-    port.start()
-
-    let cl = client.get(port)
-    if (!cl) {
-        cl = new Client(port)
-        client.set(port, cl)
+       this.sender({ id: r.id, result: result })
     }
 
-    port.addEventListener('message', function (e) {
-        const r = e.data as Rpc
-        if (!cl) return
-
-        // we could await here, but that would prevent the client from canceling
+    async dispatch( r: Rpc): Promise<any> {
         switch (r.method) {
+            case 'ping':
+                return 'pong'
             case 'connect':
-                cl.sandbox.identity = r.params
-                break
-            case 'disconnect':
-                // close everything
-                client.delete(port)
-                port.close()
-                // if this is is the last port we should unload for an attempt at
-                // a graceful shutdown.
+                this.sandbox.identity = r.params
                 break
             case 'attach':
                 // get a sandbox id
                 r.params.branch
-                cl.reply(r, {
+                this.reply(r, {
                     writable: true
                 })
                 break
@@ -98,11 +59,23 @@ function dispatch(port: MessagePort) {
             case 'subscribe':
                 //subscribe(cl, r)
                 break
-
+            default:
+                return r.method
         }
-
-    });
+    }
+    
 }
+
+class ScanMgr implements Interval {
+    current: any[] = []
+    low: Uint32Array;
+    high: Uint32Array;
+    constructor(public scan: Scan) {
+        this.low = scan.low
+        this.high = scan.high
+    }
+}
+
 
 
 // we might want this in a class so we can use it in different contexts?

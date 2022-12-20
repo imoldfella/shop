@@ -10,9 +10,7 @@ export interface Rpc {
     error?: any
 }
 
-export interface CanSend {
-    postMessage(x: any): void
-}
+type Sender = (e: Rpc) => void
 
 type Method = (params: any) => Promise<any>
 
@@ -22,21 +20,21 @@ export class RpcClient {
     resolve: any
     reject: any
     next = 42
+    constructor(public sender: Sender){
+    }
 
-    constructor(public w: CanSend) { }
     recv(r: Rpc) {
-
         if (r.method) {
             const fn = this.method.get(r.method)
             if (fn) {
                 fn(r.params).then((v) => {
                     try {
-                        this.w.postMessage({
+                        this.sender({
                             id: r.id,
                             result: v
                         })
                     } catch (e) {
-                        this.w.postMessage({
+                        this.sender({
                             id: r.id,
                             error: e
                         })
@@ -46,6 +44,11 @@ export class RpcClient {
         } else {
             const p = this.waiting.get(r.id ?? 0)
             if (!p) return
+            if (r.result){
+                p.resolve(r.result)
+            } else {
+                p.reject(r.error)
+            }
         }
     }
     addMethod(method: string, fn: (params: any) => Promise<any>) {
@@ -53,16 +56,16 @@ export class RpcClient {
     }
 
     async ask(method: string, params?: any): Promise<any> {
-        this.w.postMessage({
+        this.sender({
             method: method,
-            tag: this.next,
+            id: this.next,
             params: params
         })
 
         const r = new Promise((resolve, reject) => {
             this.waiting.set(this.next, {
                 resolve,
-                reject
+                reject,
             })
 
         })
@@ -71,34 +74,31 @@ export class RpcClient {
     }
 }
 
-// wrapper around worker support
-export class WorkerRpc extends RpcClient {
-    w: Worker
-    constructor(s: string) {
-        super(new Worker(s, { type: 'module' }))
-        this.w = super.w as Worker
-        this.w.onmessage = (m) => {
-            super.recv(m.data as Rpc)
-        }
+
+export function worker(s: URL): RpcClient {
+    const w = new Worker(s, { type: 'module' })
+    const r = new RpcClient((e:Rpc)=>{
+        w.postMessage(e)
+    })
+    r.sender = (e: any) => {
+        w.postMessage(e)
     }
-}
-class SharedWorkerWrapper {
-    w
-    constructor(x: string) {
-        this.w = new SharedWorker(x)
+    w.onmessage = (m) => {
+        r.recv(m.data as Rpc)
     }
-    postMessage(x: any) {
-    }
+    return r
 }
 
-export class SharedWorkerRpc extends RpcClient {
-    w: SharedWorkerWrapper
-    constructor(s: string) {
-        super(new SharedWorkerWrapper(s))
-        this.w = super.w as SharedWorkerWrapper
-        this.w.w.port.start()
-        this.w.w.port.onmessage = (m) => {
-            super.recv(m.data as Rpc)
-        }
+export function sharedWorker(s: URL): RpcClient {
+    const w = new SharedWorker(s, { type: 'module' })
+    const r = new RpcClient((e: Rpc) => {
+        console.log('send', s, e)
+        w.port.postMessage(e)
+    })
+    w.port.start()
+    w.port.onmessage = (m) => {
+        console.log('onmessage', m.data)
+        r.recv(m.data as Rpc)
     }
+    return r
 }

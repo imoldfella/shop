@@ -4,23 +4,54 @@
 // insert doesn't need to changing, delete doesn't need changing. update = delete + f(old, delta)
 
 import { Key } from "../data"
-import { SharedWorkerRpc } from "../util/worker_rpc"
+import { sharedWorker } from "../util/worker_rpc"
+import { Client } from "./dbw"
+
+// since shared is just to support multiple tabs, maybe we can launch directly to make it easier to debug?
+
+//const worker = sharedWorker(new URL('./shared', import.meta.url))
+// await worker.ask('ping').then(e => {
+//     console.log("adferw", e)
+// })
+
+
 
 // cache/proxy for the database worker
 export class Db {
-    // w
+
+    // with one tab, there is just this one client
+    cl = new Client(()=>{ }) 
+    async ask(method: string , params?: any) : Promise<any>{
+        const o =  await this.cl.dispatch( {
+            method,
+            id: 42,
+            params
+        })
+        return {
+            id: 42,
+            result: o
+        }
+    }
+
     constructor() {
-        // this.w = new SharedWorkerRpc('../sworker/index.mjs')
         this.init()
     }
     async init() {
-        //console.log("init worker")
-        //console.log(await this.w.ask('ping'))
-    }
 
+       await this.ask('start')
+       console.log("init", await this.ask('ping'))
+    }
+    async stop() {
+        //await worker.ask('stop')
+    }
     begin(): TxMgr {
         return new TxMgr(this)
     }
+}
+export async function createDb() {
+    const r = new Db()
+    await r.init()
+    return r
 }
 // update needs to be rebased: delta' = fRebase(old, dGold, delta)
 export class TxMgr {

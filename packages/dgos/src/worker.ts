@@ -1,6 +1,6 @@
 
-export { }
 
-self.onmessage = (e: any) => {
-    console.log("wxxqb")
+export {}
+self.onmessage = (e) => {
+    console.log("wxxqb",e.data)
 }

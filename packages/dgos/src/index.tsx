@@ -4,16 +4,17 @@ import { Suspense } from 'solid-js'
 import { Router } from '@solidjs/router'
 import './index.css'
 import { DbProvider, MediaProvider, BranchMap } from './dglib/gui'
+import { createDb } from './dglib/db/client'
 
 
 // to make bookmarks work we will need to push the route up through the iframe
 async function init() {
-  const w = new Worker('./src/worker')
-  w.postMessage('yo')
+  // we can await our database here, then hand it to Provider
+  const db = await createDb()
   render(() =>
   (<MediaProvider><Suspense>
     <Router>
-      <DbProvider>
+      <DbProvider value={db}>
         <BranchMap />
       </DbProvider>
     </Router>

@@ -79,14 +79,6 @@ export interface Sandbox {
 }
 
 
-// https://www.jsonrpc.org/
-export interface Rpc {
-    method: string,
-    id: any,
-    params: any,
-    result: any,
-    sandbox: number
-}
 
 export interface Tab {
     rid: string
