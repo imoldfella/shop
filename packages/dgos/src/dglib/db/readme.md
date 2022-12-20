@@ -19,3 +19,47 @@ how do you revoke an admin? problem, admin already knows the winding key, so tha
 
 we could create admin sets, then the admin sets would could reuse their key setup on multiple branches.
 the problem with this is that most branches have unique admin sets! roughly a DM + friends on both sides of the dm.
+
+
+
+// since shared is just to support multiple tabs, maybe we can launch directly to make it easier to debug?
+
+//const worker = sharedWorker(new URL('./shared', import.meta.url))
+// await worker.ask('ping').then(e => {
+//     console.log("adferw", e)
+// })
+
+// try one worker for debugging, not shared. gives us opfs.
+
+/* 
+    // with one tab, there is just this one client
+    cl = new Client(async (r: Rpc): Promise<any> =>{ 
+        switch(r.method) {
+            default: 
+                return 0
+        }
+    }) 
+
+        async ask(method: string , params?: any) : Promise<any>{
+        const o =  await this.cl.dispatch( {
+            method,
+            id: 42,
+            params
+        })
+        return {
+            id: 42,
+            result: o
+        }
+    }
+*/
+
+
+// prosemirror keeps two copies: predicted and golden; it throws away predicted when new transactions come in.
+// transactions are steps that can be rebased. we need to hang on to the transaction until its resolved
+// insert doesn't need to changing, delete doesn't need changing. update = delete + f(old, delta)
+
+
+// each db is completely isolated.
+// can dgos can update the database when the iframe is not loaded?
+// might as well just load the iframe and let the code itself churn.
+

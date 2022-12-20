@@ -1,5 +1,7 @@
 import { defineConfig } from 'vite';
 import solidPlugin from 'vite-plugin-solid';
+
+
 const crossOriginIsolation = () => ({
   name: 'configure-server',
 
@@ -18,8 +20,10 @@ export default defineConfig({
     ]
   },
   plugins: [
+
     solidPlugin(),
     crossOriginIsolation()],
+  
   server: {
     port: 3000,
   },

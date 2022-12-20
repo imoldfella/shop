@@ -6,6 +6,33 @@ enum Slot {
     nextTsn = 0,
     notifyBufferFull
 }
+
+
+export class RingBuffer {
+    // slot 0 is tail
+    // slot 1 is head
+    header: BigUint64Array
+    data: BigUint64Array
+    
+    constructor(public mem: Mem){
+        this.header = new BigUint64Array(mem.allocLines(1))
+        this.data = new BigUint64Array(mem.allocPages(10))
+    }
+    push(b: ArrayBufferView) {
+        const old = Number(Atomics.add(this.header,0,BigInt(b.byteLength)))
+        const n = old + b.byteLength
+        
+        // might be split, if so, make it a padding record and try again.
+
+
+
+    }   
+
+    pull(b: ArrayBufferView) {
+
+    }
+}
+// 
 export class MemDb {
     mem = new Mem()
     u64
@@ -24,8 +51,11 @@ export class MemDb {
     waitBufferFull() {
 
     }
-}
 
+    addLogRecord(lr: Uint32Array) {
+        // 
+    }
+}
 
 export enum Txx {
     begin = 0,
@@ -107,17 +137,6 @@ export type StartState = {
 }
 
 
-export class BufferPool {
-    constructor(public mem: Mem, public df: FileSet) {
-    }
-
-    // getPage is async because idb is async, performance leak
-    // we should not need to evict pages here, but we can.
-    async getPage(page: number): Promise<Uint32Array> {
-
-        return new Uint32Array(0)
-    }
-}
 
 export type Checkpoint = {
     activeTx: Txn[]

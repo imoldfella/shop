@@ -1,10 +1,10 @@
-import { useLogWriter } from "../log";
+import { useLogWriter } from "../worker";
 import { Rpc } from "../util/worker_rpc";
 import { Client } from './dbw'
-import { useLogReader } from "../log";
+import { useLogReader } from "../worker";
 import { Mem } from "../util/mem";
 //import { useFs } from "../../opfs";
-import { LogState } from "../log/log_writer";
+import { LogState } from "../worker/log_writer";
 import { FileSystemSyncAccessHandle, getAccess, readJson, useOpfs } from "../../opfs/opfs";
 import { Tx } from "../data";
 

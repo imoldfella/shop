@@ -1,8 +1,11 @@
 import { Log } from "../client/service"
-import { Checkpoint, FileSet, LogRecord, Lsn, PageId, StartState, Txn, TxStatus, Txx } from "./data"
+import { Checkpoint, FileSet, LogRecord, Lsn, PageId, RingBuffer, StartState, Txn, TxStatus, Txx } from "./data"
 import { LogState } from "./log_writer"
 
+
+
 export class LogWriter {
+    data: RingBuffer
     txStatus = new Map<number, TxStatus>()
     dirtyPageTable = new Map<PageId, Lsn>()
     flushedLsn: number
@@ -13,6 +16,7 @@ export class LogWriter {
     constructor(public start: StartState) {
         this.flushedLsn = 0
         this.flushLoop()
+        this.data = new RingBuffer(start.mem.mem)
     }
 
     get mem() { return this.start.mem }
@@ -28,7 +32,9 @@ export class LogWriter {
         // write wasActive in the log record
         const cp: Checkpoint = {
             activeTx: [],
-            dirty: []
+            dirty: [],
+            newestLsn: [],
+            recLsn: []
         }
         this.addRecord(Txx.checkpointEnd, {
             value: cp
@@ -43,11 +49,11 @@ export class LogWriter {
     }
     async flushLoop() {
         while (!this.stop) {
-            this.mem.waitBufferFull()
+            const b = this.mem.pull()
             // wait for either a full page or a commit, then write the page
             // either way, we will write complete 4K pages, and advance the LSN by 4k increments.
 
-            this.flushedLsn = maxLsn
+            this.flushedLsn = 0
         }
     }
 

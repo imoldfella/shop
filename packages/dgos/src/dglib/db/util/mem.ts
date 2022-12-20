@@ -7,7 +7,8 @@ export class Mem {
     })
     next = 0
 
-    allocPages(pages: number): Int32Array {
+    
+    allocPages(pages: number): ArrayBuffer {
         const len = pages * 64 * 1024
         const r = new Int32Array(this.mem.buffer, this.next, len)
         this.next += len
