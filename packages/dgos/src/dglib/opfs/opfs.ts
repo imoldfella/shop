@@ -19,10 +19,11 @@ export async function useOpfs() {
 const encoder = new TextEncoder();
 const writeBuffer = encoder.encode("Thank you for reading this.");
 
-export async function readJson(d: FileSystemDirectoryHandle, path: string) {
+export async function readJson<T>(d: FileSystemDirectoryHandle, path: string):Promise<T|undefined> {
     const f = await d.getFileHandle(path)
     const f2 = await f.getFile()
-    return JSON.parse(await f2.text())
+    const tx = await f2.text()
+    return tx?JSON.parse(await f2.text()):undefined
 }
 export async function writeJson(d: FileSystemDirectoryHandle, path: string, a: any) {
     const f = await d.getFileHandle(path, { create: true })

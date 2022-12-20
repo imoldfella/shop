@@ -1,5 +1,7 @@
 # 
 
+The log is only for recover, trimmed per usual at each checkpoint. History is kept in the data file per value (this is more conveniently accessed, e.g. undo). Note that each value must have two "histories": predicted and gold
+
 A portion of shared memory
 
 32 byte header
