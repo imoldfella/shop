@@ -9,13 +9,19 @@ function onerror() {
 }
 
 // opfs is sync, but idb is not
-export interface StoreFile {
-    truncate(len: number): Promise<void>
-    flush(): Promise<void>
-    close(): Promise<void>
-    write(a: ArrayBuffer, opt?: { at: number }): number
-    read(a: ArrayBuffer, opt?: { at: number }): number
-    getSize(): Promise<number>
+export abstract class StoreFile {
+    abstract truncate(len: number): Promise<void>
+    abstract flush(): Promise<void>
+    abstract close(): Promise<void>
+    abstract write(a: ArrayBuffer, opt?: { at: number }): number
+    abstract read(a: ArrayBuffer, opt?: { at: number }): number
+    abstract getSize(): Promise<number>
+
+    async writeJson(v: any) {
+    }
+    async readJson(): Promise<any> {
+        return
+    }
 }
 
 

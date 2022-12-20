@@ -4,9 +4,9 @@ import { Branch, Schema, Key, ArraySnapshot, Tx, Lsn, Scan, BranchId, ScanTx, Sa
 import { Interval, IntervalTree } from '../util/interval'
 import { Rpc, worker } from '../util/worker_rpc';
 
-const log = worker(new URL('./log', import.meta.url))
-const store = worker(new URL('./store', import.meta.url))
-const client = new Map<MessagePort, Client>()
+// should  be shared workers so that the clients can access directly
+// const log = worker(new URL('./log', import.meta.url))
+// const store = worker(new URL('./store', import.meta.url))
 
 // worker per client? makes it easy terminate, sandbox
 export class Client {
@@ -16,16 +16,15 @@ export class Client {
         }
     }
     query = new Map<number, ScanMgr>()
-    worker = worker(new URL('./clientworker', import.meta.url))
 
-    constructor(public sender: (r: Rpc)=>void) {
+    constructor(public sender: (r: Rpc) => void) {
     }
 
     reply(r: Rpc, result: any) {
-       this.sender({ id: r.id, result: result })
+        this.sender({ id: r.id, result: result })
     }
 
-    async dispatch( r: Rpc): Promise<any> {
+    async dispatch(r: Rpc): Promise<any> {
         switch (r.method) {
             case 'ping':
                 return 'pong'
@@ -63,7 +62,7 @@ export class Client {
                 return r.method
         }
     }
-    
+
 }
 
 class ScanMgr implements Interval {

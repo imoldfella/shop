@@ -1,4 +1,5 @@
 import { Store, StoreFile } from './data'
+import { FileSystemSyncAccessHandle } from './opfs'
 
 //In the origin private file system, a FileSystemHandle represents either the root directory of the origin’s space, or a descendant of the root directory.
 
@@ -12,14 +13,6 @@ interface FileSystemAccessHandle {
   getSize(): Promise<number>
 }
 
-interface FileSystemSyncAccessHandle {
-  truncate(len: number): Promise<void>
-  flush(): Promise<void>
-  close(): Promise<void>
-  write(a: ArrayBuffer, opt: { at?: number }): number
-  read(a: ArrayBuffer, opt: { at?: number }): number
-  getSize(): Promise<number>
-}
 
 export async function useOpfsStore() {
   const root = await navigator.storage.getDirectory();

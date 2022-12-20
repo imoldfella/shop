@@ -1,5 +1,10 @@
-export {}
+import { Rpc } from "../util/worker_rpc"
+
+
+function dispatch(r: Rpc, send: (r: Rpc) => void) {
+
+}
 
 onmessage = (e) => {
-    console.log("log",e.data)
+    dispatch(e.data, (r: Rpc) => { postMessage(r) })
 }

@@ -1,6 +1,8 @@
 // when log watchers watch, they must be copy out the data, and then check that it wasn't overwritten. If it was they can read from the log.
 //https://github.com/mozilla-spidermonkey/js-lock-and-condition/search?q=notifyOne
 
+import { Mem } from "../util/mem"
+
 export class LogHeader {
     static quit = 0
     static condvar = 1
@@ -10,9 +12,11 @@ export class LogHeader {
 
     buffer  // just our data.
     mask = 0
-    constructor(public sm: Int32Array) {
-        this.sm64 = new BigUint64Array(sm)
-        this.buffer = sm.slice(8)
+    sm: Int32Array
+    constructor(m: Mem) {
+        this.sm = m.allocLines(1)
+        this.sm64 = new BigUint64Array(this.sm)
+        this.buffer = this.sm.slice(8)
         this.mask = this.buffer.length - 1
     }
 
@@ -38,11 +42,11 @@ export class LogHeader {
     pos2offset(x: bigint) {
         return Number(x & BigInt(this.mask))
     }
-    slice(begin: bigint, end: bigint) : [ Int32Array, Int32Array|undefined] {
+    slice(begin: bigint, end: bigint): [Int32Array, Int32Array | undefined] {
         const b = this.pos2offset(begin)
         const e = this.pos2offset(end)
         if (e > b) {
-            return [this.sm.slice(b,e),undefined]
+            return [this.sm.slice(b, e), undefined]
         } else {
             const endBuffer = this.buffer.length
             return [this.sm.slice(b, endBuffer), this.sm.slice(8, e)]

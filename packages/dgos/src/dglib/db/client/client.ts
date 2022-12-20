@@ -4,7 +4,7 @@
 // insert doesn't need to changing, delete doesn't need changing. update = delete + f(old, delta)
 
 import { Key } from "../data"
-import { sharedWorker } from "../util/worker_rpc"
+import { Rpc, sharedWorker, worker } from "../util/worker_rpc"
 import { Client } from "./dbw"
 
 // since shared is just to support multiple tabs, maybe we can launch directly to make it easier to debug?
@@ -14,14 +14,18 @@ import { Client } from "./dbw"
 //     console.log("adferw", e)
 // })
 
+// try one worker for debugging, not shared. gives us opfs.
 
-
-// cache/proxy for the database worker
-export class Db {
-
+/* 
     // with one tab, there is just this one client
-    cl = new Client(()=>{ }) 
-    async ask(method: string , params?: any) : Promise<any>{
+    cl = new Client(async (r: Rpc): Promise<any> =>{ 
+        switch(r.method) {
+            default: 
+                return 0
+        }
+    }) 
+
+        async ask(method: string , params?: any) : Promise<any>{
         const o =  await this.cl.dispatch( {
             method,
             id: 42,
@@ -32,14 +36,23 @@ export class Db {
             result: o
         }
     }
+*/
+
+const dbms = worker(new URL('./worker', import.meta.url))
+
+// cache/proxy for the database worker
+export class Db {
+
+    async ask(method: string, params?: any): Promise<any> {
+        return dbms.ask(method, params)
+    }
 
     constructor() {
         this.init()
     }
     async init() {
-
-       await this.ask('start')
-       console.log("init", await this.ask('ping'))
+        await this.ask('start')
+        console.log("init", await this.ask('ping'))
     }
     async stop() {
         //await worker.ask('stop')

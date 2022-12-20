@@ -1,7 +1,6 @@
 import { StoreFile, useFs } from "../../opfs"
+import { Mem } from "../util/mem";
 import { LogHeader } from "./log_buffer"
-
-
 
 export class LogReader {
     constructor(public fh: StoreFile[]) {
@@ -27,18 +26,20 @@ export async function useLogReader(): Promise<LogReader> {
 // b.set( [  ])
 // commit()
 
+// return a buffer and a commit function
+// might be better to offer  bytes as a block so that we can break into smaller blocks
 type LogWriter = [Int32Array, () => void]
 
 const maxMessage = 1 * 1024 * 1024
 
+
 // header needs to identify the branch and the user identity.
 // log buffer can already be associated with a server?
 // the sync service is reading the log, what does it need? just the sandbox, but how do we recover/restart?
-export function useLogWriter(props: {
-    sm: Int32Array
-    sandbox: number
-}) {
-    const lh = new LogHeader(props.sm)
+
+// needs to take a power of 2 pages, plus some extra bytes 
+export function useLogWriter(m: Mem) {
+    const lh = new LogHeader(m)
     return (offer: Uint8Array): LogWriter => {
         if (offer.length > maxMessage) {
 
