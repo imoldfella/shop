@@ -4,29 +4,8 @@
 
 import { FileSystemSyncAccessHandle, getAccess, readJson, useOpfs } from "../../opfs/opfs"
 
-import { fileSet, FileSet, LogRecord, Lsn, MemDb, RootRecord, StartState, Txx } from "./data"
+import { Checkpoint, fileSet, FileSet, LogRecord, Lsn, MemDb, RootRecord, StartState, Txx } from "./data"
 import { LogState } from "./log_writer"
-
-// memory is shared resource, each tab perhaps can ask for some.
-
-
-
-
-// when we end there will be pages in the buffer pool, these are seen only in the raw bytes though, we don't make a typescript friend one because bytes are easier to share.
-
-
-// a little bit of performance leak? we don't need the wrapper could use global functions instead, but are javascript functions ever global?
-
-// with variable page sizes, we might need the headers to be in a consistent spot?
-// 
-
-
-
-// when a checkpoint begins, we will trim the older file (opfs delete?) 
-// when the checkpoint ends,  we will write a master record indicating it ended correctly.
-
-// If there is a crash 
-
 
 export class LogReader {
     constructor(public fh: FileSet) {
@@ -40,10 +19,6 @@ export class LogReader {
 // fix the data files using the log, trim the log and return clean starting point
 // if no files exist, then return an empty database.
 
-type Checkpoint = {
-    activeTx: number[]
-    dirty: number[]
-}
 
 // when we are done there will be no active transactions and no dirty pages.
 export async function open(): Promise<StartState> {
@@ -84,17 +59,35 @@ export async function open(): Promise<StartState> {
         switch (r.type) {
             case Txx.checkpointEnd:
                 r.value as Checkpoint
-            case Txx.insert:
-                
+            case Txx.update:
+                // update active pages.
         }
         return true
     })
 
     // redo
-
+    lr.forEach((r) => {
+        switch (r.type) {
+            case Txx.checkpointEnd:
+                r.value as Checkpoint
+            case Txx.update:
+                // update active pages.
+        }
+        return true
+    })
 
     // undo
+    lr.forEach((r) => {
+        switch (r.type) {
+            case Txx.checkpointEnd:
+                r.value as Checkpoint
+            case Txx.update:
+                // update active pages.
+        }
+        return true
+    })
 
+    
     return {
         mem,
         df,

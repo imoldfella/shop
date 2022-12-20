@@ -14,7 +14,7 @@ export class TxMgr {
     // status: TxStatus = TxStatusType.run
     prevLsn = 0
     constructor(public mem: Mem) {
-        
+
     }
 
 
@@ -23,7 +23,7 @@ export class TxMgr {
         this.prevLsn = addRecord(type, lr)
     }
     insert() {
-        this.addRecord(Txx.insert, {})
+        this.addRecord(Txx.update, {})
     }
     // maybe not async? spin lock perhaps?
     async commit() {

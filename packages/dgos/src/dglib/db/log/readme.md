@@ -21,3 +21,17 @@ bit 1: 1 = committed
 
 the log writer writes in order, it sleeps if all records are written up to the first uncommitted entry or tail.
 
+
+when we end there will be pages in the buffer pool, these are seen only in the raw bytes though, we don't make a typescript friend one because bytes are easier to share.
+
+
+
+// with variable page sizes, we might need the headers to be in a consistent spot?
+// 
+
+
+
+// when a checkpoint begins, we will trim the older file (opfs delete?) 
+// when the checkpoint ends,  we will write a master record indicating it ended correctly.
+
+// If there is a crash 

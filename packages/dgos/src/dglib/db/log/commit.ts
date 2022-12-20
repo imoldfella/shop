@@ -1,5 +1,5 @@
 import { Log } from "../client/service"
-import { FileSet, LogRecord, Lsn, PageId, StartState, Txn, TxStatus, Txx } from "./data"
+import { Checkpoint, FileSet, LogRecord, Lsn, PageId, StartState, Txn, TxStatus, Txx } from "./data"
 import { LogState } from "./log_writer"
 
 export class LogWriter {
@@ -7,6 +7,8 @@ export class LogWriter {
     dirtyPageTable = new Map<PageId, Lsn>()
     flushedLsn: number
     stop = false
+    active = 0
+    logpos = 0
 
     constructor(public start: StartState) {
         this.flushedLsn = 0
@@ -15,13 +17,25 @@ export class LogWriter {
 
     get mem() { return this.start.mem }
 
-    beginCheckpoint() {
+    // we need to switch files, store where in the log
+    async checkpoint() {
+        this.active = this.active?0:1
+        this.logpos = 0
+
         const wasActive = [...this.txStatus.keys()]
         this.addRecord(Txx.checkpointBegin)
-    }
-    completeCheckpoint() {
+
+
+
         // write wasActive in the log record
-        this.addRecord(Txx.checkpointEnd)
+        const cp : Checkpoint = {
+            activeTx: [],
+            dirty: []
+        }
+        this.addRecord(Txx.checkpointEnd,{
+        value: cp    
+        })
+        // write a new 
     }
 
     addRecord(type: Txx, lr?: Partial<LogRecord>): Lsn {
@@ -31,9 +45,10 @@ export class LogWriter {
     }
     async flushLoop() {
         while (!this.stop) {
+            this.mem.waitBufferFull()
             // wait for either a full page or a commit, then write the page
-            const maxLsn = 0
-            this.addRecord(Txx.txnEnd)
+            // either way, we will write complete 4K pages, and advance the LSN by 4k increments.
+
             this.flushedLsn = maxLsn
         }
     }

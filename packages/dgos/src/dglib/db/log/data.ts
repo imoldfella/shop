@@ -30,7 +30,7 @@ export class MemDb {
 export enum Txx {
     begin = 0,
     commit = 1,
-    insert = 2,
+    update = 2,
 
     txnEnd = 4, // write after all records flushed, not flushed
     abort = 5,
@@ -115,4 +115,9 @@ export class BufferPool {
 
         return new Uint32Array(0)
     }
+}
+
+export type Checkpoint = {
+    activeTx: number[]
+    dirty: number[]
 }
