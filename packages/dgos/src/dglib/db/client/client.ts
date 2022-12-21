@@ -9,7 +9,8 @@ import { MemDb } from "../worker/data"
 // 
 export class Db {
     mem = new MemDb
-    dbms = worker(new URL('./worker', import.meta.url))
+    //dbms = worker(new URL('./worker', import.meta.url))
+    dbms = sharedWorker(new URL('./shared', import.meta.url))
     async ask(method: string, params?: any): Promise<any> {
         return this.dbms.ask(method, params)
     }
@@ -19,9 +20,16 @@ export class Db {
 }
 
 export async function createDb() {
+    console.log("startdb")
     const r = new Db()
-    await r.ask('start')
+    // await r.ask('start')
     console.log("init", await r.ask('ping'))
+    const sab = new SharedArrayBuffer(4)
+    const sab2 = new Int32Array(sab)
+    sab2[0] = 42
+    const x = await r.ask('add', sab2)
+    console.log("add", x)
+    console.log("add2", Atomics.load(sab2, 0))
     return r
 }
 

@@ -28,6 +28,11 @@ export class Client {
         switch (r.method) {
             case 'ping':
                 return 'pong'
+            case 'add':
+                const o = r.params as Int32Array
+                console.log("w", o)
+                Atomics.store(o, 0, 43)
+                return 44
             case 'connect':
                 this.sandbox.identity = r.params
                 break

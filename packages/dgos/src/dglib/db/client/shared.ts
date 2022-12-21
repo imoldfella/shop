@@ -13,17 +13,19 @@ _self.onconnect = function (e) {
   port.addEventListener('message', (e) => {
     let cl = client.get(port)
     if (!cl) {
-      cl = new Client((r:Rpc)=> { port.postMessage(r)})
+      cl = new Client((r: Rpc) => { port.postMessage(r) })
       client.set(port, cl)
-    }  
+    }
 
     const r = e.data as Rpc
-    port.postMessage({
-      id: r.id,
-      result: r.method
-    });
+    cl.dispatch(r).then(a => {
+      port.postMessage({
+        id: r.id,
+        result: a
+      });
+    })
 
-    
+
   });
   port.start()
 }

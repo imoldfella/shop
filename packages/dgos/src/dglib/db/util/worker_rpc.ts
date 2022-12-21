@@ -20,7 +20,7 @@ export class RpcClient {
     resolve: any
     reject: any
     next = 42
-    constructor(public sender: Sender){
+    constructor(public sender: Sender) {
     }
 
     recv(r: Rpc) {
@@ -44,7 +44,7 @@ export class RpcClient {
         } else {
             const p = this.waiting.get(r.id ?? 0)
             if (!p) return
-            if (r.result){
+            if (r.result) {
                 p.resolve(r.result)
             } else {
                 p.reject(r.error)
@@ -77,12 +77,9 @@ export class RpcClient {
 
 export function worker(s: URL): RpcClient {
     const w = new Worker(s, { type: 'module' })
-    const r = new RpcClient((e:Rpc)=>{
+    const r = new RpcClient((e: Rpc) => {
         w.postMessage(e)
     })
-    r.sender = (e: any) => {
-        w.postMessage(e)
-    }
     w.onmessage = (m) => {
         r.recv(m.data as Rpc)
     }
