@@ -5,7 +5,8 @@ import { Client } from "./dbw"
 import { LogRecord, Txx } from "../worker/data"
 import { MemDb } from "../worker/data"
 
-// cache/proxy for the database worker
+// cache/proxy for using on the main thread.
+// 
 export class Db {
     mem = new MemDb
     dbms = worker(new URL('./worker', import.meta.url))
@@ -43,7 +44,7 @@ export class TxMgr {
 
     // status: TxStatus = TxStatusType.run
     prevLsn = 0
- 
+
 
     addRecord(type: Txx, lr: Partial<LogRecord>) {
         lr.prevLsn = this.prevLsn
